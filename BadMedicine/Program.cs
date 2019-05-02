@@ -35,6 +35,10 @@ namespace BadMedicine
 
             try
             {
+                //if user wants to write out the lookups generate those too
+                if(opts.Lookups)
+                    ExerciseTestDataGenerator.WriteLookups(dir);
+
                 //create a cohort of people
                 IExerciseTestIdentifiers identifiers = new ExerciseTestIdentifiers();
                 identifiers.GeneratePeople(opts.NumberOfPatients);
