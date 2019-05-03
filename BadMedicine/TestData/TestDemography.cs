@@ -18,11 +18,11 @@ namespace BadMedicine.TestData
 
         Random _r;
 
-        public TestDemography()
+        public TestDemography(Random r = null)
         {
             People = new TestPerson[500];
 
-            _r = new Random();
+            _r = r??new Random();
 
             for(int i=0;i<500;i++)
                 People[i] = new TestPerson(_r);

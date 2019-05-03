@@ -11,8 +11,6 @@ namespace BadMedicine.TestData.Exercises
 {
     public class PrescribingExerciseTestData : ExerciseTestDataGenerator
     {
-        Random r = new Random();
-
         public override object[] GenerateTestDataRow(TestPerson p)
         {
             object[] values = new object[11];

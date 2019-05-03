@@ -6,12 +6,32 @@
 
 namespace BadMedicine.TestData
 {
+    /// <summary>
+    /// Data model for a UK postcode
+    /// </summary>
     public class Postcode
     {
+        /// <summary>
+        /// The full postcode e.g. "DD8 3PZ"
+        /// </summary>
         public string Value { get; set; }
+
+        /// <summary>
+        /// The region associated with the postcode e.g. "Angus"
+        /// </summary>
         public string Ward { get; set; }
+
+        /// <summary>
+        /// The district associated with the postcode e.g. "Brechin and Edzell"
+        /// </summary>
         public string District { get; set; }
 
+        /// <summary>
+        /// Creates a new UK Postcode with it's associated Ward/District (See <see cref="Ward"/> and <see cref="District"/>)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="ward"></param>
+        /// <param name="district"></param>
         public Postcode( string value, string ward, string district)
         {
             Value = value;

@@ -7,6 +7,7 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject>BadMedicine.Program</StartupObject>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
                                                                                                                                                                               </PropertyGroup>
@@ -18,7 +19,11 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="TestData\HospitalAdmissionCodesFrequency.csv" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="TestData\Exercises\ExerciseTestData.cd" />
+    <EmbeddedResource Include="TestData\HospitalAdmissionCodesFrequency.csv" />
     <EmbeddedResource Include="TestData\LabTestCodes.csv" />
     <EmbeddedResource Include="TestData\PrescriptionCodes.csv" />
   </ItemGroup>

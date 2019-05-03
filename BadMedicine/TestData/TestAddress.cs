@@ -8,14 +8,41 @@ using System;
 
 namespace BadMedicine.TestData
 {
+    /// <summary>
+    /// Data model for a 5 line address in which some lines might be null
+    /// </summary>
     public class TestAddress
     {
+        /// <summary>
+        /// Top line of the address, may just be a number or may be a number followed by a street or just a street/house name
+        /// </summary>
         public string Line1 { get; set; }
+
+        /// <summary>
+        /// Second line of the address may be a street name or a <see cref="Postcode.District"/>
+        /// </summary>
         public string Line2 { get; set; }
+
+        /// <summary>
+        /// Third line of the address may be a <see cref="Postcode.District"/> or <see cref="Postcode.Ward"/>
+        /// </summary>
         public string Line3 { get; set; }
+
+        /// <summary>
+        /// Fourth line of the address may be a <see cref="Postcode.Ward"/> or null
+        /// </summary>
         public string Line4 { get; set; }
+
+        /// <summary>
+        /// Randomly generated UK postcode
+        /// </summary>
         public Postcode Postcode { get; set; }
 
+        /// <summary>
+        /// Generates a random address with a random street name which might have a number or not.  The
+        /// randomly generated <see cref="Postcode"/> will have the correct district/ward to match the code.
+        /// </summary>
+        /// <param name="r"></param>
         public TestAddress(Random r)
         {
             Line1 = StreetNames[r.Next(0,StreetNames.Length)];
@@ -41,8 +68,9 @@ namespace BadMedicine.TestData
             }
         }
 
-
-
+        /// <summary>
+        /// List of all street names in Tayside
+        /// </summary>
         private static string[] StreetNames = new[]
         {
             "Abercorn Street",
@@ -636,6 +664,9 @@ namespace BadMedicine.TestData
             "Yeamans Alley"
         };
 
+        /// <summary>
+        /// All Tayside postcodes and the associated District/Ward
+        /// </summary>
         static Postcode[] DundeePostcodes = new Postcode[]{
             new Postcode("DD1 1AA","Dundee City","Maryfield"),
 new Postcode("DD1 1AB","Dundee City","Maryfield"),

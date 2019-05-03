@@ -14,7 +14,6 @@ namespace BadMedicine.TestData.Exercises
     /// </summary>
     public class CarotidArteryScanReportExerciseTestData : ExerciseTestDataGenerator
     {
-        private Random r = new Random();
         private int id = 0;
 
         public override object[] GenerateTestDataRow(TestPerson p)

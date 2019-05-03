@@ -7,11 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using CsvHelper;
+using CsvHelper.Configuration;
 using MathNet.Numerics.Distributions;
 
 namespace BadMedicine.TestData.Exercises
@@ -20,10 +22,25 @@ namespace BadMedicine.TestData.Exercises
     public abstract class ExerciseTestDataGenerator : IExerciseTestDataGenerator
     {
         public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
+        
+        /// <summary>
+        /// Use for all your random needs to ensure Seed injection support.
+        /// </summary>
+        protected Random r;
+
+        public ExerciseTestDataGenerator()
+        {
+            r = new Random();
+        }
+
+        public ExerciseTestDataGenerator(Random rand = null)
+        {
+            r = rand;
+        }
+            
 
         public void GenerateTestDataFile(IExerciseTestIdentifiers cohort, FileInfo target, int numberOfRecords)
         {
-            Random r = new Random();
             int totalPeople = cohort.People.Length;
 
             int linesWritten;
@@ -191,6 +208,47 @@ namespace BadMedicine.TestData.Exercises
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        /// <summary>
+        /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>
+        /// </summary>
+        /// <param name="requestingType"></param>
+        /// <param name="resourceFileName"></param>
+        /// <param name="dt">Optional - provide if you want to strongly type certain Columns.  New columns will be added to this table
+        /// if unmatched columns are read from the csv.</param>
+        /// <returns></returns>
+        public static DataTable EmbeddedCsvToDataTable(Type requestingType,string resourceFileName,DataTable dt = null)
+        {
+            string toFind = requestingType.Namespace + "." + resourceFileName;
+            var lookup = requestingType.Assembly.GetManifestResourceStream(toFind);
+
+            if (lookup == null)
+                throw new Exception("Could not find embedded resource file " + toFind);
+          
+            CsvReader r = new CsvReader(new StreamReader(lookup),new Configuration(){Delimiter =","});
+            
+            var toReturn = dt?? new DataTable();
+
+            r.Read();
+            r.ReadHeader();
+
+            foreach (string header in r.Context.HeaderRecord)
+                if(!toReturn.Columns.Contains(header))
+                    toReturn.Columns.Add(header);
+
+            r.Read();
+
+            do
+            {
+                var row = toReturn.Rows.Add();
+                foreach (DataColumn col in toReturn.Columns)
+                {
+                    row[col] = r[col.ColumnName];
+                }
+            } while (r.Read());
+
+            return toReturn;
         }
 
         /// <summary>

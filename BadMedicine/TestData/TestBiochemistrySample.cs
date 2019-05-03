@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using BadMedicine.TestData.Exercises;
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -26,28 +27,7 @@ namespace BadMedicine.TestData
 
         static TestBiochemistrySample()
         {
-            string toFind = typeof(TestBiochemistrySample).Namespace + ".LabTestCodes.csv";
-            var lookup = typeof(TestBiochemistrySample).Assembly.GetManifestResourceStream(toFind);
-
-            if (lookup == null)
-                throw new Exception("Could not find embedded resource file " + toFind);
-          
-            CsvReader r = new CsvReader(new StreamReader(lookup),new Configuration(){Delimiter =","});
-            
-            lookupTable = new DataTable();
-
-            r.Read();
-            r.ReadHeader();
-
-            foreach (string header in r.Context.HeaderRecord)
-                lookupTable.Columns.Add(header);
-            
-            r.Read();
-
-            do
-            {
-                lookupTable.Rows.Add(r.Context.Record);
-            } while (r.Read());
+            lookupTable = ExerciseTestDataGenerator.EmbeddedCsvToDataTable(typeof(TestBiochemistrySample),"LabTestCodes.csv");
              
             weightToRow = new Dictionary<int, int>();
 
@@ -61,7 +41,7 @@ namespace BadMedicine.TestData
             maxWeight = currentWeight;
         }
 
-
+        
         public TestBiochemistrySample(Random r)
         {
             //get a random row from the lookup table - based on its representation within our biochemistry dataset

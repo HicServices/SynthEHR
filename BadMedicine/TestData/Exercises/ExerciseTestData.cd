@@ -14,7 +14,7 @@
   <Class Name="BadMedicine.TestData.Exercises.ExerciseTestDataGenerator" Collapsed="true">
     <Position X="6.75" Y="2.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>ECAIIAAAAAIAAAAgAAAAAAACAIgBAAAAAEAgACQABCA=</HashCode>
+      <HashCode>ECAIIAAAAAIAAAAgAAAAAAACAIgBAIAAAEAhACQABCA=</HashCode>
       <FileName>TestData\Exercises\ExerciseTestDataGenerator.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -41,7 +41,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="BadMedicine.TestData.Exercises.CarotidArteryScanReportExerciseTestData" Collapsed="true">
-    <Position X="11" Y="3.75" Width="3" />
+    <Position X="7.75" Y="4.75" Width="3" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAhAAAAAgA=</HashCode>
       <FileName>TestData\Exercises\CarotidArteryScanReportExerciseTestData.cs</FileName>
@@ -56,6 +56,13 @@
     <TypeIdentifier>
       <HashCode>IAEIBKAoAABIAEDAgRBDABABRAARQAgDAUAAAgEAAAA=</HashCode>
       <FileName>TestData\TestPerson.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BadMedicine.TestData.Exercises.HospitalAdmissionsExerciseTestData" Collapsed="true">
+    <Position X="4.5" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>TestData\Exercises\HospitalAdmissionsExerciseTestData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="BadMedicine.TestData.Exercises.IExerciseTestIdentifiers">

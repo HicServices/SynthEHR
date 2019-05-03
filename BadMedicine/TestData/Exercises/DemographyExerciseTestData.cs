@@ -11,8 +11,6 @@ namespace BadMedicine.TestData.Exercises
 {
     public class DemographyExerciseTestData : ExerciseTestDataGenerator
     {
-        Random r = new Random();
-
         public override object[] GenerateTestDataRow(TestPerson person)
         {
             //leave off data load run ID 

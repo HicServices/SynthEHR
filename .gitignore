@@ -4,3 +4,7 @@ BadMedicine/bin/
 BadMedicine/.vs/
 .vs/
 Visual Studio 2017/
+BadMedicineTests/obj/
+*.vspx
+*.psess
+BadMedicineTests/bin/
