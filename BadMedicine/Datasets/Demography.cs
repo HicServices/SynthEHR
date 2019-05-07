@@ -11,6 +11,9 @@ namespace BadMedicine.Datasets
 {
     public class Demography : DataGenerator
     {
+        public Demography(Random rand) : base(rand)
+        {
+        }
         public override object[] GenerateTestDataRow(Person person)
         {
             //leave off data load run ID 
@@ -190,5 +193,6 @@ namespace BadMedicine.Datasets
             sw.Write("date_of_birth,");                                         //36
             sw.Write("patient_triage_score" + Environment.NewLine);             //37
         }
+
     }
 }

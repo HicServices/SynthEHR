@@ -25,7 +25,7 @@ namespace BadMedicine.Datasets
     [InheritedExport(typeof(IDataGenerator))]
     public abstract class DataGenerator : IDataGenerator
     {
-        /// <summary>
+                /// <summary>
         /// Periodically fired when writing out rows
         /// </summary>
         public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
@@ -35,14 +35,10 @@ namespace BadMedicine.Datasets
         /// </summary>
         protected Random r;
 
-        public DataGenerator()
-        {
-            r = new Random();
-        }
-
-        public DataGenerator(Random rand = null)
+        public DataGenerator(Random rand)
         {
             r = rand;
+            _normalDist = new Normal(0, 0.3,r);
         }
             
 
@@ -111,7 +107,7 @@ namespace BadMedicine.Datasets
         /// </summary>
         /// <param name="sw"></param>
         protected abstract void WriteHeaders(StreamWriter sw);
-        readonly Normal _normalDist = new Normal(0, 0.3);
+        readonly Normal _normalDist;
 
         /// <summary>
         /// Concatenates between <paramref name="min"/> and <paramref name="max"/> calls to the <paramref name="generator"/>

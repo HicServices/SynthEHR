@@ -144,7 +144,7 @@ namespace BadMedicine
 
         public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
         {
-            var range = DateTime.Now - afterDate;
+            var range = new DateTime(2019,7,5,23,59,59) - afterDate;
 
             var randTimeSpan = new TimeSpan((long) (r.NextDouble()*range.Ticks));
 

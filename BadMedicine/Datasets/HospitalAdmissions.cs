@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace BadMedicine.Datasets
 {
@@ -7,6 +8,10 @@ namespace BadMedicine.Datasets
     /// </summary>
     public class HospitalAdmissions:DataGenerator
     {
+        public HospitalAdmissions(Random rand) : base(rand)
+        {
+        }
+
         public override object[] GenerateTestDataRow(Person p)
         {
             var episode = new HospitalAdmissionsRecord(p,p.DateOfBirth, r);

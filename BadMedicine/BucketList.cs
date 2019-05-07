@@ -5,6 +5,10 @@ using System.Text;
 
 namespace BadMedicine
 {
+    /// <summary>
+    /// Picks random object of Type T based on a specified probability for each element.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BucketList<T>
     {
         private readonly Random _r;
@@ -13,6 +17,10 @@ namespace BadMedicine
 
         private int? _total = null;
 
+        /// <summary>
+        /// Creates a new empty collection seeded with <paramref name="r"/>
+        /// </summary>
+        /// <param name="r"></param>
         public BucketList(Random r)
         {
             _r = r;

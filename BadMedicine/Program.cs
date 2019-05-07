@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using BadMedicine.Datasets;
 using CommandLine;
@@ -39,9 +40,11 @@ namespace BadMedicine
                 if(opts.Lookups)
                     DataGenerator.WriteLookups(dir);
 
+                Random r = opts.Seed == -1 ? new Random() : new Random(opts.Seed);
+
                 //create a cohort of people
                 IPersonCollection identifiers = new PersonCollection();
-                identifiers.GeneratePeople(opts.NumberOfPatients,opts.Seed == -1 ?null:new Random(opts.Seed));
+                identifiers.GeneratePeople(opts.NumberOfPatients,r);
 
                 //find all generators in the assembly
                 var generators = typeof(IDataGenerator).Assembly.GetExportedTypes()
@@ -67,7 +70,7 @@ namespace BadMedicine
                 //for each generator
                 foreach (var g in generators)
                 {
-                    var instance = (IDataGenerator)Activator.CreateInstance(g);
+                    var instance = (IDataGenerator)Activator.CreateInstance(g,r);
 
                     var targetFile = new FileInfo(Path.Combine(dir.FullName, g.Name + ".csv"));
                     instance.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfRows);

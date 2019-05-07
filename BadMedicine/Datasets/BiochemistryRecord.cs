@@ -88,7 +88,7 @@ namespace BadMedicine.Datasets
             _bucketList = new BucketList<BiochemistryRandomDataRow>(random);
 
             foreach (DataRow row in dt.Rows)
-                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
+                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row,random));
 
         }
         
@@ -107,7 +107,7 @@ namespace BadMedicine.Datasets
             public double? QVStandardDev;
             public Normal Distribution;
 
-            public BiochemistryRandomDataRow(DataRow row)
+            public BiochemistryRandomDataRow(DataRow row,Random r)
             {
                 LocalClinicalCodeValue  =(string) row["LocalClinicalCodeValue"];
                 ReadCodeValue           =(string) row["ReadCodeValue"];
@@ -124,7 +124,7 @@ namespace BadMedicine.Datasets
                 QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(),out var dev) ? dev:(double?) null;
 
                 if(QVAverage.HasValue && QVStandardDev.HasValue)
-                    Distribution = new Normal(QVAverage.Value, QVStandardDev.Value);
+                    Distribution = new Normal(QVAverage.Value, QVStandardDev.Value,r);
 
             }
         }

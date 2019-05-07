@@ -14,9 +14,9 @@ namespace BadMedicine
 
         public Person[] People { get; private set; }
 
-        public void GeneratePeople(int numberOfUniqueIndividuals, Random random = null)
+        public void GeneratePeople(int numberOfUniqueIndividuals, Random random)
         {
-            r = random ?? new Random();
+            r = random;
             People = new Person[numberOfUniqueIndividuals];
 
             for (int i = 0; i < numberOfUniqueIndividuals; i++)

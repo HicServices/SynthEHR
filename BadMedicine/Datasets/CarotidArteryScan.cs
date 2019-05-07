@@ -16,6 +16,10 @@ namespace BadMedicine.Datasets
     {
         private int id = 0;
 
+        public CarotidArteryScan(Random rand) : base(rand)
+        {
+        }
+
         public override object[] GenerateTestDataRow(Person p)
         {
             object[] results = new object[68];
@@ -171,6 +175,6 @@ namespace BadMedicine.Datasets
             };
 
             sw.WriteLine(string.Join(",", h));
-        }                             
+        }
     }                                 
 }                                     
