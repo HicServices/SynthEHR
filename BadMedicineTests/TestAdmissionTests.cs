@@ -4,16 +4,20 @@ using BadMedicine;
 using BadMedicine.Datasets;
 using NUnit.Framework;
 
-namespace BadMedicineTests.TestData
+namespace BadMedicineTests
 {
     public class TestAdmissionTests
     {
         [Test]
         public void Test_GetRandomIcdCode()
         {
+            //Seed the random generator if you want to always produce the same randomisation
             var r = new Random(100);
 
+            //Create a new person
             var person = new Person(r);
+
+            //Create test data for that person
             var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
 
             Assert.IsNotNull(a.Person.CHI);

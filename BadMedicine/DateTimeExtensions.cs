@@ -4,6 +4,9 @@ using System.Text;
 
 namespace BadMedicine
 {
+    /// <summary>
+    /// Extension methods for the <see cref="DateTime"/> class
+    /// </summary>
     public static class DateTimeExtensions
     {
         /// <summary>

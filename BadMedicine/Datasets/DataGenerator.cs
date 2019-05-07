@@ -25,9 +25,7 @@ namespace BadMedicine.Datasets
     [InheritedExport(typeof(IDataGenerator))]
     public abstract class DataGenerator : IDataGenerator
     {
-                /// <summary>
-        /// Periodically fired when writing out rows
-        /// </summary>
+        /// <inheritdoc/>
         public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
         
         /// <summary>
@@ -35,7 +33,11 @@ namespace BadMedicine.Datasets
         /// </summary>
         protected Random r;
 
-        public DataGenerator(Random rand)
+        /// <summary>
+        /// Creates a new instance which uses the provided <paramref name="rand"/> as a seed for generating data
+        /// </summary>
+        /// <param name="rand"></param>
+        protected DataGenerator(Random rand)
         {
             r = rand;
             _normalDist = new Normal(0, 0.3,r);
@@ -79,31 +81,18 @@ namespace BadMedicine.Datasets
                 
                 stopwatch.Stop();
             }
-            
         }
 
-        public virtual string GetName()
-        {
-            var typeName = GetType().Name;
-            if (typeName.EndsWith("ExerciseTestData"))
-                return typeName.Substring(0, typeName.Length - "ExerciseTestData".Length);
-
-            if (typeName.EndsWith("ExerciseTestDataGenerator"))
-                return typeName.Substring(0, typeName.Length - "ExerciseTestDataGenerator".Length);
-
-            return typeName;
-        }
 
         /// <summary>
-        /// When implemented in derived classes, returns a single row of data for writing to the output CSV.  This can
-        /// include string elements with newlines, quotes etc.
+        /// Returns a single row of data for writing to the output CSV.  This can include string elements with newlines, quotes etc.
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
         public abstract object[] GenerateTestDataRow(Person p);
 
         /// <summary>
-        /// When implemented in derived classes, outputs the top line of the CSV (column headers)
+        /// Outputs the top line of the CSV (column headers)
         /// </summary>
         /// <param name="sw"></param>
         protected abstract void WriteHeaders(StreamWriter sw);
@@ -144,7 +133,9 @@ namespace BadMedicine.Datasets
         /// <summary>
         /// returns random number between lowerBoundary and upperBoundary with a gaussian distribution around the middle
         /// </summary>
+        /// <param name="upperBoundary">Highest number that should be generated</param>
         /// <param name="digits">The number of decimal places to have in the number</param>
+        /// <param name="lowerBoundary">Lowest number that should be generated</param>
         /// <returns></returns>
         public double GetGaussian(double lowerBoundary, double upperBoundary, int digits = 2)
         {
@@ -164,7 +155,7 @@ namespace BadMedicine.Datasets
 
 
         /// <summary>
-        /// returns <paramref name="swapFor"/> if <see cref="swapIfIn"/> contains the input <paramref name="randomInt"/> (otherwise returns the input)
+        /// returns <paramref name="swapFor"/> if <paramref name="swapIfIn"/> contains the input <paramref name="randomInt"/> (otherwise returns the input)
         /// </summary>
         /// <param name="randomInt"></param>
         /// <param name="swapIfIn"></param>
@@ -201,6 +192,12 @@ namespace BadMedicine.Datasets
             return GetRandomLetter(true,r).ToString() + r.Next(0, 999);
         }
 
+        /// <summary>
+        /// Gets a random letter (A - Z)
+        /// </summary>
+        /// <param name="upperCase"></param>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public char GetRandomLetter(bool upperCase,Random r)
         {
             if(upperCase)
@@ -651,6 +648,11 @@ namespace BadMedicine.Datasets
                 default: return null;
             }
         }
+
+        /// <summary>
+        /// Writes out all lookup tables for all datasets.  These are tables which map codes to descriptions.
+        /// </summary>
+        /// <param name="dir"></param>
         public static void WriteLookups(DirectoryInfo dir)
         {
             File.WriteAllText(Path.Combine(dir.FullName, "z_Healthboards.csv"),

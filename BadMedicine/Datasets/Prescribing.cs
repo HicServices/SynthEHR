@@ -11,6 +11,7 @@ namespace BadMedicine.Datasets
 {
     public class Prescribing : DataGenerator
     {
+        /// <inheritdoc/>
         public Prescribing(Random rand) : base(rand)
         {
         }

@@ -9,8 +9,14 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
+    /// <summary>
+    /// Interface for classes which generate test data to disk.
+    /// </summary>
     public interface IDataGenerator
     {
+        /// <summary>
+        /// Periodically fired when writing out rows
+        /// </summary>
         event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
 
         /// <summary>
@@ -20,11 +26,5 @@ namespace BadMedicine.Datasets
         /// <param name="target">The file that will be created</param>
         /// <param name="numberOfRecords">The number of fake data records that should appear in the file created</param>
         void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords);
-        
-        /// <summary>
-        /// Name of the dataset e.g. "prescribing" determines how it is announced to user and the default file names generated e.g. "prescribing.csv"
-        /// </summary>
-        /// <returns></returns>
-        string GetName();
     }
 }

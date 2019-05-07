@@ -16,10 +16,12 @@ namespace BadMedicine.Datasets
     {
         private int id = 0;
 
+        /// <inheritdoc/>
         public CarotidArteryScan(Random rand) : base(rand)
         {
         }
 
+        /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
             object[] results = new object[68];
@@ -99,6 +101,7 @@ namespace BadMedicine.Datasets
         }
 
 
+        /// <inheritdoc/>
         protected override void WriteHeaders(StreamWriter sw)
         {
 

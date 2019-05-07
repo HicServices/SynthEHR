@@ -14,6 +14,7 @@ namespace BadMedicine.Datasets
     /// </summary>
     public class Biochemistry: DataGenerator
     {
+        /// <inheritdoc/>
         public Biochemistry(Random rand) : base(rand)
         {
         }

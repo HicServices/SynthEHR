@@ -8,6 +8,7 @@ namespace BadMedicine.Datasets
     /// </summary>
     public class HospitalAdmissions:DataGenerator
     {
+        /// <inheritdoc/>
         public HospitalAdmissions(Random rand) : base(rand)
         {
         }

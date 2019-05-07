@@ -8,19 +8,19 @@ using System;
 
 namespace BadMedicine
 {
+    /// <inheritdoc/>
     public class PersonCollection:IPersonCollection
     {
-        Random r;
-
+        /// <inheritdoc/>
         public Person[] People { get; private set; }
 
+        /// <inheritdoc/>
         public void GeneratePeople(int numberOfUniqueIndividuals, Random random)
         {
-            r = random;
             People = new Person[numberOfUniqueIndividuals];
 
             for (int i = 0; i < numberOfUniqueIndividuals; i++)
-                People[i]=new Person(r);
+                People[i]=new Person(random);
         }
     }
 }

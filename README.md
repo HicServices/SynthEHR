@@ -36,10 +36,10 @@ You can generate test data for your program yourself:
 var r = new Random(100);
 
 //Create a new person
-var person = new TestPerson(r);
+var person = new Person(r);
 
 //Create test data for that person
-var a = new TestAdmission(person,person.DateOfBirth,r);
+var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
 
 Assert.IsNotNull(a.Person.CHI);
 Assert.IsNotNull(a.Person.DateOfBirth);

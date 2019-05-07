@@ -9,11 +9,17 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
+    /// <summary>
+    /// Address and patient details as might appear in the CHI register
+    /// </summary>
     public class Demography : DataGenerator
     {
+        /// <inheritdoc/>
         public Demography(Random rand) : base(rand)
         {
         }
+
+        /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person person)
         {
             //leave off data load run ID 
@@ -151,7 +157,7 @@ namespace BadMedicine.Datasets
             return date2;
         }
 
-
+        /// <inheritdoc/>
         protected override void WriteHeaders(StreamWriter sw)
         {
             sw.Write("chi,");                                                   //0
