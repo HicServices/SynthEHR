@@ -19,17 +19,17 @@ namespace BadMedicine.Datasets
         public string Line1 { get; set; }
 
         /// <summary>
-        /// Second line of the address may be a street name or a <see cref="Postcode.District"/>
+        /// Second line of the address may be a street name or a <see cref="DemographyPostcode.District"/>
         /// </summary>
         public string Line2 { get; set; }
 
         /// <summary>
-        /// Third line of the address may be a <see cref="Postcode.District"/> or <see cref="Postcode.Ward"/>
+        /// Third line of the address may be a <see cref="DemographyPostcode.District"/> or <see cref="DemographyPostcode.Ward"/>
         /// </summary>
         public string Line3 { get; set; }
 
         /// <summary>
-        /// Fourth line of the address may be a <see cref="Postcode.Ward"/> or null
+        /// Fourth line of the address may be a <see cref="DemographyPostcode.Ward"/> or null
         /// </summary>
         public string Line4 { get; set; }
 

@@ -27,6 +27,12 @@ namespace BadMedicine
         /// </summary>
         public bool IsFinished { get; private set; }
 
+        /// <summary>
+        /// Creates a new instance documenting how many rows have been written so far.
+        /// </summary>
+        /// <param name="rowsWritten"></param>
+        /// <param name="elapsedTime"></param>
+        /// <param name="isFinished">True if this the last invocation and the file generation is complete</param>
         public RowsGeneratedEventArgs(int rowsWritten, TimeSpan elapsedTime, bool isFinished)
         {
             RowsWritten = rowsWritten;

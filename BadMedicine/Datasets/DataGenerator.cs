@@ -44,6 +44,7 @@ namespace BadMedicine.Datasets
         }
             
 
+        /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
             int totalPeople = cohort.People.Length;
@@ -148,6 +149,7 @@ namespace BadMedicine.Datasets
             return Math.Round((distributionZeroToOne * range) + lowerBoundary,digits);
         }
 
+        /// <inheritdoc cref="GetGaussian(double,double,int)"/>
         protected int GetGaussianInt(double lowerBoundary, double upperBoundary)
         {
             return (int) GetGaussian(lowerBoundary, upperBoundary);
@@ -187,6 +189,11 @@ namespace BadMedicine.Datasets
             }
         }
 
+        /// <summary>
+        /// Returns a random 'GPCode'.  This is a letter followed by up to 3 digits.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public string GetRandomGPCode(Random r)
         {
             return GetRandomLetter(true,r).ToString() + r.Next(0, 999);
@@ -207,6 +214,11 @@ namespace BadMedicine.Datasets
 
         }
 
+        /// <summary>
+        /// Returns a random 'status' for a CHI or sometimes null.  Values include 'C' (current), 'H' (historical), 'L'(legacy?) and 'R'(retracted?)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public object GetRandomCHIStatus(Random r)
         {
             switch (r.Next(0, 5))
