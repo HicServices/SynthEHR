@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using MathNet.Numerics.Distributions;
 
 namespace BadMedicine.Datasets
 {
@@ -17,73 +18,115 @@ namespace BadMedicine.Datasets
     /// </summary>
     public class BiochemistryRecord
     {
-        /// <summary>
-        /// every row in data table has a weigth (the number of records in our bichemistry with this sample type, this dictionary lets you input
-        /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
-        /// </summary>
-        private static Dictionary<int, int> weightToRow;
-        private static readonly int maxWeight = -1;
-        private static DataTable lookupTable;
-
+        public string LabNumber;
         public string Sample_type;
         public string Test_code;
         public string Result;
         public string Units;
         public string ReadCodeValue;
-        public string ReadCodeDescription;
+        public string Healthboard;
+        public string ArithmeticComparator;
+        public string Interpretation;
+        public string QuantityUnit;
+        public string RangeHighValue;
+        public string RangeLowValue;
 
-        static BiochemistryRecord()
-        {
-            lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv");
-             
-            weightToRow = new Dictionary<int, int>();
+        static object oLockInitialize = new object();
+        private static bool initialized;
 
-            int currentWeight = 0;
-            for (int i = 0; i < lookupTable.Rows.Count; i++)
-            {
-                currentWeight += int.Parse(lookupTable.Rows[i]["frequency"].ToString());
-                weightToRow.Add(currentWeight, i);
-            }
+        private  static BucketList<BiochemistryRandomDataRow> _bucketList;
 
-            maxWeight = currentWeight;
-        }
-
-        
         /// <summary>
         /// Generates a new random biochemistry test.
         /// </summary>
         /// <param name="r"></param>
         public BiochemistryRecord(Random r)
         {
+            lock (oLockInitialize)
+            {
+                if (!initialized)
+                    Initialize(r);
+                initialized = true;
+            }
+
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
-            DataRow row = GetRandomRowUsingWeight(r);
+            var row = _bucketList.GetRandom();
+            LabNumber = GetRandomLabNumber(r);
+            Test_code = row.LocalClinicalCodeValue;
+            Sample_type = row.SampleName;
 
-            Test_code = row["Test_code"].ToString();
-            Sample_type = row["Sample_type"].ToString();
+            Result = row.Distribution != null ? row.Distribution.Sample().ToString() : "NULL";
 
-            var hasMin = double.TryParse(row["minResult"].ToString(),out var min);
-            var hasMax = double.TryParse(row["maxResult"].ToString(),out var max);
-
-            if(hasMin && hasMax)
-                Result = ((r.NextDouble() * (max - min)) + min).ToString("#.##");
-            else
-                Result = "NULL";
-
-            Units = row["Units"].ToString();
-            ReadCodeValue = row["Read_code"].ToString();
-            ReadCodeDescription = row["Description"].ToString();
-
-        }
-
-        private DataRow GetRandomRowUsingWeight(Random r)
-        {
-            int weightToGet = r.Next(maxWeight);
-
-            //get the first key with a cumulative frequency above the one you are trying to get
-            int row =  weightToRow.First(kvp => kvp.Key > weightToGet).Value;
+            ArithmeticComparator = row.ArithmeticComparator;
+            Interpretation = row.Interpretation;
+            QuantityUnit = row.QuantityUnit;
+            RangeHighValue = row.RangeHighValue.HasValue ? row.RangeHighValue.ToString():"NULL";
+            RangeLowValue = row.RangeLowValue.HasValue ? row.RangeLowValue.ToString():"NULL";
             
-            return lookupTable.Rows[row];
+            Units = row.QuantityUnit;
+
+            Healthboard = row.hb_extract;
+            ReadCodeValue = row.ReadCodeValue;
         }
 
+        
+
+        private string GetRandomLabNumber(Random r )
+        {
+            if(r.Next(0,2)==0)
+                return "CC" + r.Next(0, 1000000);
+
+            return "BC" + r.Next(0, 1000000);
+        }
+        private void Initialize(Random random)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("RecordCount",typeof(int));
+            
+            DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
+             
+            _bucketList = new BucketList<BiochemistryRandomDataRow>(random);
+
+            foreach (DataRow row in dt.Rows)
+                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
+
+        }
+        
+        private class BiochemistryRandomDataRow
+        {
+            public string LocalClinicalCodeValue;
+            public string ReadCodeValue;
+            public string hb_extract;
+            public string SampleName;
+            public string ArithmeticComparator;
+            public string Interpretation;
+            public string QuantityUnit;
+            public double? RangeHighValue;
+            public double? RangeLowValue;
+            public double? QVAverage;
+            public double? QVStandardDev;
+            public Normal Distribution;
+
+            public BiochemistryRandomDataRow(DataRow row)
+            {
+                LocalClinicalCodeValue  =(string) row["LocalClinicalCodeValue"];
+                ReadCodeValue           =(string) row["ReadCodeValue"];
+                hb_extract              =(string) row["hb_extract"];
+                SampleName              =(string) row["SampleName"];
+                ArithmeticComparator    =(string) row["ArithmeticComparator"];
+                Interpretation          =(string) row["Interpretation"];
+                QuantityUnit            =(string) row["QuantityUnit"];
+                
+                RangeHighValue = double.TryParse(row["RangeHighValue"].ToString(),out var rangeLow) ? rangeLow:(double?) null;
+                RangeLowValue = double.TryParse(row["RangeLowValue"].ToString(),out var rangeHigh) ? rangeHigh:(double?) null;
+                
+                QVAverage = double.TryParse(row["QVAverage"].ToString(),out var min) ? min:(double?) null;
+                QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(),out var dev) ? dev:(double?) null;
+
+                if(QVAverage.HasValue && QVStandardDev.HasValue)
+                    Distribution = new Normal(QVAverage.Value, QVStandardDev.Value);
+
+            }
+        }
     }
 }

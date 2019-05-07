@@ -16,20 +16,23 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] results = new object[10];
+            object[] results = new object[13];
 
             BiochemistryRecord randomSample = new BiochemistryRecord(r);
             
             results[0] = p.CHI;
-            results[1] = GetRandomLetter(true, r);
+            results[1] = randomSample.Healthboard;
             results[2] = p.GetRandomDateDuringLifetime(r);
             results[3] = randomSample.Sample_type;
             results[4] = randomSample.Test_code;
             results[5] = randomSample.Result;
-            results[6] = GetRandomLabNumber();
+            results[6] = randomSample.LabNumber;
             results[7] = randomSample.Units;
             results[8] = randomSample.ReadCodeValue;
-            results[9] = randomSample.ReadCodeDescription;
+            results[9] = randomSample.ArithmeticComparator;
+            results[10] = randomSample.Interpretation;
+            results[11] = randomSample.RangeHighValue;
+            results[12] = randomSample.RangeLowValue;
 
             return results;
 
@@ -49,18 +52,16 @@ namespace BadMedicine.Datasets
                 "Labnumber",                        //6
                 "Units",                            //7
                 "ReadCodeValue",                    //8
-                "ReadCodeDescription"               //9
+                "ArithmeticComparator",             //9
+                "Interpretation",                   //10
+                "RangeHighValue",                   //11
+                "RangeLowValue",                    //12
+
             };
 
             sw.WriteLine(string.Join(",",h));
         }
 
-        private string GetRandomLabNumber()
-        {
-            if(r.Next(0,2)==0)
-                return "CC" + r.Next(0, 1000000);
-
-            return "BC" + r.Next(0, 1000000);
-        }
+        
     }
 }
