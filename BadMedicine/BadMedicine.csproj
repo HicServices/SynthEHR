@@ -19,13 +19,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="TestData\HospitalAdmissionCodesFrequency.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TestData\Exercises\ExerciseTestData.cd" />
-    <EmbeddedResource Include="TestData\HospitalAdmissionCodesFrequency.csv" />
-    <EmbeddedResource Include="TestData\LabTestCodes.csv" />
-    <EmbeddedResource Include="TestData\PrescriptionCodes.csv" />
+    <EmbeddedResource Include="Datasets\HospitalAdmissions.csv" />
+    <EmbeddedResource Include="Datasets\Biochemistry.csv" />
+    <EmbeddedResource Include="Datasets\Prescribing.csv" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.5.0" />

@@ -4,18 +4,21 @@
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
-    public class BiochemistryExerciseTestData : ExerciseTestDataGenerator
+    /// <summary>
+    /// Test about biochemistry lab tests e.g. CRE (Creatinine). 
+    /// </summary>
+    public class Biochemistry: DataGenerator
     {
-        public override object[] GenerateTestDataRow(TestPerson p)
+        /// <inheritdoc/>
+        public override object[] GenerateTestDataRow(Person p)
         {
             object[] results = new object[10];
 
-            TestBiochemistrySample randomSample = new TestBiochemistrySample(r);
+            BiochemistryRecord randomSample = new BiochemistryRecord(r);
             
             results[0] = p.CHI;
             results[1] = GetRandomLetter(true, r);
@@ -32,6 +35,7 @@ namespace BadMedicine.TestData.Exercises
 
         }
 
+        /// <inheritdoc/>
         protected override void WriteHeaders(StreamWriter sw)
         {
             string[] h =

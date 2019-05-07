@@ -6,14 +6,29 @@
 
 using System;
 
-namespace BadMedicine.TestData
+namespace BadMedicine.Datasets
 {
-    public class TestAppointment
+    /// <summary>
+    /// Data class describing an appointment including a guid identifier
+    /// </summary>
+    public class Appointment
     {
+        /// <summary>
+        /// Globally unique identifier for this appointment
+        /// </summary>
         public string Identifier { get; set; }
+
+        /// <summary>
+        /// Random date within the lifetime of the <see cref="Person"/> used for construction
+        /// </summary>
         public DateTime StartDate { get; set; }
 
-        public TestAppointment(TestPerson testPerson, Random r)
+        /// <summary>
+        /// Creates a new randomly generated appointment within the lifetime of the <paramref name="testPerson"/>
+        /// </summary>
+        /// <param name="testPerson"></param>
+        /// <param name="r"></param>
+        public Appointment(Person testPerson, Random r)
         {
             Identifier = "APPT_" + Guid.NewGuid();
             StartDate = testPerson.GetRandomDateDuringLifetime(r);

@@ -20,8 +20,11 @@ namespace BadMedicine
         [Option('d',"The dataset to generate, must be a class name e.g. 'TestDemography'")]
         public string Dataset{get; set; }
 
-        [Option ('l', "Generate lookup tables for some codes used in the test data")]
+        [Option('l', "Generate lookup tables for some codes used in the test data")]
         public bool Lookups { get; set; }
+
+        [Option('s',"Seeds the random number generator with a specific number",Default = -1)]
+        public int Seed { get; set; }
 
         [Usage]
         public static IEnumerable<Example> Examples

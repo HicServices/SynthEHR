@@ -7,9 +7,9 @@
 using System;
 using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
-    public interface IExerciseTestDataGenerator
+    public interface IDataGenerator
     {
         event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
 
@@ -19,7 +19,7 @@ namespace BadMedicine.TestData.Exercises
         /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
         /// <param name="target">The file that will be created</param>
         /// <param name="numberOfRecords">The number of fake data records that should appear in the file created</param>
-        void GenerateTestDataFile(IExerciseTestIdentifiers cohort, FileInfo target, int numberOfRecords);
+        void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords);
         
         /// <summary>
         /// Name of the dataset e.g. "prescribing" determines how it is announced to user and the default file names generated e.g. "prescribing.csv"

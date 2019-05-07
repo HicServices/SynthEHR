@@ -4,18 +4,17 @@
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
-    public class PrescribingExerciseTestData : ExerciseTestDataGenerator
+    public class Prescribing : DataGenerator
     {
-        public override object[] GenerateTestDataRow(TestPerson p)
+        public override object[] GenerateTestDataRow(Person p)
         {
             object[] values = new object[11];
 
-            TestPrescription prescription = new TestPrescription(r);
+            PrescribingRecord prescription = new PrescribingRecord(r);
             
             values[0] = p.CHI;
             values[1] = p.GetRandomDateDuringLifetime(r);

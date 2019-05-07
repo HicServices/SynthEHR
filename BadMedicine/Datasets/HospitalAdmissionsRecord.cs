@@ -6,18 +6,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using BadMedicine.TestData.Exercises;
+using MathNet.Numerics.Distributions;
 
-namespace BadMedicine.TestData
+namespace BadMedicine.Datasets
 {
     /// <summary>
-    /// Random record for when a <see cref="TestPerson"/> entered hospital.  Basic logic is implemented here to ensure that <see cref="DischargeDate"/>
+    /// Random record for when a <see cref="BadMedicine.Person"/> entered hospital.  Basic logic is implemented here to ensure that <see cref="DischargeDate"/>
     /// is after <see cref="AdmissionDate"/> and that the person was alive at the time.    
     /// </summary>
-    public class TestAdmission
+    public class HospitalAdmissionsRecord
     {
         private static DataTable lookupTable;
         public const string AdmissionDateDescription = "The time and date that the (fictional) patient attended the hospital";
@@ -44,77 +43,34 @@ namespace BadMedicine.TestData
         public string Condition3 { get; private set; }
         public string Condition4 { get; private set; }
 
-        public TestPerson Person { get; set; }
+        public Person Person { get; set; }
 
-        static TestAdmission()
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("AverageMonthAppearing", typeof(double));
-            dt.Columns.Add("StandardDeviationMonthAppearing", typeof(double));
-            dt.Columns.Add("CountAppearances", typeof(int));
+        static object oLockInitialize = new object();
+        private static bool initialized = false;
+        
+        /// <summary>
+        /// Maps ColumnAppearingIn to each month we might want to generate random data in (Between <see cref="MinimumDate"/> and <see cref="MaximumDate"/>)
+        /// to the row numbers which were active at that time (based on AverageMonthAppearing and StandardDeviationMonthAppearing)
+        /// </summary>
+        private static Dictionary<string, Dictionary<int, List<int>>> ICD10MonthHashMap;
 
-            lookupTable = ExerciseTestDataGenerator.EmbeddedCsvToDataTable(typeof(TestAdmission), "HospitalAdmissionCodesFrequency.csv",dt);
-
-            BuildICD10Hashmap();
-        }
-
-        private static Dictionary<string, Dictionary<int, SortedList<string, int>>> ICD10Hashmap;
-
-        private static void BuildICD10Hashmap()
-        {
-            ICD10Hashmap = new Dictionary<string, Dictionary<int, SortedList<string, int>>>();
-
-            ICD10Hashmap.Add("MAIN_CONDITION",new Dictionary<int, SortedList<string, int>>());
-            ICD10Hashmap.Add("OTHER_CONDITION_1",new Dictionary<int, SortedList<string, int>>());
-            ICD10Hashmap.Add("OTHER_CONDITION_2",new Dictionary<int, SortedList<string, int>>());
-            ICD10Hashmap.Add("OTHER_CONDITION_3",new Dictionary<int, SortedList<string, int>>());
-
-            //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
-
-            //get all the months we might be asked for
-            int from = (MinimumDate.Year - 1900) * 12 + MinimumDate.Month;
-            int to = (MaximumDate.Year - 1900) * 12 + MaximumDate.Month;
-
-
-            foreach (var columnKey in ICD10Hashmap.Keys)
-            {
-                for (int i = from; i <= to; i++)
-                {
-                    ICD10Hashmap[columnKey].Add(i, new SortedList<string, int>());
-                }
-            }
-
-            //for each row in the sample data
-            foreach (DataRow row in lookupTable.Rows)
-            {
-                //calculate 2 standard deviations in months
-                int monthFrom = Convert.ToInt32((double) row["AverageMonthAppearing"] - (2 * (double) row["StandardDeviationMonthAppearing"]));
-                int monthTo = Convert.ToInt32((double) row["AverageMonthAppearing"] + (2 * (double) row["StandardDeviationMonthAppearing"]));
-
-                //2 standard deviations might take us beyond the beginning or start so only build hashmap for dates we will be asked for
-                monthFrom = Math.Max(monthFrom, from);
-                monthTo = Math.Min(monthTo, to);
-
-                //for each month add row to the hashmap (for the correct column and month in the range)
-                for (int i = monthFrom; i <= monthTo; i++)
-                {
-                    if(monthFrom < from)
-                        continue;
-
-                    if(monthTo > to)
-                        break;
-                    
-                    ICD10Hashmap[(string)row["ColumnAppearingIn"]][i].Add((string)row["TestCode"], (int)row["CountAppearances"]);
-                }
-                
-            }
-        }
-
+        /// <summary>
+        /// Maps Row(Key) to the CountAppearances/TestCode
+        /// </summary>
+        private static BucketList<string> ICD10Rows;
+        
         public static readonly DateTime MinimumDate = new DateTime(1983,1,1);
         public static readonly DateTime MaximumDate = new DateTime(2018,1,1);
 
-        public TestAdmission(TestPerson person, DateTime afterDateX, Random r)
+        public HospitalAdmissionsRecord(Person person, DateTime afterDateX, Random r)
         {
+            lock (oLockInitialize)
+            {
+                if (!initialized)
+                    Initialize(r);
+                initialized = true;
+            }
+
             Person = person;
             if (person.DateOfBirth > afterDateX)
                 afterDateX = person.DateOfBirth;
@@ -146,7 +102,73 @@ namespace BadMedicine.TestData
                 }
             }
         }
-        
+
+        private void Initialize(Random random)
+        {
+            ICD10Rows = new BucketList<string>(random);
+
+            DataTable dt = new DataTable();
+            dt.Columns.Add("AverageMonthAppearing", typeof(double));
+            dt.Columns.Add("StandardDeviationMonthAppearing", typeof(double));
+            dt.Columns.Add("CountAppearances", typeof(int));
+
+            lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(HospitalAdmissionsRecord), "HospitalAdmissions.csv",dt);
+            
+            ICD10MonthHashMap = new Dictionary<string, Dictionary<int, List<int>>>
+            {
+                {"MAIN_CONDITION", new Dictionary<int, List<int>>()},
+                {"OTHER_CONDITION_1", new Dictionary<int,  List<int>>()},
+                {"OTHER_CONDITION_2", new Dictionary<int,  List<int>>()},
+                {"OTHER_CONDITION_3", new Dictionary<int,  List<int>>()}
+            };
+
+
+            //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
+
+            //get all the months we might be asked for
+            int from = (MinimumDate.Year - 1900) * 12 + MinimumDate.Month;
+            int to = (MaximumDate.Year - 1900) * 12 + MaximumDate.Month;
+
+
+            foreach (var columnKey in ICD10MonthHashMap.Keys)
+            {
+                for (int i = from; i <= to; i++)
+                {
+                    ICD10MonthHashMap[columnKey].Add(i, new List<int>());
+                }
+            }
+
+            int rowCount = 0;
+
+            //for each row in the sample data
+            foreach (DataRow row in lookupTable.Rows)
+            {
+                //calculate 2 standard deviations in months
+                int monthFrom = Convert.ToInt32((double) row["AverageMonthAppearing"] - (2 * (double) row["StandardDeviationMonthAppearing"]));
+                int monthTo = Convert.ToInt32((double) row["AverageMonthAppearing"] + (2 * (double) row["StandardDeviationMonthAppearing"]));
+
+                //2 standard deviations might take us beyond the beginning or start so only build hashmap for dates we will be asked for
+                monthFrom = Math.Max(monthFrom, from);
+                monthTo = Math.Min(monthTo, to);
+
+                //for each month add row to the hashmap (for the correct column and month in the range)
+                for (int i = monthFrom; i <= monthTo; i++)
+                {
+                    if(monthFrom < from)
+                        continue;
+
+                    if(monthTo > to)
+                        break;
+                    
+                    ICD10MonthHashMap[(string)row["ColumnAppearingIn"]][i].Add(rowCount);
+                }
+
+                ICD10Rows.Add((int) row["CountAppearances"], (string) row["TestCode"]); 
+                rowCount++;
+            }
+            
+        }
+
         public static DateTime GetRandomDate(DateTime from, DateTime to, Random r)
         {
             var range = to - from;
@@ -162,18 +184,7 @@ namespace BadMedicine.TestData
             //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
             int monthsSinceZeroDay = (AdmissionDate.Year - 1900) * 12 + AdmissionDate.Month;
 
-            int total = ICD10Hashmap[field][monthsSinceZeroDay].Values.Sum();
-            
-            int toPick = random.Next(0, total);
-
-            foreach (var kvp in ICD10Hashmap[field][monthsSinceZeroDay])
-            {
-                toPick -= kvp.Value;
-                if (toPick < 0)
-                    return kvp.Key;
-            }
-
-            throw new Exception("Could not pick a valid ICD code for the AdmissionDate " + AdmissionDate);
+            return ICD10Rows.GetRandom(ICD10MonthHashMap[field][monthsSinceZeroDay]);
         }
     }
 }

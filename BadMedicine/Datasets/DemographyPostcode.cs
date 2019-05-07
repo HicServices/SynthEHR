@@ -4,12 +4,12 @@
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
-namespace BadMedicine.TestData
+namespace BadMedicine.Datasets
 {
     /// <summary>
     /// Data model for a UK postcode
     /// </summary>
-    public class Postcode
+    public class DemographyPostcode
     {
         /// <summary>
         /// The full postcode e.g. "DD8 3PZ"
@@ -32,7 +32,7 @@ namespace BadMedicine.TestData
         /// <param name="value"></param>
         /// <param name="ward"></param>
         /// <param name="district"></param>
-        public Postcode( string value, string ward, string district)
+        public DemographyPostcode( string value, string ward, string district)
         {
             Value = value;
             Ward = ward;

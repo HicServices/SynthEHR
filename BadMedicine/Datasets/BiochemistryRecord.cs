@@ -7,27 +7,34 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using BadMedicine.TestData.Exercises;
-using CsvHelper;
-using CsvHelper.Configuration;
 
-namespace BadMedicine.TestData
+namespace BadMedicine.Datasets
 {
-    public class TestBiochemistrySample
+    /// <summary>
+    /// Data class representing a single row in <see cref="Biochemistry"/> (use if you want to use randomly generated data directly
+    /// rather than generate it into a file).
+    /// </summary>
+    public class BiochemistryRecord
     {
         /// <summary>
         /// every row in data table has a weigth (the number of records in our bichemistry with this sample type, this dictionary lets you input
         /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
         /// </summary>
         private static Dictionary<int, int> weightToRow;
-        private static int maxWeight = -1;
+        private static readonly int maxWeight = -1;
         private static DataTable lookupTable;
 
-        static TestBiochemistrySample()
+        public string Sample_type;
+        public string Test_code;
+        public string Result;
+        public string Units;
+        public string ReadCodeValue;
+        public string ReadCodeDescription;
+
+        static BiochemistryRecord()
         {
-            lookupTable = ExerciseTestDataGenerator.EmbeddedCsvToDataTable(typeof(TestBiochemistrySample),"LabTestCodes.csv");
+            lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv");
              
             weightToRow = new Dictionary<int, int>();
 
@@ -42,19 +49,20 @@ namespace BadMedicine.TestData
         }
 
         
-        public TestBiochemistrySample(Random r)
+        /// <summary>
+        /// Generates a new random biochemistry test.
+        /// </summary>
+        /// <param name="r"></param>
+        public BiochemistryRecord(Random r)
         {
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
             DataRow row = GetRandomRowUsingWeight(r);
 
             Test_code = row["Test_code"].ToString();
             Sample_type = row["Sample_type"].ToString();
-            
-            double min;
-            double max;
 
-            bool hasMin = double.TryParse(row["minResult"].ToString(),out min);
-            bool hasMax = double.TryParse(row["maxResult"].ToString(),out max);
+            var hasMin = double.TryParse(row["minResult"].ToString(),out var min);
+            var hasMax = double.TryParse(row["maxResult"].ToString(),out var max);
 
             if(hasMin && hasMax)
                 Result = ((r.NextDouble() * (max - min)) + min).ToString("#.##");
@@ -77,12 +85,5 @@ namespace BadMedicine.TestData
             return lookupTable.Rows[row];
         }
 
-
-        public string Sample_type;
-        public string Test_code;
-        public string Result;
-        public string Units;
-        public string ReadCodeValue;
-        public string ReadCodeDescription;
     }
 }

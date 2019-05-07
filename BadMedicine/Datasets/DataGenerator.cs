@@ -16,11 +16,18 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using MathNet.Numerics.Distributions;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
-    [InheritedExport(typeof(IExerciseTestDataGenerator))]
-    public abstract class ExerciseTestDataGenerator : IExerciseTestDataGenerator
+    /// <summary>
+    /// Base class for all randomly generated datasets.  Handles generating random datatypes and writing
+    /// out to csv etc.
+    /// </summary>
+    [InheritedExport(typeof(IDataGenerator))]
+    public abstract class DataGenerator : IDataGenerator
     {
+        /// <summary>
+        /// Periodically fired when writing out rows
+        /// </summary>
         public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
         
         /// <summary>
@@ -28,18 +35,18 @@ namespace BadMedicine.TestData.Exercises
         /// </summary>
         protected Random r;
 
-        public ExerciseTestDataGenerator()
+        public DataGenerator()
         {
             r = new Random();
         }
 
-        public ExerciseTestDataGenerator(Random rand = null)
+        public DataGenerator(Random rand = null)
         {
             r = rand;
         }
             
 
-        public void GenerateTestDataFile(IExerciseTestIdentifiers cohort, FileInfo target, int numberOfRecords)
+        public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
             int totalPeople = cohort.People.Length;
 
@@ -91,7 +98,18 @@ namespace BadMedicine.TestData.Exercises
             return typeName;
         }
 
-        public abstract object[] GenerateTestDataRow(TestPerson p);
+        /// <summary>
+        /// When implemented in derived classes, returns a single row of data for writing to the output CSV.  This can
+        /// include string elements with newlines, quotes etc.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public abstract object[] GenerateTestDataRow(Person p);
+
+        /// <summary>
+        /// When implemented in derived classes, outputs the top line of the CSV (column headers)
+        /// </summary>
+        /// <param name="sw"></param>
         protected abstract void WriteHeaders(StreamWriter sw);
         readonly Normal _normalDist = new Normal(0, 0.3);
 

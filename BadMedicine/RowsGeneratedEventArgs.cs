@@ -1,6 +1,6 @@
 using System;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine
 {
     public class RowsGeneratedEventArgs
     {

@@ -7,17 +7,17 @@
 using System;
 using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
-    public class DemographyExerciseTestData : ExerciseTestDataGenerator
+    public class Demography : DataGenerator
     {
-        public override object[] GenerateTestDataRow(TestPerson person)
+        public override object[] GenerateTestDataRow(Person person)
         {
             //leave off data load run ID 
             var values = new object[39];
             
             values[0] = person.CHI;
-            values[1] = TestPerson.GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
+            values[1] = Person.GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
             
             if(r.Next(0, 2) == 0)
                 values[2] = true;
@@ -27,7 +27,7 @@ namespace BadMedicine.TestData.Exercises
             values[3] = "Random record";
             
             if(r.Next(0,10 )== 0)//one in 10 records has one of these (an ALIAS chi)
-                values[4] = TestPerson.GetRandomCHI(person.DateOfBirth,person.Gender,r);
+                values[4] = Person.GetRandomCHI(person.DateOfBirth,person.Gender,r);
 
             values[5] = GetRandomCHIStatus(r);
             values[6] = person.DateOfBirth.Year.ToString().Substring(0,2);
@@ -36,7 +36,7 @@ namespace BadMedicine.TestData.Exercises
             values[9] = person.Gender;
 
 
-            var randomAddress = new TestAddress(r);
+            var randomAddress = new DemographyAddress(r);
             
             //if person is dead and dtCreated is after they died use the same address otehrwise use a random one (all records after a person dies have same address)
             values[10] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line1: randomAddress.Line1;
@@ -75,9 +75,9 @@ namespace BadMedicine.TestData.Exercises
 
             //birth surname and previous surname fields, sparsely populated
             if (r.Next(0, 10) == 0)
-                values[20] = TestPerson.GetRandomSurname(r);
+                values[20] = Person.GetRandomSurname(r);
             if (r.Next(0, 10) == 0)
-                values[21] = TestPerson.GetRandomSurname(r);
+                values[21] = Person.GetRandomSurname(r);
             
             if (r.Next(0, 3) == 0)
                 values[22] = person.GetRandomForename(r); //random gender appropriate middle name for 1 person in 3
@@ -91,7 +91,7 @@ namespace BadMedicine.TestData.Exercises
             //people only have previous addresses if they are alive
             if(r.Next(0, 2) == 0 && person.DateOfDeath != null)
             {
-                var randomAddress2 = new TestAddress(r);
+                var randomAddress2 = new DemographyAddress(r);
 
                 values[25] = randomAddress2.Line1;
                 values[26] = randomAddress2.Line2;
@@ -103,14 +103,14 @@ namespace BadMedicine.TestData.Exercises
                 if (r.Next(0, 2) == 0)
                 {
                     //get after birth but before dtCreated/date of death
-                    values[30] = TestPerson.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath,(DateTime)values[1]),r);
+                    values[30] = Person.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath,(DateTime)values[1]),r);
                 }
             }
 
             //an always null field, why not?!
             values[31] = null;
 
-            DateTime gp_accept_date = TestPerson.GetRandomDateAfter(person.DateOfBirth, r);
+            DateTime gp_accept_date = Person.GetRandomDateAfter(person.DateOfBirth, r);
             
             //current_gp_accept_date
             values[32] = gp_accept_date;
@@ -124,10 +124,10 @@ namespace BadMedicine.TestData.Exercises
             if(r.Next(0,3)==0)
             {
                 values[33] = GetRandomGPCode(r);
-                values[34] = TestPerson.GetRandomDateAfter((DateTime) values[32], r);
+                values[34] = Person.GetRandomDateAfter((DateTime) values[32], r);
             }
 
-            values[35] = TestPerson.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath, (DateTime)values[1]), r);
+            values[35] = Person.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath, (DateTime)values[1]), r);
             values[36] = person.DateOfBirth;
             values[37] = GetRandomDouble(r);
 

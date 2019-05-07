@@ -1,15 +1,15 @@
 ﻿using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
     /// <summary>
     /// Generates synthetic random data that is representative of patient hospital admissions data
     /// </summary>
-    public class HospitalAdmissionsExerciseTestData:ExerciseTestDataGenerator
+    public class HospitalAdmissions:DataGenerator
     {
-        public override object[] GenerateTestDataRow(TestPerson p)
+        public override object[] GenerateTestDataRow(Person p)
         {
-            var episode = new TestAdmission(p,p.DateOfBirth, r);
+            var episode = new HospitalAdmissionsRecord(p,p.DateOfBirth, r);
 
             return new object[]
             {

@@ -18,7 +18,13 @@ dotnet BadMedicine.dll c:\temp\ 500 10000
 Or run only a single dataset:
 
 ```
-dotnet ./BadMedicine.dll c:\omg 5000 200000 -l -d CarotidArteryScanReportExerciseTestData
+dotnet ./BadMedicine.dll c:\omg 5000 200000 -l -d CarotidArteryScan
+```
+
+You can seed the generator (Guids generated will still differ)
+
+```
+dotnet ./BadMedicine.dll c:\omg 5000 200000 -l -d CarotidArteryScan -s 5000
 ```
 
 ## Library Usage
@@ -48,13 +54,13 @@ Assert.IsNotNull(a.Condition1);
 
 The following synthetic datasets can be produced.
 
-| Dataset        | Description           |  Class Name |
+| Dataset        | Description           |
 | ------------- |:-------------:|:------:|
-| Demography      | Address and patient details as might appear in the CHI register | `DemographyExerciseTestData`|
-| Biochemistry      | Lab test codes as might appear in Sci Store lab system extracts | `BiochemistryExerciseTestData`|
-| Prescribing      | Prescription data of prescribed drugs | `PrescribingExerciseTestData`|
-| Carotid Artery Scan      | Scan results for Carotid Artery | `CarotidArteryScanReportExerciseTestData`|
-| Hospital Admissions | ICD9 and ICD10 codes for admission to hospital | `HospitalAdmissionsExerciseTestData`|
+| Demography      | Address and patient details as might appear in the CHI register |
+| Biochemistry      | Lab test codes as might appear in Sci Store lab system extracts |
+| Prescribing      | Prescription data of prescribed drugs |
+| Carotid Artery Scan      | Scan results for Carotid Artery |
+| Hospital Admissions | ICD9 and ICD10 codes for admission to hospital |
 
 ## What is Modelled?
 

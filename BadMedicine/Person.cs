@@ -6,10 +6,14 @@
 
 using System;
 using System.Collections.Generic;
+using BadMedicine.Datasets;
 
-namespace BadMedicine.TestData
+namespace BadMedicine
 {
-    public class TestPerson
+    /// <summary>
+    /// Randomly generated person for whom datasets can be built
+    /// </summary>
+    public class Person
     {
         public const string ForenameDescription ="The (fictional) patients forename, randomly generated from a list of 100 common forenames that match the patients gender";
         public const string SurnameDescription = " The (fictional) patients surname, randomly generated from a list of 100 common surnames";
@@ -31,15 +35,13 @@ namespace BadMedicine.TestData
         public DateTime? DateOfDeath;
         public char Gender { get; set; }
         
-        public TestAddress Address { get; set; }
-        public TestAddress PreviousAddress { get; set; }
+        public DemographyAddress Address { get; set; }
+        public DemographyAddress PreviousAddress { get; set; }
 
         static HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
         static HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
 
-        private readonly List<TestAppointment> _appointments = new List<TestAppointment>();
-        
-        public TestPerson(Random r)
+        public Person(Random r)
         {
             switch (r.Next(2))
             {
@@ -66,16 +68,11 @@ namespace BadMedicine.TestData
 
             ANOCHI = GetNovelANOCHI(r);
 
-            Address = new TestAddress(r);
+            Address = new DemographyAddress(r);
 
             //one in 10 people doesn't have a previous address
             if(r.Next(10) != 0)
-                PreviousAddress = new TestAddress(r);
-
-            //person has up to 30 random appointments (this generates a curve where less appointments are more likely)
-            for(int i=0; i<r.Next(1,30);i++)
-                _appointments.Add(new TestAppointment(this,r));
-
+                PreviousAddress = new DemographyAddress(r);
         }
         public string GetRandomForename(Random r)
         {
@@ -212,7 +209,7 @@ namespace BadMedicine.TestData
             return toreturn + chiLastDigit;
         }
 
-        private static string[] CommonGirlForenames = new[]
+        private static readonly string[] CommonGirlForenames = new[]
         {
             "AMELIA",
             "OLIVIA",
@@ -317,7 +314,7 @@ namespace BadMedicine.TestData
             "SARA"
         };
 
-        private static string[] CommonBoyForenames = new[]
+        private static readonly string[] CommonBoyForenames = new[]
         {
             "OLIVER",
             "JACK",
@@ -422,7 +419,7 @@ namespace BadMedicine.TestData
         };
 
 
-        private static string[] CommonSurnames = new[]
+        private static readonly string[] CommonSurnames = new[]
         {
             "Smith",
             "Jones",
@@ -525,16 +522,5 @@ namespace BadMedicine.TestData
             "Butler",
             "Saunders"
         };
-
-        /// <summary>
-        /// Returns a guid representing one of the (random number) of appointments the person has made in thier lifetime.  This can be used to group
-        /// events to a particular person e.g. hospitalisation record to a blood pressure measurement without crossing into other patients.
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public TestAppointment GetRandomAppointment(Random r)
-        {
-            return _appointments[r.Next(0, _appointments.Count)];
-        }
     }
 }

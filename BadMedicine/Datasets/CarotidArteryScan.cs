@@ -7,20 +7,20 @@
 using System;
 using System.IO;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine.Datasets
 {
     /// <summary>
     /// Test data based on the Scottish Vascular Labs CARSCAN database table
     /// </summary>
-    public class CarotidArteryScanReportExerciseTestData : ExerciseTestDataGenerator
+    public class CarotidArteryScan : DataGenerator
     {
         private int id = 0;
 
-        public override object[] GenerateTestDataRow(TestPerson p)
+        public override object[] GenerateTestDataRow(Person p)
         {
             object[] results = new object[68];
             
-            var appointment = p.GetRandomAppointment(r);
+            var appointment = new Appointment(p,r);
             
             results[0] = appointment.Identifier; //RECORD_NUMBER
             results[1] = 0; //R_CC_STEN_A
@@ -44,7 +44,7 @@ namespace BadMedicine.TestData.Exercises
             results[19] = p.CHI; //PatientID
             results[20] = 0; //SUMMARY
             results[21] = r.Next(0,99999); //LAST_AUTH_BY
-            results[22] = TestPerson.GetRandomDateAfter(appointment.StartDate,r); //LAST_AUTH_DT
+            results[22] = Person.GetRandomDateAfter(appointment.StartDate,r); //LAST_AUTH_DT
             results[23] = 0; //CV_FILE
             results[24] = 0; //L_CC_STEN_S
             results[25] = 0; //CV_DT

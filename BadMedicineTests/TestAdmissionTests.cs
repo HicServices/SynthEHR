@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using BadMedicine.TestData;
+using BadMedicine;
+using BadMedicine.Datasets;
 using NUnit.Framework;
 
 namespace BadMedicineTests.TestData
@@ -12,8 +13,8 @@ namespace BadMedicineTests.TestData
         {
             var r = new Random(100);
 
-            var person = new TestPerson(r);
-            var a = new TestAdmission(person,person.DateOfBirth,r);
+            var person = new Person(r);
+            var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
 
             Assert.IsNotNull(a.Person.CHI);
             Assert.IsNotNull(a.Person.DateOfBirth);
@@ -24,25 +25,25 @@ namespace BadMedicineTests.TestData
             Assert.IsNotNull(a.Condition1);
             Assert.IsNotNull(a.Condition2);
             Assert.IsNotNull(a.Condition3);
-            Assert.IsNotNull(a.Condition4);   
+            Assert.IsNull(a.Condition4);   
         }
 
         [Test]
         public void Test_Performance()
         {
             var r = new Random(100);
-            var person = new TestPerson(r);
+            var person = new Person(r);
 
             var swSetup = Stopwatch.StartNew();
             //first is always slow
-            var first= new TestAdmission(person,person.DateOfBirth,r);    
+            var first= new HospitalAdmissionsRecord(person,person.DateOfBirth,r);    
 
             Console.WriteLine("Setup took" + swSetup.ElapsedMilliseconds + "ms");
 
             var sw = Stopwatch.StartNew();
             for (int i = 0; i < 100000; i++)
             {
-                var a = new TestAdmission(person,person.DateOfBirth,r);    
+                var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);    
             }
 
             Console.WriteLine("Remainder took:" + sw.ElapsedMilliseconds +"ms");

@@ -12,22 +12,22 @@ using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace BadMedicine.TestData
+namespace BadMedicine.Datasets
 {
-    public class TestPrescription
+    public class PrescribingRecord
     {
           /// <summary>
         /// every row in data table has a weigth (the number of records in our bichemistry with this sample type, this dictionary lets you input
         /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
         /// </summary>
         private static Dictionary<int, int> weightToRow;
-        private static int maxWeight = -1;
+        private static readonly int maxWeight = -1;
         private static DataTable lookupTable;
 
-        static TestPrescription()
+        static PrescribingRecord()
         {
-            string toFind = typeof(TestPrescription).Namespace + ".PrescriptionCodes.csv";
-            var lookup = typeof(TestPrescription).Assembly.GetManifestResourceStream(toFind);
+            string toFind = typeof(PrescribingRecord).Namespace + ".Prescribing.csv";
+            var lookup = typeof(PrescribingRecord).Assembly.GetManifestResourceStream(toFind);
 
             if (lookup == null)
                 throw new Exception("Could not find embedded resource file " + toFind);
@@ -69,7 +69,7 @@ namespace BadMedicine.TestData
         }
 
 
-        public TestPrescription(Random r)
+        public PrescribingRecord(Random r)
         {
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
             DataRow row = GetRandomRowUsingWeight(r);
@@ -83,12 +83,9 @@ namespace BadMedicine.TestData
             formatted_BNF_Code = row["formatted_BNF_Code"].ToString();
             BNF_Description = row["BNF_Description"].ToString();
             Approved_Name = row["Approved_Name"].ToString();
-            
-            double min;
-            double max;
 
-            bool hasMin = double.TryParse(row["minQuantity"].ToString(),out min);
-            bool hasMax = double.TryParse(row["maxQuantity"].ToString(),out max);
+            var hasMin = double.TryParse(row["minQuantity"].ToString(),out var min);
+            var hasMax = double.TryParse(row["maxQuantity"].ToString(),out var max);
 
             if(hasMin && hasMax)
                 Quantity = ((int)((r.NextDouble() * (max - min)) + min)).ToString();//it is a number

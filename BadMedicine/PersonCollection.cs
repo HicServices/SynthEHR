@@ -6,20 +6,21 @@
 
 using System;
 
-namespace BadMedicine.TestData.Exercises
+namespace BadMedicine
 {
-    public class ExerciseTestIdentifiers:IExerciseTestIdentifiers
+    public class PersonCollection:IPersonCollection
     {
-        Random r = new Random();
+        Random r;
 
-        public TestPerson[] People { get; private set; }
+        public Person[] People { get; private set; }
 
-        public void GeneratePeople(int numberOfUniqueIndividuals)
+        public void GeneratePeople(int numberOfUniqueIndividuals, Random random = null)
         {
-            People = new TestPerson[numberOfUniqueIndividuals];
+            r = random ?? new Random();
+            People = new Person[numberOfUniqueIndividuals];
 
             for (int i = 0; i < numberOfUniqueIndividuals; i++)
-                People[i]=new TestPerson(r);
+                People[i]=new Person(r);
         }
     }
 }

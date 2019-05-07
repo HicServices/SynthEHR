@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using BadMedicine.TestData.Exercises;
+using BadMedicine.Datasets;
 using CommandLine;
 
 namespace BadMedicine
@@ -37,15 +37,15 @@ namespace BadMedicine
             {
                 //if user wants to write out the lookups generate those too
                 if(opts.Lookups)
-                    ExerciseTestDataGenerator.WriteLookups(dir);
+                    DataGenerator.WriteLookups(dir);
 
                 //create a cohort of people
-                IExerciseTestIdentifiers identifiers = new ExerciseTestIdentifiers();
-                identifiers.GeneratePeople(opts.NumberOfPatients);
+                IPersonCollection identifiers = new PersonCollection();
+                identifiers.GeneratePeople(opts.NumberOfPatients,opts.Seed == -1 ?null:new Random(opts.Seed));
 
                 //find all generators in the assembly
-                var generators = typeof(IExerciseTestDataGenerator).Assembly.GetExportedTypes()
-                    .Where(t => typeof(IExerciseTestDataGenerator).IsAssignableFrom(t)
+                var generators = typeof(IDataGenerator).Assembly.GetExportedTypes()
+                    .Where(t => typeof(IDataGenerator).IsAssignableFrom(t)
                     && !t.IsAbstract
                     && t.IsClass).ToList();
             
@@ -67,7 +67,7 @@ namespace BadMedicine
                 //for each generator
                 foreach (var g in generators)
                 {
-                    var instance = (IExerciseTestDataGenerator)Activator.CreateInstance(g);
+                    var instance = (IDataGenerator)Activator.CreateInstance(g);
 
                     var targetFile = new FileInfo(Path.Combine(dir.FullName, g.Name + ".csv"));
                     instance.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfRows);
