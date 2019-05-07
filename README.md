@@ -55,7 +55,7 @@ Assert.IsNotNull(a.Condition1);
 The following synthetic datasets can be produced.
 
 | Dataset        | Description           |
-| ------------- |:-------------:|:------:|
+| ------------- |:-------------:|
 | Demography      | Address and patient details as might appear in the CHI register |
 | Biochemistry      | Lab test codes as might appear in Sci Store lab system extracts |
 | Prescribing      | Prescription data of prescribed drugs |
