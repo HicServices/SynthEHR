@@ -102,10 +102,10 @@ namespace BadMedicine.Datasets
 
 
         /// <inheritdoc/>
-        protected override void WriteHeaders(StreamWriter sw)
+        protected override string[] GetHeaders()
         {
 
-            string[] h =
+            return new string[]
             {
                 "RECORD_NUMBER",    //0
                 "R_CC_STEN_A",      //1
@@ -176,8 +176,6 @@ namespace BadMedicine.Datasets
                 "L_VERT_ARTERY",    //66
                 "R_IC_END_DIA"      //67
             };
-
-            sw.WriteLine(string.Join(",", h));
         }
     }                                 
 }                                     

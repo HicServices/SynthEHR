@@ -45,9 +45,9 @@ namespace BadMedicine.Datasets
         }
 
         /// <inheritdoc/>
-        protected override void WriteHeaders(StreamWriter sw)
+        protected override string[] GetHeaders()
         {
-            string[] h =
+            return new string[]
             {
                 "chi",                              //0
                 "hb_extract",                       //1
@@ -64,8 +64,6 @@ namespace BadMedicine.Datasets
                 "RangeLowValue",                    //12
 
             };
-
-            sw.WriteLine(string.Join(",",h));
         }
     }
 }

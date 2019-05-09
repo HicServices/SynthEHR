@@ -5,6 +5,7 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Data;
 using System.IO;
 
 namespace BadMedicine.Datasets
@@ -26,5 +27,20 @@ namespace BadMedicine.Datasets
         /// <param name="target">The file that will be created</param>
         /// <param name="numberOfRecords">The number of fake data records that should appear in the file created</param>
         void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords);
+
+        /// <summary>
+        /// Returns a single row of data for writing to the output CSV.  This can include string elements with newlines, quotes etc.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        object[] GenerateTestDataRow(Person p);
+
+        /// <summary>
+        /// Create the dataset in memory using the person identifiers in the <paramref name="cohort"/>
+        /// </summary>
+        /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
+        /// <param name="numberOfRecords">The number of fake data records that should be in the table returned</param>
+        /// <returns></returns>
+        DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords);
     }
 }

@@ -31,9 +31,9 @@ namespace BadMedicine.Datasets
             };
         }
 
-        protected override void WriteHeaders(StreamWriter sw)
+        protected override string[] GetHeaders()
         {
-            string[] headers =
+            return new string[]
             {
                 "chi",
                 "dob",
@@ -45,8 +45,6 @@ namespace BadMedicine.Datasets
                 "Condition4",
                 "Comment"
             };
-
-            sw.WriteLine(string.Join(",",headers));
         }
     }
 }

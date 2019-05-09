@@ -46,11 +46,8 @@ namespace BadMedicine
                 IPersonCollection identifiers = new PersonCollection();
                 identifiers.GeneratePeople(opts.NumberOfPatients,r);
 
-                //find all generators in the assembly
-                var generators = typeof(IDataGenerator).Assembly.GetExportedTypes()
-                    .Where(t => typeof(IDataGenerator).IsAssignableFrom(t)
-                    && !t.IsAbstract
-                    && t.IsClass).ToList();
+                var factory = new DataGeneratorFactory();
+                var generators = factory.GetAvailableGenerators().ToList();
             
                 //if the user only wants to extract a single dataset
                 if(!string.IsNullOrEmpty(opts.Dataset))
@@ -66,11 +63,13 @@ namespace BadMedicine
 
                     generators = new List<Type>(new []{match});
                 }
+
                 
+
                 //for each generator
                 foreach (var g in generators)
                 {
-                    var instance = (IDataGenerator)Activator.CreateInstance(g,r);
+                    var instance = factory.Create(g,r);
 
                     var targetFile = new FileInfo(Path.Combine(dir.FullName, g.Name + ".csv"));
                     instance.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfRows);

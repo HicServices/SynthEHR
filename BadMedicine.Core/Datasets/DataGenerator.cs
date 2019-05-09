@@ -42,7 +42,6 @@ namespace BadMedicine.Datasets
             r = rand;
             _normalDist = new Normal(0, 0.3,r);
         }
-            
 
         /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
@@ -84,19 +83,34 @@ namespace BadMedicine.Datasets
             }
         }
 
+        public virtual DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords)
+        {
+            var dt = new DataTable();
 
-        /// <summary>
-        /// Returns a single row of data for writing to the output CSV.  This can include string elements with newlines, quotes etc.
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
+            foreach (var h in GetHeaders())
+                dt.Columns.Add(h);
+
+            int totalPeople = cohort.People.Length;
+
+            for (int i = 0; i < numberOfRecords; i++)
+                dt.Rows.Add(GenerateTestDataRow(cohort.People[r.Next(totalPeople)]));
+            
+            return dt;
+        }
+
+        /// <inheritdoc/>
         public abstract object[] GenerateTestDataRow(Person p);
+
+        protected abstract string[] GetHeaders();
 
         /// <summary>
         /// Outputs the top line of the CSV (column headers)
         /// </summary>
         /// <param name="sw"></param>
-        protected abstract void WriteHeaders(StreamWriter sw);
+        private void WriteHeaders(StreamWriter sw)
+        {
+            sw.WriteLine(string.Join(",", GetHeaders()));
+        }
         readonly Normal _normalDist;
 
         /// <summary>

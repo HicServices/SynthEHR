@@ -37,9 +37,9 @@ namespace BadMedicine.Datasets
             return values;
         }
 
-        protected override void WriteHeaders(StreamWriter sw)
+        protected override string[] GetHeaders()
         {
-            string[] headers =
+            return new string[]
             {
                 "chi",
                 "prescribed_date",
@@ -53,8 +53,6 @@ namespace BadMedicine.Datasets
                 "formatted_bnf",
                 "description"
             };
-
-            sw.WriteLine(string.Join(",",headers));
         }
 
     }
