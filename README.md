@@ -1,5 +1,21 @@
 # BadMedicine
-Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system
+Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system.  It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
+
+BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Generator etc in that data generated is based on (simple) models generated from live EHR datasets collected for over 30 years in Tayside and Fife (UK).  This makes the data generated recognisable (codes used, frequency of codes etc) from a clinical perspective and representative of the problems (ontology mapping etc) that data analysts would encounter working with real medical data.
+
+Datasets generated are not suitable for training AI algorithms etc (See [What is Modelled?](#what-is-modelled))
+
+## Datasets
+
+The following synthetic datasets can be produced.
+
+| Dataset        | Description           |
+| ------------- |:-------------:|
+| Demography      | Address and patient details as might appear in the CHI register |
+| Biochemistry      | Lab test codes as might appear in Sci Store lab system extracts |
+| Prescribing      | Prescription data of prescribed drugs |
+| Carotid Artery Scan      | Scan results for Carotid Artery |
+| Hospital Admissions | ICD9 and ICD10 codes for admission to hospital |
 
 ## Command Line Usage:
 
@@ -49,18 +65,6 @@ Assert.IsNotNull(a.AdmissionDate);
 Assert.IsNotNull(a.DischargeDate);
 Assert.IsNotNull(a.Condition1);
 ```
-
-## Datasets
-
-The following synthetic datasets can be produced.
-
-| Dataset        | Description           |
-| ------------- |:-------------:|
-| Demography      | Address and patient details as might appear in the CHI register |
-| Biochemistry      | Lab test codes as might appear in Sci Store lab system extracts |
-| Prescribing      | Prescription data of prescribed drugs |
-| Carotid Artery Scan      | Scan results for Carotid Artery |
-| Hospital Admissions | ICD9 and ICD10 codes for admission to hospital |
 
 ## What is Modelled?
 
