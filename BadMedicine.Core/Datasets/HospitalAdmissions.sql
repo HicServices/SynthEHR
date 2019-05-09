@@ -1,0 +1,28 @@
+select 
+MAIN_CONDITION as TestCode,
+count(*) as CountAppearances,
+	avg(CAST(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE) as bigint)) as AverageMonthAppearing,
+	STDEV(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE)) as StandardDeviationMonthAppearing,
+	'MAIN_CONDITION' as ColumnAppearingIn
+from [ISD_SMR]..[SMR01] 
+Group By
+MAIN_CONDITION
+having count(*) >5
+UNION
+select OTHER_CONDITION_1,count(*), avg(CAST(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE) as bigint)), STDEV(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE)),'OTHER_CONDITION_1'
+from [ISD_SMR]..[SMR01] 
+Group By
+OTHER_CONDITION_1
+having count(*) >5
+UNION
+select OTHER_CONDITION_2,count(*), avg(CAST(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE) as bigint)), STDEV(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE)),'OTHER_CONDITION_2'
+from [ISD_SMR]..[SMR01] 
+Group By
+OTHER_CONDITION_2
+having count(*) >5
+UNION
+select OTHER_CONDITION_3,count(*), avg(CAST(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE) as bigint)), STDEV(DATEDIFF(MONTH,'00:00:00',ADMISSION_DATE)),'OTHER_CONDITION_3'
+from [ISD_SMR]..[SMR01] 
+Group By
+OTHER_CONDITION_3
+having count(*) >5

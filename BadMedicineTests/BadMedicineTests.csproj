@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BadMedicine\BadMedicine.csproj" />
+    <ProjectReference Include="..\BadMedicine.Core\BadMedicine.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -8,3 +8,4 @@ BadMedicineTests/obj/
 *.vspx
 *.psess
 BadMedicineTests/bin/
+BadMedicine.Core/obj/
