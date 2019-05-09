@@ -19,28 +19,34 @@ The following synthetic datasets can be produced.
 
 ## Command Line Usage:
 
-Bad Medicine can be run from the command line:
+First build BadMedicine.csproj
+```
+dotnet publish BadMedicine.csproj -r win-x64 --self-contained
+cd .\bin\Debug\netcoreapp2.2\win-x64\
+```
+
+Then run BadMedicine.exe
 
 ```
-dotnet BadMedicine.dll c:\temp\
+BadMedicine.exe c:\temp\
 ```
 
 You can change how much data is produced (e.g. 500 patients, 10000 records per dataset):
 
 ```
-dotnet BadMedicine.dll c:\temp\ 500 10000
+BadMedicine.exe c:\temp\ 500 10000
 ```
 
 Or run only a single dataset:
 
 ```
-dotnet ./BadMedicine.dll c:\omg 5000 200000 -l -d CarotidArteryScan
+BadMedicine.exe c:\omg 5000 200000 -l -d CarotidArteryScan
 ```
 
 You can seed the generator (Guids generated will still differ)
 
 ```
-dotnet ./BadMedicine.dll c:\omg 5000 200000 -l -d CarotidArteryScan -s 5000
+BadMedicine.exe c:\omg 5000 200000 -l -d CarotidArteryScan -s 5000
 ```
 
 ## Library Usage
