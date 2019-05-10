@@ -9,6 +9,7 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
     public class Prescribing : DataGenerator
     {
         /// <inheritdoc/>
@@ -16,42 +17,50 @@ namespace BadMedicine.Datasets
         {
         }
 
+        /// <summary>
+        /// Creates a new demography record (GP registration) for the <paramref name="p"/>
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] values = new object[11];
+            object[] values = new object[12];
 
             PrescribingRecord prescription = new PrescribingRecord(r);
             
             values[0] = p.CHI;
             values[1] = p.GetRandomDateDuringLifetime(r);
             values[2] = prescription.Quantity;
-            values[3] = prescription.strength;
-            values[4] = prescription.formulation_code;
-            values[5] = prescription.measure_code;
-            values[6] = prescription.name;
-            values[7] = prescription.Approved_Name;
-            values[8] = prescription.BNF_Code;
-            values[9] = prescription.formatted_BNF_Code;
-            values[10] = prescription.BNF_Description;
+            values[3] = prescription.Strength;
+            values[4] = prescription.StrengthNumerical;
+            values[5] = prescription.FormulationCode;
+            values[6] = prescription.MeasureCode;
+            values[7] = prescription.Name;
+            values[8] = prescription.ApprovedName;
+            values[9] = prescription.BnfCode;
+            values[10] = prescription.FormattedBnfCode;
+            values[11] = prescription.BnfDescription;
 
             return values;
         }
 
+        /// <inheritdoc/>
         protected override string[] GetHeaders()
         {
             return new string[]
             {
                 "chi",
-                "prescribed_date",
-                "quantity",
-                "strength",
-                "formulation_code",
-                "measure_code",
-                "name",
-                "approved_name",
-                "bnf",
-                "formatted_bnf",
-                "description"
+                "PrescribedDate",
+                "Quantity",
+                "Strength",
+                "StrengthNumerical",
+                "FormulationCode",
+                "MeasureCode",
+                "Name",
+                "ApprovedName",
+                "BnfCode",
+                "FormattedBnfCode",
+                "BnfDescription"
             };
         }
 

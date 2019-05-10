@@ -13,6 +13,7 @@ namespace BadMedicine.Datasets
         {
         }
 
+        /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
             var episode = new HospitalAdmissionsRecord(p,p.DateOfBirth, r);
@@ -23,26 +24,27 @@ namespace BadMedicine.Datasets
                 episode.Person.DateOfBirth,
                 episode.AdmissionDate,
                 episode.DischargeDate,
-                episode.Condition1,
-                episode.Condition2,
-                episode.Condition3,
-                episode.Condition4,
+                episode.MainCondition,
+                episode.OtherCondition1,
+                episode.OtherCondition2,
+                episode.OtherCondition3,
                 GetRandomSentence(r)
             };
         }
 
+        /// <inheritdoc/>
         protected override string[] GetHeaders()
         {
             return new string[]
             {
                 "chi",
-                "dob",
-                "admission_date",
-                "discharge_date",
-                "Condition1",
-                "Condition2",
-                "Condition3",
-                "Condition4",
+                "DateOfBirth",
+                "AdmissionDate",
+                "DischargeDate",
+                "MainCondition",
+                "OtherCondition1",
+                "OtherCondition2",
+                "OtherCondition3",
                 "Comment"
             };
         }

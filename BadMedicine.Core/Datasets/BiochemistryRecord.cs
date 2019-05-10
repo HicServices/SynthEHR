@@ -18,17 +18,37 @@ namespace BadMedicine.Datasets
     /// </summary>
     public class BiochemistryRecord
     {
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="LabNumber"]'/>
         public string LabNumber;
-        public string Sample_type;
-        public string Test_code;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="SampleType"]'/>
+        public string SampleType;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="TestCode"]'/>
+        public string TestCode;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Result"]'/>
         public string Result;
-        public string Units;
+        
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ReadCodeValue"]'/>
         public string ReadCodeValue;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Healthboard"]'/>
         public string Healthboard;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ArithmeticComparator"]'/>
         public string ArithmeticComparator;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Interpretation"]'/>
         public string Interpretation;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="QuantityUnit"]'/>
         public string QuantityUnit;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeHighValue"]'/>
         public string RangeHighValue;
+
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeLowValue"]'/>
         public string RangeLowValue;
 
         static object oLockInitialize = new object();
@@ -52,8 +72,8 @@ namespace BadMedicine.Datasets
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
             var row = _bucketList.GetRandom();
             LabNumber = GetRandomLabNumber(r);
-            Test_code = row.LocalClinicalCodeValue;
-            Sample_type = row.SampleName;
+            TestCode = row.LocalClinicalCodeValue;
+            SampleType = row.SampleName;
 
             Result = row.Distribution != null ? row.Distribution.Sample().ToString() : "NULL";
 
@@ -63,8 +83,6 @@ namespace BadMedicine.Datasets
             RangeHighValue = row.RangeHighValue.HasValue ? row.RangeHighValue.ToString():"NULL";
             RangeLowValue = row.RangeLowValue.HasValue ? row.RangeLowValue.ToString():"NULL";
             
-            Units = row.QuantityUnit;
-
             Healthboard = row.hb_extract;
             ReadCodeValue = row.ReadCodeValue;
         }

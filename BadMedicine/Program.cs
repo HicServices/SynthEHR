@@ -32,6 +32,12 @@ namespace BadMedicine
 
         private static void RunOptionsAndReturnExitCode(ProgramOptions opts)
         {
+
+            if (opts.NumberOfPatients <= 0)
+                opts.NumberOfPatients = 500;
+            if (opts.NumberOfRows <= 0)
+                opts.NumberOfRows = 2000;
+
             var dir = Directory.CreateDirectory(opts.OutputDirectory);
 
             try

@@ -83,6 +83,7 @@ namespace BadMedicine.Datasets
             }
         }
 
+        /// <inheritdoc/>
         public virtual DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords)
         {
             var dt = new DataTable();
@@ -101,6 +102,7 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public abstract object[] GenerateTestDataRow(Person p);
 
+        /// <inheritdoc/>
         protected abstract string[] GetHeaders();
 
         /// <summary>
@@ -143,6 +145,34 @@ namespace BadMedicine.Datasets
         public double GetGaussian()
         {
             return Math.Min(Math.Max(-1,_normalDist.Sample()),1);
+        }
+        
+        /// <summary>
+        /// Returns a random date inclusive of the lower bound and exclusive of the upper bound.
+        /// </summary>
+        /// <param name="from">inclusive lower bound</param>
+        /// <param name="to">exclusive upper bound</param>
+        /// <param name="r">seeded random</param>
+        /// <returns></returns>
+        public static DateTime GetRandomDate(DateTime from, DateTime to, Random r)
+        {
+            var range = to - from;
+
+            var randTimeSpan = new TimeSpan((long) (r.NextDouble()*range.Ticks));
+
+            return from + randTimeSpan;
+        }
+        
+        /// <summary>
+        /// Returns a date after (or on) <paramref name="afterDate"/>.  In order to preserve randomisation seeding a constant
+        /// value in 2019 is used instead of DateTime.Now (ensures that data generated doesn't vary with the same seed).
+        /// </summary>
+        /// <param name="afterDate"></param>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
+        {
+            return GetRandomDate(afterDate, new DateTime(2019, 7, 5, 23, 59, 59),r);
         }
 
         /// <summary>

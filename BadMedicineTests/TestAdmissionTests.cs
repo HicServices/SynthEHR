@@ -26,10 +26,7 @@ namespace BadMedicineTests
             Assert.IsNotNull(a.Person.Address.Postcode);
             Assert.IsNotNull(a.AdmissionDate);
             Assert.IsNotNull(a.DischargeDate);
-            Assert.IsNotNull(a.Condition1);
-            Assert.IsNotNull(a.Condition2);
-            Assert.IsNotNull(a.Condition3);
-            Assert.IsNull(a.Condition4);   
+            Assert.IsNotNull(a.MainCondition);
         }
 
         [Test]

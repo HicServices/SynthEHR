@@ -19,9 +19,9 @@ namespace BadMedicineTests
             Assert.AreEqual("BC262017",record.LabNumber);
             Assert.AreEqual("NULL",record.QuantityUnit);
             Assert.AreEqual("451G.",record.ReadCodeValue);
-            Assert.AreEqual("Blood",record.Sample_type);
-            Assert.AreEqual("eCOM",record.Test_code);
-            Assert.AreEqual("NULL",record.Units);
+            Assert.AreEqual("Blood",record.SampleType);
+            Assert.AreEqual("eCOM",record.TestCode);
+            Assert.AreEqual("NULL",record.QuantityUnit);
         }
     }
 }

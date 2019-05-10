@@ -50,7 +50,7 @@ namespace BadMedicine.Datasets
             results[19] = p.CHI; //PatientID
             results[20] = 0; //SUMMARY
             results[21] = r.Next(0,99999); //LAST_AUTH_BY
-            results[22] = Person.GetRandomDateAfter(appointment.StartDate,r); //LAST_AUTH_DT
+            results[22] = GetRandomDateAfter(appointment.StartDate,r); //LAST_AUTH_DT
             results[23] = 0; //CV_FILE
             results[24] = 0; //L_CC_STEN_S
             results[25] = 0; //CV_DT

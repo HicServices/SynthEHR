@@ -15,32 +15,33 @@ namespace BadMedicine
     /// </summary>
     public class Person
     {
-        public const string ForenameDescription ="The (fictional) patients forename, randomly generated from a list of 100 common forenames that match the patients gender";
-        public const string SurnameDescription = " The (fictional) patients surname, randomly generated from a list of 100 common surnames";
-
-        public const string CHIDescription = "Community Health Index (CHI) number is a unique personal identifier allocated to each patient on first registration with a GP Practice. It follows the format DDMMYYRRGC where DDMMYY represents the persons date of birth, RR are random digits, G is another random digit but acts as a gender identifier, (where odd numbers indicate males and even numbers indicate females), and the final digit is an arithmetical check digit.";
-        public const string ANOCHIDescription = "Annonymous identifier that has replaced the identifiable CHI.  The CHI number will be stored in an ANO database.";
-
-        public const string DateOfBirthDescription =
-            "The (fictional) date of birth of the patient, this should match the first 6 digits of the CHI (if the patient has a CHI and not an ANOCHI)";
-
-        public const string GenderDescription = "M for Male patient, F for Female patient.  Always populated.  Will match the last digit of the CHI (if the patient has a CHI and not an ANOCHI) with odd numbers for females and even numbers for males.";
-
-
-        public string Forename { get; set; }
-        public string Surname { get; set; }
-        public string CHI { get; set; }
-        public string ANOCHI { get; set; }
-        public DateTime DateOfBirth = new DateTime();
-        public DateTime? DateOfDeath;
-        public char Gender { get; set; }
         
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
+        public string Forename { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Surname"]'/>
+        public string Surname { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Common/Field[@name="chi"]'/>
+        public string CHI { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="ANOCHI"]'/>
+        public string ANOCHI { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="DateOfBirth"]'/>
+        public DateTime DateOfBirth = new DateTime();
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="DateOfDeath"]'/>
+        public DateTime? DateOfDeath;
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Gender"]'/>
+        public char Gender { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Address"]'/>
         public DemographyAddress Address { get; set; }
+        /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="PreviousAddress"]'/>
         public DemographyAddress PreviousAddress { get; set; }
 
         static HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
         static HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
 
+        /// <summary>
+        /// Generates a new random person using the seeded random
+        /// </summary>
+        /// <param name="r"></param>
         public Person(Random r)
         {
             switch (r.Next(2))
@@ -56,11 +57,11 @@ namespace BadMedicine
             Forename = GetRandomForename(r);
             Surname = GetRandomSurname(r);
 
-            DateOfBirth = GetRandomDate(r);
+            DateOfBirth = DataGenerator.GetRandomDate(new DateTime(1970,1,1),new DateTime(2014,1,1),r);
             
             //1 in 10 patients is dead
             if (r.Next(10) == 0)
-                DateOfDeath = GetRandomDateAfter(DateOfBirth, r);
+                DateOfDeath = DataGenerator.GetRandomDateAfter(DateOfBirth, r);
             else
                 DateOfDeath = null;
 
@@ -74,6 +75,12 @@ namespace BadMedicine
             if(r.Next(10) != 0)
                 PreviousAddress = new DemographyAddress(r);
         }
+
+        /// <summary>
+        /// Returns a random first name based on the <see cref="Person.Gender"/>
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public string GetRandomForename(Random r)
         {
             if(Gender == 'F')
@@ -82,46 +89,29 @@ namespace BadMedicine
             return CommonBoyForenames[r.Next(100)];
         }
 
+        /// <summary>
+        /// Returns a random date after the patients date of birth (and before their death if they are dead).
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public DateTime GetRandomDateDuringLifetime(Random r)
         {
             if (DateOfDeath == null)
-                return GetRandomDateAfter(DateOfBirth, r);
+                return DataGenerator.GetRandomDateAfter(DateOfBirth, r);
 
-            return GetRandomDateBetween(DateOfBirth, (DateTime)DateOfDeath, r);
+            return DataGenerator.GetRandomDate(DateOfBirth, (DateTime)DateOfDeath, r);
         }
 
+        /// <summary>
+        /// Returns a random surname from a list of common surnames
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         public static string GetRandomSurname(Random r)
         {
             return CommonSurnames[r.Next(100)];
         }
         
-        public static DateTime GetRandomDateBetween(DateTime start, DateTime end, Random r)
-        {
-            if (start > end)
-                throw new ArgumentOutOfRangeException("end date was before start date");
-
-            TimeSpan timeSpan = end - start;
-            TimeSpan newSpan = new TimeSpan(0, r.Next(0, (int)timeSpan.TotalMinutes), 0);
-            return start + newSpan;
-        }
-
-        public static DateTime GetRandomDate(Random r)
-        {
-            int year = r.Next(1970, 2014);
-            int month = Math.Max(1, r.Next(13));
-            int day = Math.Max(1, r.Next(28));
-
-            try
-            {
-                return new DateTime(year, month, day);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Invalid datetime " + year + "-" + month + "-" + day, e);
-            }
-        }
-
-
         /// <summary>
         /// If the person died before onDate it returns NULL (as of onDate we did not know when the person would die).  if onDate is > date of death it 
         /// returns the date of death (we knew when they died - you cannot predict the future but you can remember the past)
@@ -142,15 +132,6 @@ namespace BadMedicine
             return null;
         }
 
-        public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
-        {
-            var range = new DateTime(2019,7,5,23,59,59) - afterDate;
-
-            var randTimeSpan = new TimeSpan((long) (r.NextDouble()*range.Ticks));
-
-            return afterDate + randTimeSpan;
-        }
-
         private string GetNovelANOCHI(Random r)
         {
             string anochi;
@@ -169,7 +150,7 @@ namespace BadMedicine
             string chi;
             do
             {
-                chi = GenerateCHI(r);
+                chi = GetRandomCHI(r);
             } while (AlreadyGeneratedCHIs.Contains(chi));
             AlreadyGeneratedCHIs.Add(chi);
 
@@ -186,27 +167,29 @@ namespace BadMedicine
             return toreturn + "_A";
         }
 
-        private string GenerateCHI(Random r)
+        /// <summary>
+        /// Returns a randomly generated CHI number for the patient.  The first 6 digits will match the patients <see cref="DateOfBirth"/> and
+        /// the second to last digit will match the <see cref="Gender"/>.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public string GetRandomCHI( Random r)
         {
-           return GetRandomCHI(DateOfBirth,Gender,r);
-        }
+            string toreturn = DateOfBirth.ToString("ddMMyy" + r.Next(10, 99));
 
-
-        public static string GetRandomCHI(DateTime dateOfBirth, char gender, Random r)
-        {
-            string toreturn = dateOfBirth.ToString("ddMMyy" + r.Next(100, 999));
-
-            int chiLastDigit = r.Next(10);
+            int genderDigit = r.Next(10);
 
             //odd last number for girls
-            if (gender == 'F' && chiLastDigit % 2 == 0)
-                chiLastDigit = 1;
+            if (Gender == 'F' && genderDigit % 2 == 0)
+                genderDigit = 1;
 
             //even last number for guys
-            if (gender == 'M' && chiLastDigit % 2 == 1)
-                chiLastDigit = 2;
+            if (Gender == 'M' && genderDigit % 2 == 1)
+                genderDigit = 2;
 
-            return toreturn + chiLastDigit;
+            int checkDigit = r.Next(0, 9);
+
+            return toreturn + genderDigit + checkDigit;
         }
 
         private static readonly string[] CommonGirlForenames = new[]

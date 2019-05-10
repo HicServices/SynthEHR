@@ -1,0 +1,178 @@
+<Datasets>
+  <Common>
+    <Field name="chi">
+      <summary>
+        Community Health Index (CHI) number is a unique personal identifier allocated to each patient on first registration with a GP Practice. It follows the format DDMMYYRRGC where DDMMYY represents the persons date of birth, RR are random digits, G is another random digit but acts as a gender identifier, (where odd numbers indicate males and even numbers indicate females), and the final digit is an arithmetical check digit.
+      </summary>
+    </Field>
+  </Common>
+  <Biochemistry>
+    <summary>
+      Tayside and Fife labs biochemistry data.  This data is provided in a format based upon the SCI-Store system.
+    </summary>
+    <Field name="ArithmeticComparator">
+		<summary>  
+			This field represents additional information to be used in conjunction with the numeric result field Result. 
+			The contents should be interpreted along with the Result, for example, some EGFR results may be reported as Result = 60, with ArithmeticComparator = '>'  
+			This means the result is greater than 60.
+		</summary>
+		</Field>
+		<Field name="Interpretation">
+		<summary>  
+      Contains comments regarding the result.
+		</summary>  
+		</Field>
+    <Field name="Healthboard">
+      <summary>
+        This is the alpha and/or numeric Health Board code in which the patient CHI information was extracted from. 
+      </summary>
+    </Field>
+    <Field name="SampleDate">
+      <summary>
+        This is the date and time when the sample was taken from the patient.
+      </summary>
+    </Field>
+    <Field name="SampleType">
+      <summary>
+        The type of sample that was run e.g. 'Blood', 'Serum' etc.
+      </summary>
+    </Field>
+    <Field name="TestCode">
+      <summary>
+        This field store the test code for the test taken/performed (e.g., CHOL = Cholesterol) as used by the providing organisation.  This is the internal lab system identifier for the test being run (See ReadCodeValue for a coded answer).  Includes non clinical/message codes such as ECOM.
+      </summary>
+    </Field>
+    <Field name="Result">
+      <summary>
+      </summary>
+    </Field><Field name="LabNumber">
+      <summary>
+        This is a unique identifier assigned by the lab system to identify a sample run.  Each sample run can have multiple tests run.
+      </summary>
+    </Field><Field name="QuantityUnit">
+      <summary>
+        The unit of measure that the Result is expressed in e.g. "mmol/L" / "umol/L".
+      </summary>
+    </Field>
+    <Field name="ReadCodeValue">
+      <summary>
+        The read code allocated to the test.  This field is useful as a standardised grouping for the tests, for example, if you are looking in Serum Total Cholesterol, all records marked with 44P. represent this regardless of the TestCode provided.
+      </summary>
+    </Field>
+    <Field name="RangeLowValue">
+      <summary>
+        Minimum guideline value for the test result at the time of testing.  These ranges vary based on relevant criteria such as age, gender, and guidelines will also change over time.
+      </summary>
+    </Field>
+    <Field name="RangeHighValue">
+      <summary>
+        Maximum guideline value for the test result at the time of testing.  These ranges vary based on relevant criteria such as age, gender, and guidelines will also change over time.
+      </summary>
+    </Field>
+	</Biochemistry>
+  <Demography>
+     <summary>
+       Address and patient details as might appear in the CHI register
+      </summary>
+    <Field name="Forename">
+      <summary>
+        Patients forename, randomly generated from a list of 100 common forenames that match the patients gender
+      </summary>
+    </Field>
+    <Field name="Surname">
+      <summary>
+        patients surname, randomly generated from a list of 100 common surnames
+      </summary>
+    </Field>
+    <Field name="ANOCHI">
+      <summary>
+        Annonymous identifier that has replaced the identifiable CHI.  Typically represented as aaa1234567 where the first three letters uniquely identify a project (allowing for project specific anonymisation)
+      </summary>
+    </Field>
+    <Field name="DateOfBirth">
+      <summary>
+        Date of birth of the patient, this should match the first 6 digits of the CHI 
+      </summary>
+    </Field>
+    <Field name="DateOfDeath">
+      <summary>
+        If the patient is dead then this date will be filled in with the date it occured
+      </summary>
+    </Field>
+    <Field name="Gender">
+      <summary>
+        M for Male patient, F for Female patient.  Should match the second last digit of the CHI (if the patient has a CHI and not an ANOCHI) with odd numbers for females and even numbers for males.
+      </summary>
+    </Field>
+    <Field name="Address">
+      <summary>
+        The address which the patient lives at at the time of the EHR record being generated
+      </summary>
+    </Field>
+    <Field name="PreviousAddress">
+      <summary>
+        The previous address which the patient lived at when the EHR record being generated
+      </summary>
+    </Field>
+  </Demography>
+  <Prescribing>
+  <summary> 
+	Prescription data of prescribed drugs 
+  </summary>
+  <Field name="ResSeqNo">
+      <summary>
+        Unique number identifying a prescribable drug
+      </summary>
+    </Field>
+	<Field name="Quantity">
+      <summary>
+        The number prescribed to the patent e.g. 12
+      </summary>
+    </Field>
+	<Field name="Strength">
+      <summary>
+        The strength of the drug prescribed e.g. "2.5 MG"
+      </summary>
+    </Field>
+	<Field name="StrengthNumerical">
+      <summary>
+        The numerical portion of Strength e.g. 50 (must be combined with MeasureCode)
+      </summary>
+    </Field>
+	<Field name="FormulationCode">
+      <summary>
+        How the drug is provided e.g. "TABS", "CREAM"
+      </summary>
+    </Field>
+	<Field name="MeasureCode">
+      <summary>
+        The units portion of Strength e.g. MG
+      </summary>
+    </Field>
+	<Field name="Name">
+      <summary>
+        The common/proprietary name for the drug being prescribed e.g. VENTOLIN
+      </summary>
+    </Field>
+	<Field name="ApprovedName">
+      <summary>
+        The standardised name/active drug e.g. SALBUTAMOL
+      </summary>
+    </Field>
+	<Field name="BnfCode">
+      <summary>
+        Machine readable formatting of Bnf 0407010Q0AAAAAA
+      </summary>
+    </Field>
+	<Field name="FormattedBnfCode">
+    <summary>
+        Human readable formatting of Bnf e.g. 4.7.1
+      </summary>
+    </Field>
+	<Field name="BnfDescription">
+    <summary>
+        Lookup description of what the Bnf entry means
+      </summary>
+    </Field>
+  </Prescribing>
+</Datasets>

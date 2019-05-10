@@ -9,9 +9,7 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
-    /// <summary>
-    /// Address and patient details as might appear in the CHI register
-    /// </summary>
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Demography'/>
     public class Demography : DataGenerator
     {
         /// <inheritdoc/>
@@ -26,7 +24,7 @@ namespace BadMedicine.Datasets
             var values = new object[39];
             
             values[0] = person.CHI;
-            values[1] = Person.GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
+            values[1] = GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
             
             if(r.Next(0, 2) == 0)
                 values[2] = true;
@@ -36,7 +34,7 @@ namespace BadMedicine.Datasets
             values[3] = "Random record";
             
             if(r.Next(0,10 )== 0)//one in 10 records has one of these (an ALIAS chi)
-                values[4] = Person.GetRandomCHI(person.DateOfBirth,person.Gender,r);
+                values[4] = person.GetRandomCHI(r);
 
             values[5] = GetRandomCHIStatus(r);
             values[6] = person.DateOfBirth.Year.ToString().Substring(0,2);
@@ -112,14 +110,14 @@ namespace BadMedicine.Datasets
                 if (r.Next(0, 2) == 0)
                 {
                     //get after birth but before dtCreated/date of death
-                    values[30] = Person.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath,(DateTime)values[1]),r);
+                    values[30] = GetRandomDate(person.DateOfBirth, GetMinimum(person.DateOfDeath,(DateTime)values[1]),r);
                 }
             }
 
             //an always null field, why not?!
             values[31] = null;
 
-            DateTime gp_accept_date = Person.GetRandomDateAfter(person.DateOfBirth, r);
+            DateTime gp_accept_date = GetRandomDateAfter(person.DateOfBirth, r);
             
             //current_gp_accept_date
             values[32] = gp_accept_date;
@@ -133,10 +131,10 @@ namespace BadMedicine.Datasets
             if(r.Next(0,3)==0)
             {
                 values[33] = GetRandomGPCode(r);
-                values[34] = Person.GetRandomDateAfter((DateTime) values[32], r);
+                values[34] = GetRandomDateAfter((DateTime) values[32], r);
             }
 
-            values[35] = Person.GetRandomDateBetween(person.DateOfBirth, GetMinimum(person.DateOfDeath, (DateTime)values[1]), r);
+            values[35] = GetRandomDate(person.DateOfBirth, GetMinimum(person.DateOfDeath, (DateTime)values[1]), r);
             values[36] = person.DateOfBirth;
             values[37] = GetRandomDouble(r);
 

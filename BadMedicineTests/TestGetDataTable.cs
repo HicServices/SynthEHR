@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BadMedicine;
 using BadMedicine.Datasets;
 using NUnit.Framework;

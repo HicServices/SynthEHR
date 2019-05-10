@@ -9,9 +9,7 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
-    /// <summary>
-    /// Test about biochemistry lab tests e.g. CRE (Creatinine). 
-    /// </summary>
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry'/>
     public class Biochemistry: DataGenerator
     {
         /// <inheritdoc/>
@@ -29,11 +27,11 @@ namespace BadMedicine.Datasets
             results[0] = p.CHI;
             results[1] = randomSample.Healthboard;
             results[2] = p.GetRandomDateDuringLifetime(r);
-            results[3] = randomSample.Sample_type;
-            results[4] = randomSample.Test_code;
+            results[3] = randomSample.SampleType;
+            results[4] = randomSample.TestCode;
             results[5] = randomSample.Result;
             results[6] = randomSample.LabNumber;
-            results[7] = randomSample.Units;
+            results[7] = randomSample.QuantityUnit;
             results[8] = randomSample.ReadCodeValue;
             results[9] = randomSample.ArithmeticComparator;
             results[10] = randomSample.Interpretation;
@@ -50,13 +48,13 @@ namespace BadMedicine.Datasets
             return new string[]
             {
                 "chi",                              //0
-                "hb_extract",                       //1
-                "Sample_date",                      //2
-                "Sample_type",                      //3
-                "Test_code",                        //4
+                "Healthboard",                      //1
+                "SampleDate",                       //2
+                "SampleType",                       //3
+                "TestCode",                         //4
                 "Result",                           //5
                 "Labnumber",                        //6
-                "Units",                            //7
+                "QuantityUnit",                     //7
                 "ReadCodeValue",                    //8
                 "ArithmeticComparator",             //9
                 "Interpretation",                   //10

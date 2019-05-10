@@ -14,6 +14,7 @@ using CsvHelper.Configuration;
 
 namespace BadMedicine.Datasets
 {
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
     public class PrescribingRecord
     {
           /// <summary>
@@ -68,21 +69,25 @@ namespace BadMedicine.Datasets
             maxWeight = currentWeight;
         }
 
-
+        /// <summary>
+        /// Generates a new random prescription record
+        /// </summary>
+        /// <param name="r"></param>
         public PrescribingRecord(Random r)
         {
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
             DataRow row = GetRandomRowUsingWeight(r);
 
-            res_seqno = row["res_seqno"].ToString();
-            name = row["name"].ToString();
-            formulation_code = row["formulation_code"].ToString();
-            strength = row["strength"].ToString();
-            measure_code = row["measure_code"].ToString();
-            BNF_Code = row["BNF_Code"].ToString();
-            formatted_BNF_Code = row["formatted_BNF_Code"].ToString();
-            BNF_Description = row["BNF_Description"].ToString();
-            Approved_Name = row["Approved_Name"].ToString();
+            ResSeqNo = row["res_seqno"].ToString();
+            Name = row["name"].ToString();
+            FormulationCode = row["formulation_code"].ToString();
+            Strength= row["strength"].ToString();
+            StrengthNumerical = row["orig_strength"].ToString() == "NULL" ? null : (double?)Convert.ToDouble(row["orig_strength"].ToString());
+            MeasureCode = row["measure_code"].ToString();
+            BnfCode = row["BNF_Code"].ToString();
+            FormattedBnfCode= row["formatted_BNF_Code"].ToString();
+            BnfDescription = row["BNF_Description"].ToString();
+            ApprovedName = row["Approved_Name"].ToString();
 
             var hasMin = double.TryParse(row["minQuantity"].ToString(),out var min);
             var hasMax = double.TryParse(row["maxQuantity"].ToString(),out var max);
@@ -107,15 +112,27 @@ namespace BadMedicine.Datasets
             return lookupTable.Rows[row];
         }
 
-        public string res_seqno;
-        public string name;
-        public string formulation_code;
-        public string strength;
-        public string measure_code;
-        public string BNF_Code;
-        public string formatted_BNF_Code;
-        public string BNF_Description;
-        public string Approved_Name;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ResSeqNo"]'/>
+        public string ResSeqNo;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Name"]'/>
+        public string Name;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormulationCode"]'/>
+        public string FormulationCode;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Strength"]'/>
+        public string Strength;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="StrengthNumerical"]'/>
+        public double? StrengthNumerical;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="MeasureCode"]'/>
+        public string MeasureCode;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfCode"]'/>
+        public string BnfCode;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormattedBnfCode"]'/>
+        public string FormattedBnfCode;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfDescription"]'/>
+        public string BnfDescription;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ApprovedName"]'/>
+        public string ApprovedName;
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Quantity"]'/>
         public string Quantity;
     }
 }
