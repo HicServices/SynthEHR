@@ -27,30 +27,8 @@ namespace BadMedicine.Datasets
 
         static PrescribingRecord()
         {
-            string toFind = typeof(PrescribingRecord).Namespace + ".Prescribing.csv";
-            var lookup = typeof(PrescribingRecord).Assembly.GetManifestResourceStream(toFind);
-
-            if (lookup == null)
-                throw new Exception("Could not find embedded resource file " + toFind);
-          
-             
-            CsvReader r = new CsvReader(new StreamReader(lookup),new Configuration(){Delimiter =","});
-            
-            lookupTable = new DataTable();
-
-            r.Read();
-            r.ReadHeader();
-
-            foreach (string header in r.Context.HeaderRecord)
-                lookupTable.Columns.Add(header);
-            
-            r.Read();
-
-            do
-            {
-                lookupTable.Rows.Add(r.Context.Record);
-            } while (r.Read());
-             
+            lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(PrescribingRecord),"Prescribing.csv");
+                       
             weightToRow = new Dictionary<int, int>();
 
             int currentWeight = 0;

@@ -10,7 +10,9 @@ using System.ComponentModel.Composition;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -278,7 +280,9 @@ namespace BadMedicine.Datasets
         }
 
         /// <summary>
-        /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>
+        /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>.  Will also work 
+        /// if you have an embedded resoruce file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
+        /// 
         /// </summary>
         /// <param name="requestingType"></param>
         /// <param name="resourceFileName"></param>
@@ -287,11 +291,10 @@ namespace BadMedicine.Datasets
         /// <returns></returns>
         public static DataTable EmbeddedCsvToDataTable(Type requestingType,string resourceFileName,DataTable dt = null)
         {
-            string toFind = requestingType.Namespace + "." + resourceFileName;
-            var lookup = requestingType.Assembly.GetManifestResourceStream(toFind);
+            var lookup = GetResourceStream(requestingType,resourceFileName);
 
             if (lookup == null)
-                throw new Exception("Could not find embedded resource file " + toFind);
+                throw new Exception("Could not find embedded resource file " + resourceFileName);
           
             CsvReader r = new CsvReader(new StreamReader(lookup),new Configuration(){Delimiter =","});
             
@@ -315,6 +318,40 @@ namespace BadMedicine.Datasets
                 }
             } while (r.Read());
 
+            return toReturn;
+        }
+
+        private static Stream GetResourceStream(Type requestingType, string resourceFileName)
+        {
+            string toFind = requestingType.Namespace + "." + resourceFileName;
+            //is there an unzipped resource available?
+            var toReturn = requestingType.Assembly.GetManifestResourceStream(toFind);
+
+            //no
+            if(toReturn == null)
+            {
+                //see if there is a zipped resource file in the namespaces
+                string toFindZip = requestingType.Namespace + "." + "Aggregates.zip";
+                var zip = requestingType.Assembly.GetManifestResourceStream(toFindZip);
+                
+                MemoryStream memoryStream = new MemoryStream();
+
+                //containing a file named resourceFileNamed
+                if(zip != null)
+                    using(var archive = new ZipArchive(zip))
+                    {
+                        var entry = archive.GetEntry(resourceFileName);
+                        if(entry != null)
+                        {
+                            using(var s = entry.Open())
+                            {
+                                s.CopyTo(memoryStream);
+                                memoryStream.Seek(0, SeekOrigin.Begin);
+                                return memoryStream;
+                            }                            
+                        }                            
+                    }
+            }
             return toReturn;
         }
 
