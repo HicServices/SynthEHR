@@ -711,6 +711,19 @@ namespace BadMedicine.Datasets
         /// <param name="dir"></param>
         public static void WriteLookups(DirectoryInfo dir)
         {
+
+            File.WriteAllText(Path.Combine(dir.FullName,"z_chiStatus.csv"),
+@"""C"",""The current record - it contains the approved CHI Number and which contains the GP with whom the patient is currently registered or was last registered with before transfer out of Scotland or death.
+""R"",""Redundant records are former records that were cancelled from use, mainly because the date of birth within the number was incorrect.""
+""L"",""Local copy records are records copied by Trusts (usually) from the current record’s CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
+""Y"",""Local copy records are records copied by Trusts (usually) from the current record’s CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
+""H"",""Historical records are previously used records for the same patient on different CHIs.   These will have different CHI Numbers if transferred across Scotland before 1997, when they had to be registered again with a different CHI Number.  If transferred from 1997 onwards, they should have been transferred electronically from one CHI to another, keeping the same CHI Number. ""
+""D"",""Deleted"""
+);
+
+
+
+
             File.WriteAllText(Path.Combine(dir.FullName, "z_Healthboards.csv"),
 @"
 Code,Description
