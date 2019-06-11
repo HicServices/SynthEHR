@@ -19,78 +19,46 @@ namespace BadMedicine.Datasets
         private static DataTable lookupTable;
         private static DataTable operationsTable;
 
-        /// <summary>
-        /// Random date indicating the time that the patient attended hospital
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="AdmissionDate"]'/>
         public DateTime AdmissionDate{get; private set; }
 
-        /// <summary>
-        /// Random date indicating the time/date patient was discharged from hospital (will be up to 10 days after <see cref="AdmissionDate"/>)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="DischargeDate"]'/>
         public DateTime DischargeDate { get; private set; }
 
-        /// <summary>
-        /// ICD Code based on the distribution of ICD codes in real hospital admissions.  This is the primary condition leading to the hospitalisation.
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="MainCondition"]'/>
         public string MainCondition { get; private set; }
 
-        /// <summary>
-        /// ICD Code based on the distribution of ICD codes in real hospital admissions.  This is a secondary condition leading to the hospitalisation.  These
-        /// codes tend to be more general codes than <see cref="MainCondition"/>.
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherCondition1"]'/>
         public string OtherCondition1 { get; private set; }
 
-        /// <summary>
-        /// ICD Code based on the distribution of ICD codes in real hospital admissions.  This is a secondary condition  leading to the hospitalisation.  These
-        /// codes tend to be more general codes than <see cref="MainCondition"/>.
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherCondition2"]'/>
         public string OtherCondition2 { get; private set; }
 
-        /// <summary>
-        /// ICD Code based on the distribution of ICD codes in real hospital admissions.  This is a secondary condition leading to the hospitalisation.  These
-        /// codes tend to be more general codes than <see cref="MainCondition"/>.
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherCondition3"]'/>
         public string OtherCondition3 { get; private set; }
-
-
-        /// <summary>
-        /// The main operation performed on the patient (if any).  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="MainOperation"]'/>
         public string MainOperation {get;private set;}
 
-        /// <summary>
-        /// The main operation (if any) performed on the patient.  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="MainOperationB"]'/>
         public string MainOperationB    {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation1"]'/>
         public string OtherOperation1   {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation1B"]'/>
         public string OtherOperation1B  {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation2"]'/>
         public string OtherOperation2   {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation2B"]'/>
         public string OtherOperation2B  {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation3"]'/>
         public string OtherOperation3   {get;private set;}
 
-        /// <summary>
-        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
-        /// </summary>
+        /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherOperation3B"]'/>
         public string OtherOperation3B  {get;private set;}
 
         /// <summary>

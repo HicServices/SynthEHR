@@ -728,5 +728,45 @@ Carotid ultrasound tests for blocked or narrowed carotid arteries, which can inc
 	Free text field
 	</summary>
 	</Field>
+	<Field name="MainOperation">
+	<summary>
+	The main operation is that selected by the clinician responsible for the care of the patient. Part A is used for single codes or for the primary part of a recognised code-pair. 
+	</summary>
+	</Field>
+	<Field name="MainOperationB">
+	<summary>
+	The main operation is that selected by the clinician responsible for the care of the patient. Part B is used for Core Approach, Technique, Site or Laterality codes or for the supplementary part of a recognised code-pair. 
+	</summary>
+	</Field>
+	<Field name="OtherOperation1">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part A is used for single codes or for the primary part of a recognised code-pair.
+	</summary>
+	</Field>
+	<Field name="OtherOperation1B">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part B is used for Approach, Technique, Site or Laterality codes or for the supplementary part of a recognised code-pair. 
+	</summary>
+	</Field>
+	<Field name="OtherOperation2">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part A is used for single codes or for the primary part of a recognised code-pair.
+	</summary>
+	</Field>
+	<Field name="OtherOperation2B">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part B is used for Approach, Technique, Site or Laterality codes or for the supplementary part of a recognised code-pair. 
+	</summary>
+	</Field>
+	<Field name="OtherOperation3">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part A is used for single codes or for the primary part of a recognised code-pair.
+	</summary>
+	</Field>
+	<Field name="OtherOperation3B">
+	<summary>
+	This field represents other operation entered in the order specified by the clinician. Part B is used for Approach, Technique, Site or Laterality codes or for the supplementary part of a recognised code-pair. 
+	</summary>
+	</Field>
   </HospitalAdmissions>
 </Datasets>
