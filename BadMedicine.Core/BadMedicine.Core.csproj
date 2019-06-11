@@ -28,6 +28,9 @@
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\Datasets.doc.xml" Link="Datasets.doc.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Datasets\Aggregates.zip" />
   </ItemGroup>
   <ItemGroup>

@@ -44,6 +44,7 @@
     </Field>
     <Field name="Result">
       <summary>
+        Numerical measure captured during the test (expressed in QuantityUnit units)
       </summary>
     </Field><Field name="LabNumber">
       <summary>
