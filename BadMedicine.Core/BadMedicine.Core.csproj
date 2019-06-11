@@ -21,11 +21,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Datasets\HospitalAdmissionsOperations.csv" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Datasets\HospitalAdmissions.csv" />
     <EmbeddedResource Include="Datasets\Biochemistry.csv" />
+    <EmbeddedResource Include="Datasets\HospitalAdmissionsOperations.csv" />
     <EmbeddedResource Include="Datasets\Prescribing.csv" />
   </ItemGroup>
   <ItemGroup>

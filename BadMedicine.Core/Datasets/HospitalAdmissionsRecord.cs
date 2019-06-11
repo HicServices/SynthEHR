@@ -17,7 +17,8 @@ namespace BadMedicine.Datasets
     public class HospitalAdmissionsRecord
     {
         private static DataTable lookupTable;
-        
+        private static DataTable operationsTable;
+
         /// <summary>
         /// Random date indicating the time that the patient attended hospital
         /// </summary>
@@ -51,6 +52,47 @@ namespace BadMedicine.Datasets
         /// </summary>
         public string OtherCondition3 { get; private set; }
 
+
+        /// <summary>
+        /// The main operation performed on the patient (if any).  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string MainOperation {get;private set;}
+
+        /// <summary>
+        /// The main operation (if any) performed on the patient.  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string MainOperationB    {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation1   {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation1B  {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation2   {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation2B  {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation3   {get;private set;}
+
+        /// <summary>
+        /// An operation (if any) performed on the patient .  This random data is based only on MAIN_CONDITION (so the operation should be expected for the presenting MAIN_CONDITION)
+        /// </summary>
+        public string OtherOperation3B  {get;private set;}
+
         /// <summary>
         /// The <see cref="Person"/> being admitted to hospital
         /// </summary>
@@ -69,7 +111,13 @@ namespace BadMedicine.Datasets
         /// Maps Row(Key) to the CountAppearances/TestCode
         /// </summary>
         private static BucketList<string> ICD10Rows;
-        
+
+        /// <summary>
+        /// Maps a given MAIN_CONDITION code (doesn't cover other conditons) to popular operations for that condition.  The string array is always length 8 and corresponds to
+        /// MAIN_OPERATION,MAIN_OPERATION_B,OTHER_OPERATION_1,OTHER_OPERATION_1B,OTHER_OPERATION_2,OTHER_OPERATION_2B,OTHER_OPERATION_3,OTHER_OPERATION_3B
+        /// </summary>
+        private static Dictionary<string,BucketList<string[]>> ConditionsToOperationsMap = new Dictionary<string, BucketList<string[]>>();
+
         /// <summary>
         /// The earliest date from which to generate records (matches HIC aggregate data collected)
         /// </summary>
@@ -124,6 +172,21 @@ namespace BadMedicine.Datasets
                     if(r.Next(10) ==0)
                         OtherCondition3 = "Nul";
                 }
+            }
+
+            //if the condition is one that is often treated in a specific way
+            if(ConditionsToOperationsMap.ContainsKey(MainCondition))
+            {
+                string[] operations = ConditionsToOperationsMap[MainCondition].GetRandom();
+                
+                MainOperation = operations[0];
+                MainOperationB = operations[1];
+                OtherOperation1 = operations[2];
+                OtherOperation1B = operations[3];
+                OtherOperation2 = operations[4];
+                OtherOperation2B = operations[5];
+                OtherOperation3 = operations[6];
+                OtherOperation3B = operations[7];
             }
         }
 
@@ -190,9 +253,34 @@ namespace BadMedicine.Datasets
                 ICD10Rows.Add((int) row["CountAppearances"], (string) row["TestCode"]); 
                 rowCount++;
             }
-            
+
+            operationsTable = new DataTable();
+            operationsTable.Columns.Add("CountOfRecords",typeof(int));
+
+            DataGenerator.EmbeddedCsvToDataTable(typeof(HospitalAdmissionsRecord),"HospitalAdmissionsOperations.csv",operationsTable);
+                        
+            foreach(DataRow r in operationsTable.Rows)
+            {
+                string key = (string)r["MAIN_CONDITION"];
+                if(!ConditionsToOperationsMap.ContainsKey(key))
+                {
+                    ConditionsToOperationsMap.Add(key,new BucketList<string[]>(random));
+
+                    ConditionsToOperationsMap[key].Add((int)r["CountOfRecords"],new []{ 
+                        r["MAIN_OPERATION"] as string,
+                        r["MAIN_OPERATION_B"] as string,
+                        r["OTHER_OPERATION_1"] as string,
+                        r["OTHER_OPERATION_1B"] as string,
+                        r["OTHER_OPERATION_2"] as string,
+                        r["OTHER_OPERATION_2B"] as string,
+                        r["OTHER_OPERATION_3"] as string,
+                        r["OTHER_OPERATION_3B"] as string
+                        });
+                }
+            }
         }
         
+
         private string GetRandomICDCode(string field, Random random)
         {
             
@@ -201,5 +289,6 @@ namespace BadMedicine.Datasets
 
             return ICD10Rows.GetRandom(ICD10MonthHashMap[field][monthsSinceZeroDay]);
         }
+
     }
 }

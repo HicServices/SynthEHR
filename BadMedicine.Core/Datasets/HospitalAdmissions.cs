@@ -28,7 +28,15 @@ namespace BadMedicine.Datasets
                 episode.OtherCondition1,
                 episode.OtherCondition2,
                 episode.OtherCondition3,
-                GetRandomSentence(r)
+                GetRandomSentence(r),
+                episode.MainOperation,
+                episode.MainOperationB,
+                episode.OtherOperation1,
+                episode.OtherOperation1B,
+                episode.OtherOperation2,
+                episode.OtherOperation2B,
+                episode.OtherOperation3,
+                episode.OtherOperation3B,
             };
         }
 
@@ -45,7 +53,15 @@ namespace BadMedicine.Datasets
                 "OtherCondition1",
                 "OtherCondition2",
                 "OtherCondition3",
-                "Comment"
+                "Comment",
+                "MainOperation",
+                "MainOperationB",
+                "OtherOperation1",
+                "OtherOperation1B",
+                "OtherOperation2",
+                "OtherOperation2B",
+                "OtherOperation3",
+                "OtherOperation3B"
             };
         }
     }
