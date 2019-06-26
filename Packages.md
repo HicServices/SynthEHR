@@ -14,6 +14,5 @@
 | CsvHelper | [GitHub](https://github.com/JoshClose/CsvHelper) | [12.1.2](https://www.nuget.org/packages/CsvHelper/12.1.2) | MS-PL / Apache 2.0 | Enables reading/writing CSV files |
 | [Nunit](https://nunit.org/) |[GitHub](https://github.com/nunit/nunit) | [3.11.0](https://www.nuget.org/packages/NUnit/3.11.0) | [MIT](https://opensource.org/licenses/MIT) | Unit testing |
 | NUnit3TestAdapter | [GitHub](https://github.com/nunit/nunit3-vs-adapter)| [3.13.0](https://www.nuget.org/packages/NUnit3TestAdapter/3.13.0) | [MIT](https://opensource.org/licenses/MIT) | Run unit tests from within Visual Studio |
-| System.ComponentModel.Composition | [GitHub](https://github.com/dotnet/corefx) | [4.5.0](https://www.nuget.org/packages/System.ComponentModel.Composition/4.5.0) |[MIT](https://opensource.org/licenses/MIT) | Allows detecting and loading DBMS Implementations (Oracle / MySql etc) on demand|  |
 
 
