@@ -22,9 +22,16 @@ namespace BadMedicineTests
         [TestCase("../../../../BadMedicine.Core/BadMedicine.Core.csproj", "../../../../BadMedicine.Core/BadMedicine.nuspec", "../../../../Packages.md")]
         public void TestDependencyCorrect(string csproj, string nuspec, string packagesMarkdown)
         {
+            if(csproj != null && !Path.IsPathRooted(csproj))
+                csproj = Path.Combine(TestContext.CurrentContext.TestDirectory,csproj);
+            if(nuspec != null && !Path.IsPathRooted(nuspec))
+                nuspec = Path.Combine(TestContext.CurrentContext.TestDirectory,nuspec);
+            if(packagesMarkdown != null && !Path.IsPathRooted(packagesMarkdown))
+                packagesMarkdown = Path.Combine(TestContext.CurrentContext.TestDirectory,packagesMarkdown);
+
             if (!File.Exists(csproj))
                 Assert.Fail("Could not find file {0}", csproj);
-            if (!File.Exists(nuspec))
+            if (nuspec != null && !File.Exists(nuspec))
                 Assert.Fail("Could not find file {0}", nuspec);
 
             if (packagesMarkdown != null && !File.Exists(packagesMarkdown))
@@ -45,7 +52,7 @@ namespace BadMedicineTests
                 bool found = false;
 
                 //analyzers do not have to be listed as a dependency in nuspec (but we should document them in packages.md)
-                if (!Analyzers.Contains(package))
+                if (!Analyzers.Contains(package) && nuspec != null)
                 {
                     //make sure it appears in the nuspec
                     foreach (Match d in rDependencyRef.Matches(File.ReadAllText(nuspec)))
