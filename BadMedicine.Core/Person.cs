@@ -34,6 +34,9 @@ namespace BadMedicine
         public DemographyAddress Address { get; set; }
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="PreviousAddress"]'/>
         public DemographyAddress PreviousAddress { get; set; }
+        
+        public const int MinimumYearOfBirth = 1914;
+        public const int MaximumYearOfBirth = 2014;
 
         static HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
         static HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
@@ -57,7 +60,7 @@ namespace BadMedicine
             Forename = GetRandomForename(r);
             Surname = GetRandomSurname(r);
 
-            DateOfBirth = DataGenerator.GetRandomDate(new DateTime(1970,1,1),new DateTime(2014,1,1),r);
+            DateOfBirth = DataGenerator.GetRandomDate(new DateTime(MinimumYearOfBirth,1,1),new DateTime(MaximumYearOfBirth,1,1),r);
             
             //1 in 10 patients is dead
             if (r.Next(10) == 0)

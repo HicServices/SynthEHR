@@ -125,7 +125,7 @@ namespace BadMedicine.Datasets
 
             //before 1980 some records will be missing forename (deliberate errors!)
             if (gp_accept_date.Year < 1980)
-                if (r.Next(gp_accept_date.Year - 1970) == 0)//the farther back you go the more likely they are to be missing a forename
+                if (r.Next(gp_accept_date.Year - Person.MinimumYearOfBirth) == 0)//the farther back you go the more likely they are to be missing a forename
                         values[8] = null;//some people are randomly missing a forename
             
             if(r.Next(0,3)==0)
