@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -24,7 +23,6 @@ namespace BadMedicine.Datasets
     /// Base class for all randomly generated datasets.  Handles generating random datatypes and writing
     /// out to csv etc.
     /// </summary>
-    [InheritedExport(typeof(IDataGenerator))]
     public abstract class DataGenerator : IDataGenerator
     {
         /// <inheritdoc/>

@@ -11,7 +11,7 @@ namespace BadMedicine.Datasets
     public class DataGeneratorFactory
     {
         /// <summary>
-        /// Finds all concrete implementations of <see cref="IDataGenerator"/> that are exported from the BadMedicine library (MEF).
+        /// Finds all concrete implementations of <see cref="IDataGenerator"/>.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Type> GetAvailableGenerators()

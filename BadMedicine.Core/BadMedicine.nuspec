@@ -17,7 +17,6 @@ BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Ge
     <dependencies>
       <dependency id="CsvHelper" version="12.1.2" exclude="Build,Analyzers" />
       <dependency id="MathNet.Numerics" version="4.7.0" exclude="Build,Analyzers" />
-      <dependency id="System.ComponentModel.Composition" version="4.5.0" exclude="Build,Analyzers" />
     </dependencies>
   </metadata>
   <files>

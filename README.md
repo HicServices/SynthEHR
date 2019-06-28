@@ -17,15 +17,13 @@ The following synthetic datasets can be produced.
 | Carotid Artery Scan      | Scan results for Carotid Artery |
 | Hospital Admissions | ICD9 and ICD10 codes for admission to hospital |
 
-## Command Line Usage:
+## Usage:
 
-First build BadMedicine.csproj
-```
-dotnet publish BadMedicine.csproj -r win-x64 --self-contained
-cd .\bin\Debug\netcoreapp2.2\win-x64\
-```
+BadMedicine is available as a [nuget package](https://www.nuget.org/packages/HIC.BadMedicine/) for linking as a library
 
-Then run BadMedicine.exe
+The standalone CLI (BadMedicine.exe) is available in the [releases section of Github](https://github.com/HicServices/BadMedicine/releases)
+
+Usage is as follows:
 
 ```
 BadMedicine.exe c:\temp\
@@ -49,9 +47,19 @@ You can seed the generator (Guids generated will still differ)
 BadMedicine.exe c:\omg 5000 200000 -l -d CarotidArteryScan -s 5000
 ```
 
+## Building
+
+You can build a OS specific binary
+
+First build BadMedicine.csproj
+```
+dotnet publish BadMedicine.csproj -r win-x64 --self-contained
+cd .\bin\Debug\netcoreapp2.2\win-x64\
+```
+
 ## Library Usage
 
-You can generate test data for your program yourself:
+You can generate test data for your program yourself by referencing the [nuget package](https://www.nuget.org/packages/HIC.BadMedicine/):
 
 ```csharp
 //Seed the random generator if you want to always produce the same randomisation
