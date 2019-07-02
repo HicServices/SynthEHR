@@ -1,3 +1,7 @@
+require "net/http"
+require 'uri'
+require 'json'
+
 load 'rakeconfig.rb'
 $MSBUILD15CMD = MSBUILD15CMD.gsub(/\\/,"/")
 
