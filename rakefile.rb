@@ -51,9 +51,10 @@ end
 desc "Pushes the plugin packages into the specified folder"    
 task :pack, [:config] do |t, args|
 	args.with_defaults(:config => :Release)
+	version = File.open('version') {|f| f.readline}
     Dir.chdir('BadMedicine.Core') do
-        sh "nuget pack BadMedicine.nuspec -Properties Configuration=#{args.config} -IncludeReferencedProjects -Symbols -Version #{$VERSION}#{$SUFFIX}"
-        sh "nuget push HIC.BadMedicine.#{$VERSION}#{$SUFFIX}.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey #{NUGETKEY}"
+        sh "nuget pack BadMedicine.nuspec -Properties Configuration=#{args.config} -IncludeReferencedProjects -Symbols -Version #{version}"
+        sh "nuget push HIC.BadMedicine.#{version}.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey #{NUGETKEY}"
     end
 end
 
