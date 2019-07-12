@@ -69,10 +69,6 @@ namespace BadMedicineTests
                     Assert.AreEqual(row2[cell],row3[cell]);
                 }
             }
-            
-            
-
-
         }
     }
 }
