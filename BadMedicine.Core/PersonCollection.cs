@@ -5,6 +5,7 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Collections.Generic;
 
 namespace BadMedicine
 {
@@ -14,13 +15,16 @@ namespace BadMedicine
         /// <inheritdoc/>
         public Person[] People { get; private set; }
 
+        public HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
+        public HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
+
         /// <inheritdoc/>
         public void GeneratePeople(int numberOfUniqueIndividuals, Random random)
         {
             People = new Person[numberOfUniqueIndividuals];
 
             for (int i = 0; i < numberOfUniqueIndividuals; i++)
-                People[i]=new Person(random);
+                People[i]=new Person(random,this);
         }
     }
 }

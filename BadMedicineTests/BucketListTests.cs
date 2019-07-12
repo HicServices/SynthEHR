@@ -11,18 +11,21 @@ namespace BadMedicineTests
         [Test]
         public void Test_BucketList_OneElment()
         {
-            BucketList<string> list = new BucketList<string>(new Random(100));
+            var r = new Random(100);
+
+            BucketList<string> list = new BucketList<string>();
             list.Add(1,"fish");
 
-            Assert.AreEqual("fish",list.GetRandom());
-            Assert.AreEqual("fish",list.GetRandom(new []{0}));
+            Assert.AreEqual("fish",list.GetRandom(r));
+            Assert.AreEqual("fish",list.GetRandom(new []{0},r));
         }
 
         [TestCase(true)]
         [TestCase(false)]
         public void Test_BucketList_TwoElments(bool passIndices)
         {
-            BucketList<string> list = new BucketList<string>(new Random(100));
+            var r = new Random(100);
+            BucketList<string> list = new BucketList<string>();
             
             //we expect twice as many blue as red
             list.Add(1,"red");
@@ -33,7 +36,7 @@ namespace BadMedicineTests
             
             for (int i = 0; i < 1000; i++)
             {
-                switch (passIndices ? list.GetRandom() : list.GetRandom(new[] {0, 1}))
+                switch (passIndices ? list.GetRandom(r) : list.GetRandom(new[] {0, 1},r))
                 {
                     case "red": 
                         countRed++;

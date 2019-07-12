@@ -13,7 +13,7 @@ namespace BadMedicine
     /// <summary>
     /// Randomly generated person for whom datasets can be built
     /// </summary>
-    public class Person
+    public class Person : IEquatable<Person>
     {
         
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
@@ -28,6 +28,7 @@ namespace BadMedicine
         public DateTime DateOfBirth = new DateTime();
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="DateOfDeath"]'/>
         public DateTime? DateOfDeath;
+        
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Gender"]'/>
         public char Gender { get; set; }
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Address"]'/>
@@ -38,8 +39,20 @@ namespace BadMedicine
         public const int MinimumYearOfBirth = 1914;
         public const int MaximumYearOfBirth = 2014;
 
-        static HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
-        static HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
+        /// <summary>
+        /// The collection to which the patient belongs, may be null
+        /// </summary>
+        private PersonCollection _parent;
+
+        /// <summary>
+        /// Generates a new random person using the seeded random.  This overload ensures that the <see cref="Person"/> generated
+        /// does not already exist in the <paramref name="collection"/> (in terms of CHI / ANOCHI numbers).
+        /// </summary>
+        /// <param name="r"></param>
+        public Person(Random r,PersonCollection collection):this(r)
+        {
+            _parent = collection;
+        }
 
         /// <summary>
         /// Generates a new random person using the seeded random
@@ -135,28 +148,36 @@ namespace BadMedicine
             return null;
         }
 
+        /// <summary>
+        /// Returns a new random ANOCHI which does not exist in <see cref="_parent"/> (if we have one)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         private string GetNovelANOCHI(Random r)
         {
             string anochi;
-            do
-            {
-                anochi = GenerateANOCHI(r);
-            } while (AlreadyGeneratedANOCHIs.Contains(anochi));
-            AlreadyGeneratedANOCHIs.Add(anochi);
+            anochi = GenerateANOCHI(r);
+
+            while(_parent != null && _parent.AlreadyGeneratedANOCHIs.Contains(anochi))
+                anochi = GenerateANOCHI(r);            
             
             return anochi;
 
         }
 
+        /// <summary>
+        /// Returns a new random CHI which does not exist in <see cref="_parent"/> (if we have one)
+        /// </summary>
+        /// <param name="r"></param>
+        /// <returns></returns>
         private string GetNovelCHI(Random r)
         {
             string chi;
-            do
-            {
-                chi = GetRandomCHI(r);
-            } while (AlreadyGeneratedCHIs.Contains(chi));
-            AlreadyGeneratedCHIs.Add(chi);
+            chi = GetRandomCHI(r);
 
+            while(_parent != null && _parent.AlreadyGeneratedCHIs.Contains(chi))
+                chi = GetRandomCHI(r);        
+            
             return chi;
         }
 
@@ -193,6 +214,36 @@ namespace BadMedicine
             int checkDigit = r.Next(0, 9);
 
             return toreturn + genderDigit + checkDigit;
+        }
+
+        public bool Equals(Person other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(Forename, other.Forename) && string.Equals(Surname, other.Surname) && string.Equals(CHI, other.CHI) && string.Equals(ANOCHI, other.ANOCHI) && Gender == other.Gender && Equals(Address, other.Address) && Equals(PreviousAddress, other.PreviousAddress);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Person) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Forename != null ? Forename.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Surname != null ? Surname.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (CHI != null ? CHI.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ANOCHI != null ? ANOCHI.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Gender.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Address != null ? Address.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (PreviousAddress != null ? PreviousAddress.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
         private static readonly string[] CommonGirlForenames = new[]

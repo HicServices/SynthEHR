@@ -11,31 +11,22 @@ namespace BadMedicine
     /// <typeparam name="T"></typeparam>
     public class BucketList<T>
     {
-        private readonly Random _r;
+        
         readonly List<T> _buckets = new List<T>();
         readonly List<int> _probabilities = new List<int>();
 
         private int? _total = null;
 
         /// <summary>
-        /// Creates a new empty collection seeded with <paramref name="r"/>
-        /// </summary>
-        /// <param name="r"></param>
-        public BucketList(Random r)
-        {
-            _r = r;
-        }
-
-        /// <summary>
         /// Returns a random bucket (based on the probability of each bucket)
         /// </summary>
         /// <returns></returns>
-        public T GetRandom()
+        public T GetRandom(Random r)
         {
             //cache the total
             _total = _total??_probabilities.Sum();
 
-            int toPick = _r.Next(0, _total.Value);
+            int toPick = r.Next(0, _total.Value);
 
             for (int i = 0; i < _probabilities.Count; i++)
             {
@@ -53,13 +44,13 @@ namespace BadMedicine
         /// </summary>
         /// <param name="usingOnlyIndices"></param>
         /// <returns></returns>
-        public T GetRandom(IEnumerable<int> usingOnlyIndices)
+        public T GetRandom(IEnumerable<int> usingOnlyIndices, Random r)
         {
             var idx = usingOnlyIndices.ToList();
 
             int total = idx.Sum(t=>_probabilities[t]);
             
-            int toPick = _r.Next(0, total);
+            int toPick = r.Next(0, total);
 
             foreach (int i in idx)
             {

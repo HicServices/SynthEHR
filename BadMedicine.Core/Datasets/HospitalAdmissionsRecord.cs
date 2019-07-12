@@ -107,7 +107,7 @@ namespace BadMedicine.Datasets
             lock (oLockInitialize)
             {
                 if (!initialized)
-                    Initialize(r);
+                    Initialize();
                 initialized = true;
             }
 
@@ -145,7 +145,7 @@ namespace BadMedicine.Datasets
             //if the condition is one that is often treated in a specific way
             if(ConditionsToOperationsMap.ContainsKey(MainCondition))
             {
-                string[] operations = ConditionsToOperationsMap[MainCondition].GetRandom();
+                string[] operations = ConditionsToOperationsMap[MainCondition].GetRandom(r);
                 
                 MainOperation = operations[0];
                 MainOperationB = operations[1];
@@ -158,9 +158,9 @@ namespace BadMedicine.Datasets
             }
         }
 
-        private void Initialize(Random random)
+        private void Initialize()
         {
-            ICD10Rows = new BucketList<string>(random);
+            ICD10Rows = new BucketList<string>();
 
             DataTable dt = new DataTable();
             dt.Columns.Add("AverageMonthAppearing", typeof(double));
@@ -232,7 +232,7 @@ namespace BadMedicine.Datasets
                 string key = (string)r["MAIN_CONDITION"];
                 if(!ConditionsToOperationsMap.ContainsKey(key))
                 {
-                    ConditionsToOperationsMap.Add(key,new BucketList<string[]>(random));
+                    ConditionsToOperationsMap.Add(key,new BucketList<string[]>());
 
                     ConditionsToOperationsMap[key].Add((int)r["CountOfRecords"],new []{ 
                         r["MAIN_OPERATION"] as string,
@@ -255,7 +255,7 @@ namespace BadMedicine.Datasets
             //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
             int monthsSinceZeroDay = (AdmissionDate.Year - 1900) * 12 + AdmissionDate.Month;
 
-            return ICD10Rows.GetRandom(ICD10MonthHashMap[field][monthsSinceZeroDay]);
+            return ICD10Rows.GetRandom(ICD10MonthHashMap[field][monthsSinceZeroDay],random);
         }
 
     }

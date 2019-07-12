@@ -65,17 +65,17 @@ namespace BadMedicine.Datasets
             lock (oLockInitialize)
             {
                 if (!initialized)
-                    Initialize(r);
+                    Initialize();
                 initialized = true;
             }
 
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
-            var row = _bucketList.GetRandom();
+            var row = _bucketList.GetRandom(r);
             LabNumber = GetRandomLabNumber(r);
             TestCode = row.LocalClinicalCodeValue;
             SampleType = row.SampleName;
 
-            Result = row.Distribution != null ? row.Distribution.Sample().ToString() : "NULL";
+            Result = row.GetQVResult(r);
 
             ArithmeticComparator = row.ArithmeticComparator;
             Interpretation = row.Interpretation;
@@ -96,17 +96,17 @@ namespace BadMedicine.Datasets
 
             return "BC" + r.Next(0, 1000000);
         }
-        private void Initialize(Random random)
+        private void Initialize()
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("RecordCount",typeof(int));
             
             DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
              
-            _bucketList = new BucketList<BiochemistryRandomDataRow>(random);
+            _bucketList = new BucketList<BiochemistryRandomDataRow>();
 
             foreach (DataRow row in dt.Rows)
-                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row,random));
+                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
 
         }
         
@@ -123,9 +123,8 @@ namespace BadMedicine.Datasets
             public double? RangeLowValue;
             public double? QVAverage;
             public double? QVStandardDev;
-            public Normal Distribution;
 
-            public BiochemistryRandomDataRow(DataRow row,Random r)
+            public BiochemistryRandomDataRow(DataRow row)
             {
                 LocalClinicalCodeValue  =(string) row["LocalClinicalCodeValue"];
                 ReadCodeValue           =(string) row["ReadCodeValue"];
@@ -141,9 +140,20 @@ namespace BadMedicine.Datasets
                 QVAverage = double.TryParse(row["QVAverage"].ToString(),out var min) ? min:(double?) null;
                 QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(),out var dev) ? dev:(double?) null;
 
-                if(QVAverage.HasValue && QVStandardDev.HasValue)
-                    Distribution = new Normal(QVAverage.Value, QVStandardDev.Value,r);
+            }
 
+            /// <summary>
+            /// Returns a new QV value using the <see cref="QVAverage"/> and <see cref="QVStandardDev"/> seeded with the provided
+            /// <paramref name="r"/>.  Returns null if <see cref="QVAverage"/> or <see cref="QVStandardDev"/> are null.
+            /// </summary>
+            /// <param name="r"></param>
+            /// <returns></returns>
+            internal string GetQVResult(Random r)
+            {
+                if(QVAverage.HasValue && QVStandardDev.HasValue)
+                   return new Normal(QVAverage.Value, QVStandardDev.Value,r).Sample().ToString();
+                 
+                return null;
             }
         }
     }
