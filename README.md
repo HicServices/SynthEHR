@@ -1,4 +1,7 @@
 # BadMedicine
+
+[![Build Status](https://travis-ci.org/HicServices/BadMedicine.svg?branch=master)](https://travis-ci.org/HicServices/BadMedicine) [![NuGet Badge](https://buildstats.info/nuget/HIC.BadMedicine)](https://www.nuget.org/packages/HIC.BadMedicine/)  [![Total alerts](https://img.shields.io/lgtm/alerts/g/HicServices/BadMedicine.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/HicServices/BadMedicine/alerts/)
+
 Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system.  It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
 
 BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Generator etc in that data generated is based on (simple) models generated from live EHR datasets collected for over 30 years in Tayside and Fife (UK).  This makes the data generated recognisable (codes used, frequency of codes etc) from a clinical perspective and representative of the problems (ontology mapping etc) that data analysts would encounter working with real medical data.
