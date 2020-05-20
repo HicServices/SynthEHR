@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ...
 
+## [0.1.6] - 2020-05-20
+
+### Changed
+
+- Updated CsvHelper to 15.0.5
+- Updated MathNet.Numerics to 4.9.1
+
 ## [0.1.5] - 2019-07-12
 
 ### Fixed
@@ -26,7 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v0.1.5...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v0.1.6...develop
+[0.1.6]: https://github.com/HicServices/BadMedicine/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/HicServices/BadMedicine/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/HicServices/BadMedicine/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/HicServices/BadMedicine/compare/0.0.1.2...v0.1.3

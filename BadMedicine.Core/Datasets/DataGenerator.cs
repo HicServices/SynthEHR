@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace BadMedicine.Datasets
                 string task = "Populate " + target.Name;
                 stopwatch.Start();
 
-                using (var writer = new CsvWriter(sw))
+                using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
                 {
                     for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
                     {
@@ -294,7 +295,7 @@ namespace BadMedicine.Datasets
             if (lookup == null)
                 throw new Exception("Could not find embedded resource file " + resourceFileName);
           
-            CsvReader r = new CsvReader(new StreamReader(lookup),new Configuration(){Delimiter =","});
+            CsvReader r = new CsvReader(new StreamReader(lookup),new CsvConfiguration(CultureInfo.CurrentCulture){Delimiter =","});
             
             var toReturn = dt?? new DataTable();
 
