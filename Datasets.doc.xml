@@ -10,6 +10,41 @@
     <summary>
 		Tayside and Fife births record.  Contains the parents and children birthed during the admission.  This data is provided in a format based upon the Scottish SMR02 dataset
 	</summary>
+    <Field name="MotherCHI">
+		<summary>  
+			Unique identifier of the pregnant mother of the baby being born
+        </summary>
+	</Field>
+    <Field name="Healthboard">
+		<summary>  
+			Single letter code describing which NHS healthboard the record came from e.g. T for Tayside, F for Fife
+        </summary>
+	</Field>
+    <Field name="Date">
+		<summary>  
+			The date of admission to the birthing unit
+        </summary>
+	</Field>
+    <Field name="PartnerCHI">
+		<summary>  
+			Unique identifier of the second contributor of genetic material for the babie(s) being born or null if baby is a clone
+        </summary>
+	</Field>
+        <Field name="BabyCHI1">
+		<summary>  
+			Unique identifier of the first baby to be born
+        </summary>
+	</Field>
+        <Field name="BabyCHI2">
+		<summary>  
+			Unique identifier of the second baby to be born (if twins)
+        </summary>
+	</Field>
+        <Field name="BabyCHI3">
+		<summary>  
+			Unique identifier of the third baby to be born (if triplets)
+        </summary>
+	</Field>
   </Births>
   <Biochemistry>
     <summary>
