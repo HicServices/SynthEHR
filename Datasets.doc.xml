@@ -6,6 +6,11 @@
       </summary>
     </Field>
   </Common>
+  <Births>
+    <summary>
+		Tayside and Fife births record.  Contains the parents and children birthed during the admission.  This data is provided in a format based upon the Scottish SMR02 dataset
+	</summary>
+  </Births>
   <Biochemistry>
     <summary>
       Tayside and Fife labs biochemistry data.  This data is provided in a format based upon the SCI-Store system.
