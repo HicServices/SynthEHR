@@ -6,9 +6,24 @@ namespace BadMedicine.Datasets
     /// <include file='../../Datasets.doc.xml' path='Datasets/Births'/>
     public class Births : DataGenerator
     {
+        const int MinAge = 18;
+        const int MaxAge = 55;
+
         /// <inheritdoc/>
         public Births(Random rand) : base(rand)
         {
+        }
+
+        /// <inheritdoc/>
+        public override bool IsEligible(Person p)
+        {
+            // if died must have lived for at least 18 years
+            if(p.DateOfDeath.HasValue)
+                return p.DateOfDeath.Value.Subtract(p.DateOfBirth) > TimeSpan.FromDays(MinAge * 366); // lets round up for leap years
+
+            //if alive must be older than minimum age to give birth
+            return p.DateOfBirth < DateTime.Now.AddYears(MinAge);
+
         }
 
         /// <inheritdoc/>
@@ -19,7 +34,7 @@ namespace BadMedicine.Datasets
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
             
-            var youngest = p.DateOfBirth.AddYears(18);
+            var youngest = p.DateOfBirth.AddYears(MinAge);
             var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(55);
             
             // No future dates
