@@ -6,15 +6,17 @@ namespace BadMedicine.Datasets
     /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity'/>
     public class Maternity : DataGenerator
     {
-        const int MinAge = 18;
-        const int MaxAge = 55;
 
         /// <inheritdoc/>
         public Maternity(Random rand) : base(rand)
         {
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns true if the person is Female and lived to be older than <see cref="MaternityRecord.MinAge"/> (e.g. 18).  Considers current DateTime and <see cref="Person.DateOfDeath"/>
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public override bool IsEligible(Person p)
         {
             if( p.Gender != 'F')
@@ -22,32 +24,23 @@ namespace BadMedicine.Datasets
 
             // if died must have lived for at least 18 years
             if(p.DateOfDeath.HasValue)
-                return p.DateOfDeath.Value.Subtract(p.DateOfBirth) > TimeSpan.FromDays(MinAge * 366); // lets round up for leap years
+                return p.DateOfDeath.Value.Subtract(p.DateOfBirth) > TimeSpan.FromDays(MaternityRecord.MinAge * 366); // lets round up for leap years
 
             //if alive must be older than minimum age to give birth
-            return p.DateOfBirth < DateTime.Now.AddYears(MinAge);
-
+            return p.DateOfBirth < Now.AddYears(MaternityRecord.MinAge);
         }
 
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
-            var record = new MaternityRecord(r);
+            var record = new MaternityRecord(p,r);
 
             object[] results = new object[11];
             
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
             
-            var youngest = p.DateOfBirth.AddYears(MinAge);
-            var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(55);
-            
-            // No future dates
-            oldest = oldest > DateTime.Now ? DateTime.Now : oldest;
-
-            // If they died younger than 18 or were born less than 18 years into the past
-            var birthDate = youngest > oldest ? youngest : GetRandomDate(youngest,oldest,r);
-            results[2] = birthDate;
+            results[2] = record.Date;
 
             // Partner CHI
             results[3] = p.GetRandomCHI(r);
@@ -60,8 +53,10 @@ namespace BadMedicine.Datasets
             if(results[4] != null && r.Next(34) == 0)
                 results[5] = p.GetRandomCHI(r);
 
-
             results[7] = record.SendingLocation;
+            results[8] = Guid.NewGuid().ToString();
+            results[9] = record.Location;
+            results[10] = record.MaritalStatus;
 
             return results;
         }

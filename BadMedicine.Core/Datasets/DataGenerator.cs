@@ -35,6 +35,11 @@ namespace BadMedicine.Datasets
         protected Random r;
 
         /// <summary>
+        /// Use this instead of DateTime.Now to ensure reproducible datasets when using the same seeded random
+        /// </summary>
+        public static DateTime Now {get; } = new DateTime(2019, 7, 5, 23, 59, 59);
+
+        /// <summary>
         /// Creates a new instance which uses the provided <paramref name="rand"/> as a seed for generating data
         /// </summary>
         /// <param name="rand"></param>
@@ -203,7 +208,7 @@ namespace BadMedicine.Datasets
         /// <returns></returns>
         public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
         {
-            return GetRandomDate(afterDate, new DateTime(2019, 7, 5, 23, 59, 59),r);
+            return GetRandomDate(afterDate, Now,r);
         }
 
         /// <summary>
