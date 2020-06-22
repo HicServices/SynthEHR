@@ -125,7 +125,7 @@ namespace BadMedicine.Datasets
             int totalPeople = cohort.People.Length;
 
             for (int i = 0; i < numberOfRecords; i++)
-                dt.Rows.Add(GetRandomEligiblePerson(cohort.People,r));
+                dt.Rows.Add(GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)));
             
             return dt;
         }

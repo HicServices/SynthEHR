@@ -3,20 +3,23 @@ using System.IO;
 
 namespace BadMedicine.Datasets
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Births'/>
-    public class Births : DataGenerator
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity'/>
+    public class Maternity : DataGenerator
     {
         const int MinAge = 18;
         const int MaxAge = 55;
 
         /// <inheritdoc/>
-        public Births(Random rand) : base(rand)
+        public Maternity(Random rand) : base(rand)
         {
         }
 
         /// <inheritdoc/>
         public override bool IsEligible(Person p)
         {
+            if( p.Gender != 'F')
+                return false;
+
             // if died must have lived for at least 18 years
             if(p.DateOfDeath.HasValue)
                 return p.DateOfDeath.Value.Subtract(p.DateOfBirth) > TimeSpan.FromDays(MinAge * 366); // lets round up for leap years
@@ -29,7 +32,9 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] results = new object[8];
+            var record = new MaternityRecord(r);
+
+            object[] results = new object[11];
             
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
@@ -55,6 +60,9 @@ namespace BadMedicine.Datasets
             if(results[4] != null && r.Next(34) == 0)
                 results[5] = p.GetRandomCHI(r);
 
+
+            results[7] = record.SendingLocation;
+
             return results;
         }
 
@@ -70,6 +78,11 @@ namespace BadMedicine.Datasets
                 "BabyCHI1",                         //4
                 "BabyCHI2",                         //5
                 "BabyCHI3",                         //6
+                "SendingLocation",                  //7
+                "EpisodeRecordKey",                 //8
+                "Location",                         //9
+                "MaritalStatus",                    //10
+
             };
         }
     }

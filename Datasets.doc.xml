@@ -6,16 +6,36 @@
       </summary>
     </Field>
   </Common>
-  <Births>
+  <Maternity>
     <summary>
 		Tayside and Fife births record.  Contains the parents and children birthed during the admission.  This data is provided in a format based upon the Scottish SMR02 dataset
 	</summary>
-    <Field name="MotherCHI">
+  <Field name="MotherCHI">
 		<summary>  
 			Unique identifier of the pregnant mother of the baby being born
-        </summary>
+     </summary>
 	</Field>
-    <Field name="Healthboard">
+  <Field name="SendingLocation">
+		<summary>  
+			This field indicates the location of where the data was sent from. This is not necessarily the same place as where the episode took place.
+     </summary>
+	</Field>
+  <Field name="EpisodeRecordKey">
+		<summary>  
+			Unique identifier indicating a specific case record
+     </summary>
+	</Field>
+  <Field name="MaritalStatus">
+		<summary>  
+			This field represents the mothers marital status.  At a certain date ISD stopped using numbers in this column and started using letters.  If this field contains a letter (A-Z),
+     </summary>
+	</Field>
+  <Field name="Location">
+		<summary>  
+			This field represents the location code at which health activity takes place. In other words, the location code represents the point of delivery of health care. 
+     </summary>
+	</Field>
+  <Field name="Healthboard">
 		<summary>  
 			Single letter code describing which NHS healthboard the record came from e.g. T for Tayside, F for Fife
         </summary>
@@ -45,7 +65,7 @@
 			Unique identifier of the third baby to be born (if triplets)
         </summary>
 	</Field>
-  </Births>
+  </Maternity>
   <Biochemistry>
     <summary>
       Tayside and Fife labs biochemistry data.  This data is provided in a format based upon the SCI-Store system.
@@ -142,7 +162,7 @@
     </Field>
     <Field name="Gender">
       <summary>
-        M for Male patient, F for Female patient.  Should match the second last digit of the CHI (if the patient has a CHI and not an ANOCHI) with odd numbers for females and even numbers for males.
+        M for Male patient, F for Female patient.  Should match the second last digit of the CHI (if the patient has a CHI and not an ANOCHI) with odd numbers for females and even numbers for males.  This reflects the physical sex at birth and not what the person may identify as now.
       </summary>
     </Field>
     <Field name="Address">

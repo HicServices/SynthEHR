@@ -49,6 +49,7 @@ namespace BadMedicine
         /// does not already exist in the <paramref name="collection"/> (in terms of CHI / ANOCHI numbers).
         /// </summary>
         /// <param name="r"></param>
+        /// <param name="collection"></param>
         public Person(Random r,PersonCollection collection):this(r)
         {
             _parent = collection;
