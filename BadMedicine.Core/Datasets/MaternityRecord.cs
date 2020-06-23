@@ -5,7 +5,10 @@ using System.Text;
 
 namespace BadMedicine.Datasets
 {
-    class MaternityRecord
+    /// <summary>
+    /// Describes a single maternity event for a specific <see cref="Person"/>
+    /// </summary>
+    public class MaternityRecord
     {
         public const int MinAge = 18;
         public const int MaxAge = 55;
@@ -67,10 +70,10 @@ namespace BadMedicine.Datasets
             var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(55);
             
             // No future dates
-            oldest = oldest > DateTime.Now ? DataGenerator.Now : oldest;
+            oldest = oldest > DataGenerator.Now ? DataGenerator.Now : oldest;
 
             // If they died younger than 18 or were born less than 18 years into the past
-            Date = youngest > oldest ? youngest : DataGenerator.GetRandomDate(youngest,oldest,r);
+            Date = youngest > oldest ? oldest : DataGenerator.GetRandomDate(youngest,oldest,r);
 
             Location = _locations.GetRandom(r);
             SendingLocation = _locations.GetRandom(r);

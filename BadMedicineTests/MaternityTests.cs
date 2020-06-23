@@ -47,7 +47,30 @@ namespace BadMedicineTests
             Assert.Greater(countFromPopularLocation , countFromRareLocation);
 
             // like a lot more!
-            Assert.Greater(countFromPopularLocation , countFromRareLocation * 10);
+            Assert.Greater(countFromPopularLocation , countFromRareLocation * 10);            
         }
+
+        [Test]
+        public void Test_MaternityRecord()
+        {
+            var r = new Random(100);
+            var m = new Maternity(r);
+
+            var pc = new PersonCollection();
+            pc.GeneratePeople(100,r);
+
+            var eligible = pc.People.Where(m.IsEligible);
+            var dict = eligible.ToDictionary(k=>k,v=>new MaternityRecord(v,r));
+
+            //gave birth after being born themselves
+            Assert.IsTrue(dict.All(kv=>kv.Key.DateOfBirth < kv.Value.Date));
+
+            //no future dates
+            Assert.IsTrue(dict.All(kv=> kv.Value.Date <= DataGenerator.Now));
+
+
+
+        }
+
     }
 }
