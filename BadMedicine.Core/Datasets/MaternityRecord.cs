@@ -12,9 +12,10 @@ namespace BadMedicine.Datasets
 
         static object oLockInitialize = new object();
         private static bool initialized;
-        private  static BucketList<string> _locations;
-        private static BucketList<string> _maritalStatusOld;
-        private static BucketList<string> _maritalStatusNew;
+        private  static BucketList<string> _locations = new BucketList<string>();
+        private static BucketList<string> _maritalStatusOld = new BucketList<string>();
+        private static BucketList<string> _maritalStatusNew = new BucketList<string>();
+        private static BucketList<string> _specialities = new BucketList<string>();
         
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Location"]'/>
         public string Location {get;set;}
@@ -28,10 +29,19 @@ namespace BadMedicine.Datasets
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="MaritalStatus"]'/>
         public object MaritalStatus { get; set; }
 
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Speciality"]'/>
+        public string Speciality { get; internal set; }
+
         /// <summary>
         /// The person on whom the maternity action is performed
         /// </summary>
         public Person Person {get;set;}
+
+        /// <summary>
+        /// Chi numbers of up to 3 babies involved.  Always contains 3 elements with nulls e.g. if twins then first 2 elements are populated and third is null.
+        /// </summary>
+        public string[] BabyChi { get; } = new string[3];
+        
 
         /// <summary>
         /// The date at which the data collector stopped using numeric marital status codes (in favour of alphabetical)
@@ -66,6 +76,17 @@ namespace BadMedicine.Datasets
             SendingLocation = _locations.GetRandom(r);
             MaritalStatus = Date < MaritalStatusSwitchover ? _maritalStatusOld.GetRandom(r) : _maritalStatusNew.GetRandom(r);
 
+            BabyChi[0] = new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
+                       
+            // One in 30 are twins
+            if(r.Next(30) == 0)
+                BabyChi[1] =  new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
+
+            // One in 1000 are triplets ( 1/30 * 1/34)
+            if(BabyChi[1] != null && r.Next(34) == 0)
+                BabyChi[2] =  new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
+
+            Speciality = _specialities.GetRandom(r);
         }
 
         private void Initialize()
@@ -73,17 +94,13 @@ namespace BadMedicine.Datasets
             DataTable dt = new DataTable();
             
             DataGenerator.EmbeddedCsvToDataTable(typeof(Maternity),"Maternity.csv",dt);
-             
-            _locations = new BucketList<string>();
-            _maritalStatusNew = new BucketList<string>();
-            _maritalStatusOld = new BucketList<string>();
 
             foreach (DataRow row in dt.Rows)
             {
                 AddRow(row,"Location",_locations);
                 AddRow(row,"MaritalStatusNumeric",_maritalStatusOld);
                 AddRow(row,"MaritalStatusAlpha",_maritalStatusNew);
-                
+                AddRow(row,"Speciality",_specialities);
             }
                 
         }

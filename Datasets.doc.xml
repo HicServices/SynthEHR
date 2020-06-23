@@ -30,6 +30,11 @@
 			This field represents the mothers marital status.  At a certain date ISD stopped using numbers in this column and started using letters.  If this field contains a letter (A-Z),
      </summary>
 	</Field>
+  <Field name="Speciality">
+		<summary>  
+			A specialty is defined as a division of medicine or dentistry covering a specific area of clinical activity and identified within one of the Royal Colleges or Faculties.
+     </summary>
+	</Field>
   <Field name="Location">
 		<summary>  
 			This field represents the location code at which health activity takes place. In other words, the location code represents the point of delivery of health care. 

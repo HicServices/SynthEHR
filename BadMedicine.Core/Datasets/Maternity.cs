@@ -35,7 +35,7 @@ namespace BadMedicine.Datasets
         {
             var record = new MaternityRecord(p,r);
 
-            object[] results = new object[11];
+            object[] results = new object[12];
             
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
@@ -43,20 +43,18 @@ namespace BadMedicine.Datasets
             results[2] = record.Date;
 
             // Partner CHI
-            results[3] = p.GetRandomCHI(r);
+            results[3] = new Person(r).GetRandomCHI(r);
 
-            // One in 30 are twins
-            if(r.Next(30) == 0)
-                results[4] = p.GetRandomCHI(r);
-
-            // One in 1000 are triplets ( 1/30 * 1/34)
-            if(results[4] != null && r.Next(34) == 0)
-                results[5] = p.GetRandomCHI(r);
+            // Baby CHIs
+            results[4] = record.BabyChi[0];
+            results[5] = record.BabyChi[1];
+            results[6] = record.BabyChi[2];
 
             results[7] = record.SendingLocation;
             results[8] = Guid.NewGuid().ToString();
             results[9] = record.Location;
             results[10] = record.MaritalStatus;
+            results[11] = record.Speciality;
 
             return results;
         }
@@ -77,6 +75,7 @@ namespace BadMedicine.Datasets
                 "EpisodeRecordKey",                 //8
                 "Location",                         //9
                 "MaritalStatus",                    //10
+                "Speciality"                        //11
 
             };
         }

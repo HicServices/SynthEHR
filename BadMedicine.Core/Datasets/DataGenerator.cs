@@ -872,6 +872,173 @@ Z,Shetland");
 4,IV
 9,Nil
 8,Not applicable");
+
+            File.WriteAllText(Path.Combine(dir.FullName, "z_Speciality.csv"),
+@"A1,General Medicine
+A11,Acute Medicine
+A2,Cardiology
+A21,Paediatric Cardiology
+A3,Clinical Genetics
+A4,Tropical Medicine
+A5,Clinical Pharmacology & Therapeutics
+A6,Infectious Diseases
+A7,Dermatology
+A8,Endocrinology & Diabetes
+A81,Endocrinology
+A82,Diabetes
+A9,Gastroenterology
+AA,Genito-Urinary Medicine
+AB,Geriatric Medicine
+AC,Homeopathy
+AD,Medical Oncology
+AF,Paediatrics
+AFA,Community Child Health
+AG,Renal Medicine
+AH,Neurology
+AJ,Integrative Care
+AK,Occupational Medicine
+AM,Palliative Medicine
+AN,Public Health Medicine
+AP,Rehabilitation Medicine
+AQ,Respiratory Medicine
+AR,Rheumatology
+AS,Sport & Exercise Medicine
+AT,Medical Ophthalmology
+AV,Clinical Neurophysiology
+AW,Allergy
+C1,General Surgery
+C11,General Surgery (excl Vascular, Maxillofacial)
+C12,Vascular Surgery
+C13,Oral and Maxillofacial Surgery
+C14,Major Trauma
+C2,Accident & Emergency
+C3,Anaesthetics
+C31,Pain Management
+C4,Cardiothoracic Surgery
+C41,Cardiac Surgery
+C42,Thoracic Surgery
+C5,Ear, Nose & Throat (ENT)
+C51,Audiological Medicine
+C6,Neurosurgery
+C7,Ophthalmology
+C8,Trauma and Orthopaedic Surgery
+C9,Plastic Surgery
+C91,Cleft Lip and Palate Surgery
+CA,Paediatric Surgery
+CB,Urology
+CC,Intensive Care Medicine
+D1,Community Dental Practice
+D2,General Dental Practice
+D3,Oral Surgery
+D4,Oral Medicine
+D5,Orthodontics
+D6,Restorative Dentistry
+D61,Restorative Dentistry - Endodontics
+D62,Restorative Dentistry - Periodontics
+D63,Restorative Dentistry - Prosthodontics
+D7,Dental Public Health
+D8,Paediatric Dentistry
+D9,Oral Pathology
+DA,Oral Microbiology
+DB,Dental & Maxillofacial Radiology
+DC,Surgical Dentistry
+DD,Fixed & Removable Prosthodontics
+DE,Special Care Dentistry
+E1,General Practice
+E11,GP Obstetrics
+E12,GP Other than Obstetrics
+F1,Obstetrics & Gynaecology
+F1A,Well Woman Service
+F1B,Family Planning Service
+F2,Gynaecology
+F3,Obstetrics
+F31,Obstetrics Ante-Natal
+F32,Obstetrics Post-Natal
+F4,Community Sexual & Reproductive Health
+G1,General Psychiatry (Mental Illness)
+G1A,Community Psychiatry
+G2,Child & Adolescent Psychiatry
+G21,Child Psychiatry
+G22,Adolescent Psychiatry
+G3,Forensic Psychiatry
+G4,Psychiatry of Old Age
+G5,Learning Disability
+G6,Psychotherapy
+G61,Behavioural Psychotherapy
+G62,Child and Adolescent Psychotherapy
+G63,Adult Psychotherapy
+H1,Clinical Radiology
+H1A,Breast Screening Service
+H2,Clinical Oncology
+J1,Histopathology
+J2,Blood Transfusion
+J3,Chemical Pathology
+J4,Haematology
+J5,Immunology
+J6,Medical Microbiology & Virology
+J61,Microbiology
+J62,Virology
+J7,Diagnostic Neuropathology
+J8,Forensic Histopathology
+J9,Paediatric and Perinatal Pathology
+R1,Chiropody/Podiatry
+R11,Surgical Podiatry
+R2,Clinical psychology
+R3,Dietetics
+R4,Occupational Therapy
+R41,Industrial therapists
+R5,Physiotherapy
+R6,Speech and Language Therapy
+R7,Ambulancemen/women – Accident & Emergency
+R8,Audiological science
+R81,Hearing aids
+R82,Audiometry
+R9,Medical physics
+RA,Pharmacy
+RB,Physiology
+RC,Dental Hygiene
+RD,Dental Surgery Assistance
+RE,Physiological Measurement
+RF,Prosthetics/orthotics
+RF1,Prosthetics
+RF2,Orthotics
+RG,Dispensing optometry
+RH,Optometry
+RJ,Orthoptics
+RK,Diagnostic radiography
+RK1,Electroencephalography
+RK2,Electrocardiography
+RK3,Ultrasonics
+RK4,Nuclear medicine
+RL,Therapeutic radiography
+RM,Medical photography
+RP,Paramedics
+RS,Dental therapy
+RT,Pharmaceutical Medicine
+RU,Arts Therapies
+RU1,Art Therapy
+RU2,Drama Therapy
+RU3,Music Therapy
+RU4,Dance Therapy
+RU5,Mistletoe Therapy
+RU6,Acupuncture
+RU7,Bowen Therapy
+RU8,Counselling
+T1,General nursing
+T11,School nursing
+T2,Midwifery
+T21,Community Midwifery
+T3,Mental health nursing
+T31,Community psychiatric nursing
+T4,Learning disability nursing
+T41,Community learning disability nursing
+T5,Community nursing (district nursing)
+T6,Health visiting
+T7,Sick children's nursing
+T8,Nursery nursing
+XSU,Unspecified
+XX,Others"                
+                );
         }
 
     }
