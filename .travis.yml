@@ -2,6 +2,11 @@ language: csharp
 mono: none
 dotnet: 2.2.100
 
+cache:
+  directories:
+  - $HOME/.local/share/NuGet/
+  - $HOME/.nuget
+
 script:
 - dotnet build
 - dotnet test "./BadMedicineTests/BadMedicineTests.csproj"
