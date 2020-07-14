@@ -1,4 +1,4 @@
-Location,Location_RecordCount,MaritalStatusNumeric,MaritalStatusNumeric_RecordCount,MaritalStatusAlpha,MaritalStatusAlpha_RecordCount,Speciality,Speciality_RecordCount
+Location,Location_RecordCount,MaritalStatusNumeric,MaritalStatusNumeric_RecordCount,MaritalStatusAlpha,MaritalStatusAlpha_RecordCount,Specialty,Specialty_RecordCount
 F805H,159467,2,229130,A,16112,F3,337127
 T101H,156512,1,116992,Z,15469,,190526
 T202H,68372,,44724,B,15408,T21,18468

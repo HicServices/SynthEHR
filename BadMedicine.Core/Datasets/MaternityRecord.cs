@@ -18,7 +18,7 @@ namespace BadMedicine.Datasets
         private  static BucketList<string> _locations = new BucketList<string>();
         private static BucketList<string> _maritalStatusOld = new BucketList<string>();
         private static BucketList<string> _maritalStatusNew = new BucketList<string>();
-        private static BucketList<string> _specialities = new BucketList<string>();
+        private static BucketList<string> _specialties = new BucketList<string>();
         
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Location"]'/>
         public string Location {get;set;}
@@ -32,8 +32,8 @@ namespace BadMedicine.Datasets
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="MaritalStatus"]'/>
         public object MaritalStatus { get; set; }
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Speciality"]'/>
-        public string Speciality { get; internal set; }
+        /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Specialty"]'/>
+        public string Specialty { get; internal set; }
 
         /// <summary>
         /// The person on whom the maternity action is performed
@@ -67,7 +67,7 @@ namespace BadMedicine.Datasets
             Person = p;
             
             var youngest = p.DateOfBirth.AddYears(MinAge);
-            var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(55);
+            var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(MaxAge);
             
             // No future dates
             oldest = oldest > DataGenerator.Now ? DataGenerator.Now : oldest;
@@ -83,13 +83,15 @@ namespace BadMedicine.Datasets
                        
             // One in 30 are twins
             if(r.Next(30) == 0)
-                BabyChi[1] =  new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
+            {
+                BabyChi[1] = new Person(r) { DateOfBirth = Date }.GetRandomCHI(r);
 
-            // One in 1000 are triplets ( 1/30 * 1/34)
-            if(BabyChi[1] != null && r.Next(34) == 0)
-                BabyChi[2] =  new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
+                // One in 1000 are triplets (1/30 * 1/34)
+                if (r.Next(34) == 0)
+                    BabyChi[2] = new Person(r) { DateOfBirth = Date }.GetRandomCHI(r);
+            }
 
-            Speciality = _specialities.GetRandom(r);
+            Specialty = _specialties.GetRandom(r);
         }
 
         private void Initialize()
@@ -103,7 +105,7 @@ namespace BadMedicine.Datasets
                 AddRow(row,"Location",_locations);
                 AddRow(row,"MaritalStatusNumeric",_maritalStatusOld);
                 AddRow(row,"MaritalStatusAlpha",_maritalStatusNew);
-                AddRow(row,"Speciality",_specialities);
+                AddRow(row,"Specialty",_specialties);
             }
                 
         }

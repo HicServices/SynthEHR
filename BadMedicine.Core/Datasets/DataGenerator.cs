@@ -101,7 +101,7 @@ namespace BadMedicine.Datasets
 
 
         /// <summary>
-        /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligibile then returns a random person.
+        /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligible then returns a random person.
         /// </summary>
         /// <param name="people"></param>
         /// <param name="r"></param>
@@ -109,7 +109,7 @@ namespace BadMedicine.Datasets
         public Person GetRandomEligiblePerson(Person[] people, Random r)
         {
             if(people.Length == 0)
-                throw new ArgumentException("Must pass at least 1 person to GetRandomEiliblePerson",nameof(people));
+                throw new ArgumentException("Must pass at least 1 person to GetRandomEligiblePerson",nameof(people));
             
             var eligible = people.Where(IsEligible).ToArray();
 
@@ -873,8 +873,9 @@ Z,Shetland");
 9,Nil
 8,Not applicable");
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_Speciality.csv"),
-@"A1,General Medicine
+            File.WriteAllText(Path.Combine(dir.FullName, "z_Specialty.csv"),
+@"Code,Specialty
+A1,General Medicine
 A11,Acute Medicine
 A2,Cardiology
 A21,Paediatric Cardiology
@@ -1039,6 +1040,21 @@ T8,Nursery nursing
 XSU,Unspecified
 XX,Others"                
                 );
+
+
+            File.WriteAllText(Path.Combine(dir.FullName, "z_MaritalStatus.csv"),
+@"Code,Meaning
+A,Never married nor registered civil partnership
+B,Married
+C,Registered civil partnership
+D,Separated, but still married
+E,Separated, but still in civil partnership
+F,Divorced
+G,Dissolved civil partnership
+H,Widowed
+J,Surviving civil partner
+Y,Other
+Z,Not known");
         }
 
     }

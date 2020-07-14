@@ -27,10 +27,10 @@
 	</Field>
   <Field name="MaritalStatus">
 		<summary>  
-			This field represents the mothers marital status.  At a certain date ISD stopped using numbers in this column and started using letters.  If this field contains a letter (A-Z),
+			This field represents the mother's marital status.  At a certain date ISD stopped using numbers in this column and started using letters.  If this field contains a letter (A-Z), see lookup table z_MaritalStatus
      </summary>
 	</Field>
-  <Field name="Speciality">
+  <Field name="Specialty">
 		<summary>  
 			A specialty is defined as a division of medicine or dentistry covering a specific area of clinical activity and identified within one of the Royal Colleges or Faculties.
      </summary>

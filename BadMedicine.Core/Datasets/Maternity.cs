@@ -54,7 +54,7 @@ namespace BadMedicine.Datasets
             results[8] = Guid.NewGuid().ToString();
             results[9] = record.Location;
             results[10] = record.MaritalStatus;
-            results[11] = record.Speciality;
+            results[11] = record.Specialty;
 
             return results;
         }
@@ -75,7 +75,7 @@ namespace BadMedicine.Datasets
                 "EpisodeRecordKey",                 //8
                 "Location",                         //9
                 "MaritalStatus",                    //10
-                "Speciality"                        //11
+                "Specialty"                        //11
 
             };
         }
