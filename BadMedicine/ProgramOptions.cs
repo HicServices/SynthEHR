@@ -17,7 +17,7 @@ namespace BadMedicine
         [Value(2,HelpText = "The number of rows to generate in test dataset(s)",Default = 2000)]
         public int NumberOfRows {get; set; }
         
-        [Option('d',"The dataset to generate, must be a class name e.g. 'TestDemography'")]
+        [Option('d',"The dataset to generate, must be a class name e.g. 'Demography'")]
         public string Dataset{get; set; }
 
         [Option('l', "Generate lookup tables for some codes used in the test data")]

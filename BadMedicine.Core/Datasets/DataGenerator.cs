@@ -35,6 +35,11 @@ namespace BadMedicine.Datasets
         protected Random r;
 
         /// <summary>
+        /// Use this instead of DateTime.Now to ensure reproducible datasets when using the same seeded random
+        /// </summary>
+        public static DateTime Now {get; } = new DateTime(2019, 7, 5, 23, 59, 59);
+
+        /// <summary>
         /// Creates a new instance which uses the provided <paramref name="rand"/> as a seed for generating data
         /// </summary>
         /// <param name="rand"></param>
@@ -44,11 +49,19 @@ namespace BadMedicine.Datasets
             _normalDist = new Normal(0, 0.3,r);
         }
 
+        /// <summary>
+        /// Returns true if it is elligible to generate rows in the dataset for the given <paramref name="p"/>
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public virtual bool IsEligible(Person p)
+        {
+            return true;
+        }
+
         /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
-            int totalPeople = cohort.People.Length;
-
             int linesWritten;
             using(StreamWriter sw = new StreamWriter(target.FullName))
             {
@@ -61,8 +74,8 @@ namespace BadMedicine.Datasets
                 using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
                 {
                     for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
-                    {
-                        foreach (object o in GenerateTestDataRow(cohort.People[r.Next(totalPeople)]))
+                    {                       
+                        foreach (object o in GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)))
                             writer.WriteField(o);
                         
                         writer.NextRecord();
@@ -84,6 +97,26 @@ namespace BadMedicine.Datasets
             }
         }
 
+
+        /// <summary>
+        /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligible then returns a random person.
+        /// </summary>
+        /// <param name="people"></param>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public Person GetRandomEligiblePerson(Person[] people, Random r)
+        {
+            if(people.Length == 0)
+                throw new ArgumentException("Must pass at least 1 person to GetRandomEligiblePerson",nameof(people));
+            
+            var eligible = people.Where(IsEligible).ToArray();
+
+            return
+                eligible.Any() ? eligible[r.Next(eligible.Length)] 
+                    //if nobody is eligibile then everyone is!
+                    : people[r.Next(people.Length)];
+        }
+
         /// <inheritdoc/>
         public virtual DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords)
         {
@@ -92,10 +125,8 @@ namespace BadMedicine.Datasets
             foreach (var h in GetHeaders())
                 dt.Columns.Add(h);
 
-            int totalPeople = cohort.People.Length;
-
             for (int i = 0; i < numberOfRecords; i++)
-                dt.Rows.Add(GenerateTestDataRow(cohort.People[r.Next(totalPeople)]));
+                dt.Rows.Add(GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)));
             
             return dt;
         }
@@ -173,7 +204,7 @@ namespace BadMedicine.Datasets
         /// <returns></returns>
         public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
         {
-            return GetRandomDate(afterDate, new DateTime(2019, 7, 5, 23, 59, 59),r);
+            return GetRandomDate(afterDate, Now,r);
         }
 
         /// <summary>
@@ -367,18 +398,18 @@ namespace BadMedicine.Datasets
                 case 1: return "I often see the time 11:11 or 12:34 on clocks.";
                 case 2: return "Malls are great places to shop; I can find everything I need under one roof.";
                 case 3: return "Christmas is coming.";
-                case 4: return "I will never be this young again. Ever. Oh damn… I just got older.";
+                case 4: return "I will never be this young again. Ever. Oh damn' I just got older.";
                 case 5: return "This is a Japanese doll.";
                 case 6: return "We have never been to Asia, nor have we visited Africa.";
                 case 7: return "She was too short to see over the fence.";
                 case 8: return "Hurry!";
-                case 9: return "If I don’t like something, I’ll stay away from it.";
-                case 10: return "Wednesday is hump day, but has anyone asked the camel if he’s happy about it?";
+                case 9: return "If I don't like something, I'll stay away from it.";
+                case 10: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
                 case 11: return "She folded her handkerchief neatly.";
                 case 12: return "I checked to make sure that he was still alive.";
-                case 13: return "He didn’t want to go to the dentist, yet he went anyway.";
+                case 13: return "He didn't want to go to the dentist, yet he went anyway.";
                 case 14: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 15: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn’t so bad after all.";
+                case 15: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
                 case 16: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
                 case 17: return "Cats are good pets, for they are clean and are not noisy.";
                 case 18: return "The body may perhaps compensates for the loss of a true metaphysics.";
@@ -390,7 +421,7 @@ namespace BadMedicine.Datasets
                 case 24: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
                 case 25: return "She did her best to help him.";
                 case 26: return "We need to rent a room for our party.";
-                case 27: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn’t and they don’t recommend anyone else do it either.";
+                case 27: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
                 case 28: return "The river stole the gods.";
                 case 29: return "Joe made the sugar cookies; Susan decorated them.";
                 case 30: return "He told us a very exciting adventure story.";
@@ -398,29 +429,29 @@ namespace BadMedicine.Datasets
                 case 32: return "I really want to go to work, but I am too sick to drive.";
                 case 33: return "A glittering gem is not enough.";
                 case 34: return "Abstraction is often one floor above you.";
-                case 35: return "Sometimes it is better to just walk away from things and go back to them later when you’re in a better frame of mind.";
+                case 35: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
                 case 36: return "Mary plays the piano.";
                 case 37: return "She did not cheat on the test, for it was not the right thing to do.";
-                case 38: return "I would have gotten the promotion, but my attendance wasn’t good enough.";
+                case 38: return "I would have gotten the promotion, but my attendance wasn't good enough.";
                 case 39: return "I want more detailed information.";
-                case 40: return "It was getting dark, and we weren’t there yet.";
+                case 40: return "It was getting dark, and we weren't there yet.";
                 case 41: return "She borrowed the book from him many years ago and hasn't yet returned it.";
-                case 42: return "I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was.";
+                case 42: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
                 case 43: return "Wow, does that work?";
                 case 44: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
                 case 45: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 46: return "If Purple People Eaters are real… where do they find purple people to eat?";
+                case 46: return "If Purple People Eaters are real' where do they find purple people to eat?";
                 case 47: return "Where do random thoughts come from?";
                 case 48: return "They got there early, and they got really good seats.";
                 case 49: return "Everyone was busy, so I went to the movie alone.";
                 case 50: return "I am never at home on Sundays.";
                 case 51: return "Should we start class now, or should we wait for everyone to get here?";
                 case 52: return "The quick brown fox jumps over the lazy dog.";
-                case 53: return "A song can make or ruin a person’s day if they let it get to them.";
-                case 54: return "I want to buy a onesie… but know it won’t suit me.";
+                case 53: return "A song can make or ruin a person's day if they let it get to them.";
+                case 54: return "I want to buy a onesie' but know it won't suit me.";
                 case 55: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
                 case 56: return "I hear that Nancy is very pretty.";
-                case 57: return "What was the person thinking when they discovered cow’s milk was fine for human consumption… and why did they do it in the first place!?";
+                case 57: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
                 case 58: return "She advised him to come back at once.";
                 case 59: return "He ran out of money, so he had to stop playing poker.";
                 case 60: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
@@ -436,12 +467,12 @@ namespace BadMedicine.Datasets
                 case 70: return "Sixty-Four comes asking for bread.";
                 case 71: return "I am counting my calories, yet I really want dessert.";
                 case 72: return "How was the math test?";
-                case 73: return "If you like tuna and tomato sauce- try combining the two. It’s really not as bad as it sounds.";
-                case 74: return "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.";
+                case 73: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
+                case 74: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
                 case 75: return "She wrote him a long letter, but he didn't read it.";
                 case 76: return "Don't step on the broken glass.";
                 case 77: return "Check back tomorrow; I will see if the book has arrived.";
-                case 78: return "I currently have 4 windows open up… and I don’t know why.";
+                case 78: return "I currently have 4 windows open up' and I don't know why.";
                 case 79: return "Tom got a small piece of pie.";
                 case 80: return "Is it free?";
                 case 81: return "She only paints with bold colors; she does not like pastels.";
@@ -463,9 +494,9 @@ namespace BadMedicine.Datasets
                 case 97: return "I am happy to take your donation; any amount will be greatly appreciated.";
                 case 98: return "I hear that Nancy is very pretty.";
                 case 99: return "I want more detailed information.";
-                case 100: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn’t so bad after all.";
+                case 100: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
                 case 101: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
-                case 102: return "I currently have 4 windows open up… and I don’t know why.";
+                case 102: return "I currently have 4 windows open up' and I don't know why.";
                 case 103: return "The shooter says goodbye to his love.";
                 case 104: return "Everyone was busy, so I went to the movie alone.";
                 case 105: return "She was too short to see over the fence.";
@@ -487,7 +518,7 @@ namespace BadMedicine.Datasets
                 case 121: return "The lake is a long way from here.";
                 case 122: return "Lets all be unique together until we realise we are all the same.";
                 case 123: return "Let me help you with your baggage.";
-                case 124: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn’t and they don’t recommend anyone else do it either.";
+                case 124: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
                 case 125: return "Christmas is coming.";
                 case 126: return "The stranger officiates the meal.";
                 case 127: return "Joe made the sugar cookies; Susan decorated them.";
@@ -495,17 +526,17 @@ namespace BadMedicine.Datasets
                 case 129: return "Don't step on the broken glass.";
                 case 130: return "The sky is clear; the stars are twinkling.";
                 case 131: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 132: return "If you like tuna and tomato sauce- try combining the two. It’s really not as bad as it sounds.";
-                case 133: return "If Purple People Eaters are real… where do they find purple people to eat?";
-                case 134: return "It was getting dark, and we weren’t there yet.";
+                case 132: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
+                case 133: return "If Purple People Eaters are real' where do they find purple people to eat?";
+                case 134: return "It was getting dark, and we weren't there yet.";
                 case 135: return "Where do random thoughts come from?";
                 case 136: return "The river stole the gods.";
-                case 137: return "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.";
+                case 137: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
                 case 138: return "Sixty-Four comes asking for bread.";
                 case 139: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
                 case 140: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
                 case 141: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 142: return "What was the person thinking when they discovered cow’s milk was fine for human consumption… and why did they do it in the first place!?";
+                case 142: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
                 case 143: return "He said he was not there yesterday; however, many people saw him there.";
                 case 144: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
                 case 145: return "Check back tomorrow; I will see if the book has arrived.";
@@ -516,8 +547,8 @@ namespace BadMedicine.Datasets
                 case 150: return "A glittering gem is not enough.";
                 case 151: return "She only paints with bold colors; she does not like pastels.";
                 case 152: return "The memory we used to share is no longer coherent.";
-                case 153: return "If I don’t like something, I’ll stay away from it.";
-                case 154: return "A song can make or ruin a person’s day if they let it get to them.";
+                case 153: return "If I don't like something, I'll stay away from it.";
+                case 154: return "A song can make or ruin a person's day if they let it get to them.";
                 case 155: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
                 case 156: return "She borrowed the book from him many years ago and hasn't yet returned it.";
                 case 157: return "Hurry!";
@@ -525,8 +556,8 @@ namespace BadMedicine.Datasets
                 case 159: return "Two seats were vacant.";
                 case 160: return "This is a Japanese doll.";
                 case 161: return "She folded her handkerchief neatly.";
-                case 162: return "He didn’t want to go to the dentist, yet he went anyway.";
-                case 163: return "I want to buy a onesie… but know it won’t suit me.";
+                case 162: return "He didn't want to go to the dentist, yet he went anyway.";
+                case 163: return "I want to buy a onesie' but know it won't suit me.";
                 case 164: return "Tom got a small piece of pie.";
                 case 165: return "Please wait outside of the house.";
                 case 166: return "He ran out of money, so he had to stop playing poker.";
@@ -539,37 +570,37 @@ namespace BadMedicine.Datasets
                 case 173: return "Cats are good pets, for they are clean and are not noisy.";
                 case 174: return "We have never been to Asia, nor have we visited Africa.";
                 case 175: return "Is it free?";
-                case 176: return "I will never be this young again. Ever. Oh damn… I just got older.";
-                case 177: return "I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was.";
+                case 176: return "I will never be this young again. Ever. Oh damn' I just got older.";
+                case 177: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
                 case 178: return "The body may perhaps compensates for the loss of a true metaphysics.";
                 case 179: return "The mysterious diary records the voice.";
-                case 180: return "I would have gotten the promotion, but my attendance wasn’t good enough.";
-                case 181: return "Wednesday is hump day, but has anyone asked the camel if he’s happy about it?";
+                case 180: return "I would have gotten the promotion, but my attendance wasn't good enough.";
+                case 181: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
                 case 182: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
-                case 183: return "Sometimes it is better to just walk away from things and go back to them later when you’re in a better frame of mind.";
+                case 183: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
                 case 184: return "She did not cheat on the test, for it was not the right thing to do.";
                 case 185: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
                 case 186: return "The old apple revels in its authority.";
                 case 187: return "Tom got a small piece of pie.";
-                case 188: return "I will never be this young again. Ever. Oh damn… I just got older.";
+                case 188: return "I will never be this young again. Ever. Oh damn' I just got older.";
                 case 189: return "Should we start class now, or should we wait for everyone to get here?";
                 case 190: return "He told us a very exciting adventure story.";
                 case 191: return "They got there early, and they got really good seats.";
                 case 192: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
                 case 193: return "Two seats were vacant.";
-                case 194: return "What was the person thinking when they discovered cow’s milk was fine for human consumption… and why did they do it in the first place!?";
-                case 195: return "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.";
+                case 194: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
+                case 195: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
                 case 196: return "Please wait outside of the house.";
                 case 197: return "Everyone was busy, so I went to the movie alone.";
                 case 198: return "Yeah, I think it's a good environment for learning English.";
-                case 199: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn’t and they don’t recommend anyone else do it either.";
+                case 199: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
                 case 200: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
                 case 201: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
                 case 202: return "We have never been to Asia, nor have we visited Africa.";
                 case 203: return "Malls are great places to shop; I can find everything I need under one roof.";
                 case 204: return "She borrowed the book from him many years ago and hasn't yet returned it.";
                 case 205: return "I want more detailed information.";
-                case 206: return "It was getting dark, and we weren’t there yet.";
+                case 206: return "It was getting dark, and we weren't there yet.";
                 case 207: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
                 case 208: return "The body may perhaps compensates for the loss of a true metaphysics.";
                 case 209: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
@@ -582,8 +613,8 @@ namespace BadMedicine.Datasets
                 case 216: return "Hurry!";
                 case 217: return "The old apple revels in its authority.";
                 case 218: return "I'd rather be a bird than a fish.";
-                case 219: return "If I don’t like something, I’ll stay away from it.";
-                case 220: return "I currently have 4 windows open up… and I don’t know why.";
+                case 219: return "If I don't like something, I'll stay away from it.";
+                case 220: return "I currently have 4 windows open up' and I don't know why.";
                 case 221: return "Abstraction is often one floor above you.";
                 case 222: return "Wow, does that work?";
                 case 223: return "The book is in front of the table.";
@@ -592,15 +623,15 @@ namespace BadMedicine.Datasets
                 case 226: return "I checked to make sure that he was still alive.";
                 case 227: return "She always speaks to him in a loud voice.";
                 case 228: return "I am happy to take your donation; any amount will be greatly appreciated.";
-                case 229: return "Wednesday is hump day, but has anyone asked the camel if he’s happy about it?";
+                case 229: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
                 case 230: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
                 case 231: return "A glittering gem is not enough.";
                 case 232: return "Joe made the sugar cookies; Susan decorated them.";
                 case 233: return "The stranger officiates the meal.";
                 case 234: return "He said he was not there yesterday; however, many people saw him there.";
                 case 235: return "Cats are good pets, for they are clean and are not noisy.";
-                case 236: return "If you like tuna and tomato sauce- try combining the two. It’s really not as bad as it sounds.";
-                case 237: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn’t so bad after all.";
+                case 236: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
+                case 237: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
                 case 238: return "Christmas is coming.";
                 case 239: return "Let me help you with your baggage.";
                 case 240: return "Sixty-Four comes asking for bread.";
@@ -618,35 +649,35 @@ namespace BadMedicine.Datasets
                 case 252: return "I think I will buy the red car, or I will lease the blue one.";
                 case 253: return "Where do random thoughts come from?";
                 case 254: return "She did her best to help him.";
-                case 255: return "Sometimes it is better to just walk away from things and go back to them later when you’re in a better frame of mind.";
+                case 255: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
                 case 256: return "The quick brown fox jumps over the lazy dog.";
-                case 257: return "A song can make or ruin a person’s day if they let it get to them.";
+                case 257: return "A song can make or ruin a person's day if they let it get to them.";
                 case 258: return "I am never at home on Sundays.";
                 case 259: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
                 case 260: return "I often see the time 11:11 or 12:34 on clocks.";
                 case 261: return "The waves were crashing on the shore; it was a lovely sight.";
                 case 262: return "We need to rent a room for our party.";
-                case 263: return "He didn’t want to go to the dentist, yet he went anyway.";
+                case 263: return "He didn't want to go to the dentist, yet he went anyway.";
                 case 264: return "We have a lot of rain in June.";
                 case 265: return "The lake is a long way from here.";
                 case 266: return "I really want to go to work, but I am too sick to drive.";
                 case 267: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 268: return "I want to buy a onesie… but know it won’t suit me.";
+                case 268: return "I want to buy a onesie' but know it won't suit me.";
                 case 269: return "Mary plays the piano.";
                 case 270: return "Is it free?";
                 case 271: return "The mysterious diary records the voice.";
                 case 272: return "Lets all be unique together until we realise we are all the same.";
-                case 273: return "I would have gotten the promotion, but my attendance wasn’t good enough.";
+                case 273: return "I would have gotten the promotion, but my attendance wasn't good enough.";
                 case 274: return "The memory we used to share is no longer coherent.";
                 case 275: return "She wrote him a long letter, but he didn't read it.";
-                case 276: return "I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was.";
+                case 276: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
                 case 277: return "The shooter says goodbye to his love.";
-                case 278: return "If Purple People Eaters are real… where do they find purple people to eat?";
+                case 278: return "If Purple People Eaters are real' where do they find purple people to eat?";
                 case 279: return "Rock music approaches at high velocity.";
                 case 280: return "I often see the time 11:11 or 12:34 on clocks.";
-                case 281: return "What was the person thinking when they discovered cow’s milk was fine for human consumption… and why did they do it in the first place!?";
+                case 281: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
                 case 282: return "Christmas is coming.";
-                case 283: return "A song can make or ruin a person’s day if they let it get to them.";
+                case 283: return "A song can make or ruin a person's day if they let it get to them.";
                 case 284: return "Where do random thoughts come from?";
                 case 285: return "We have a lot of rain in June.";
                 case 286: return "The memory we used to share is no longer coherent.";
@@ -662,7 +693,7 @@ namespace BadMedicine.Datasets
                 case 296: return "Check back tomorrow; I will see if the book has arrived.";
                 case 297: return "The quick brown fox jumps over the lazy dog.";
                 case 298: return "Abstraction is often one floor above you.";
-                case 299: return "I want to buy a onesie… but know it won’t suit me.";
+                case 299: return "I want to buy a onesie' but know it won't suit me.";
                 case 300: return "Should we start class now, or should we wait for everyone to get here?";
                 case 301: return "Lets all be unique together until we realise we are all the same.";
                 case 302: return "The shooter says goodbye to his love.";
@@ -671,9 +702,9 @@ namespace BadMedicine.Datasets
                 case 305: return "This is a Japanese doll.";
                 case 306: return "The sky is clear; the stars are twinkling.";
                 case 307: return "She wrote him a long letter, but he didn't read it.";
-                case 308: return "I was very proud of my nickname throughout high school but today- I couldn’t be any different to what my nickname was.";
+                case 308: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
                 case 309: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 310: return "If Purple People Eaters are real… where do they find purple people to eat?";
+                case 310: return "If Purple People Eaters are real' where do they find purple people to eat?";
                 case 311: return "She folded her handkerchief neatly.";
                 case 312: return "She was too short to see over the fence.";
                 case 313: return "I am counting my calories, yet I really want dessert.";
@@ -687,20 +718,20 @@ namespace BadMedicine.Datasets
                 case 321: return "Hurry!";
                 case 322: return "He said he was not there yesterday; however, many people saw him there.";
                 case 323: return "I checked to make sure that he was still alive.";
-                case 324: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn’t and they don’t recommend anyone else do it either.";
-                case 325: return "Wednesday is hump day, but has anyone asked the camel if he’s happy about it?";
-                case 326: return "I will never be this young again. Ever. Oh damn… I just got older.";
+                case 324: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
+                case 325: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
+                case 326: return "I will never be this young again. Ever. Oh damn' I just got older.";
                 case 327: return "He told us a very exciting adventure story.";
                 case 328: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
                 case 329: return "They got there early, and they got really good seats.";
                 case 330: return "Malls are great places to shop; I can find everything I need under one roof.";
                 case 331: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 332: return "If you like tuna and tomato sauce- try combining the two. It’s really not as bad as it sounds.";
+                case 332: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
                 case 333: return "She did not cheat on the test, for it was not the right thing to do.";
                 case 334: return "Don't step on the broken glass.";
-                case 335: return "I currently have 4 windows open up… and I don’t know why.";
+                case 335: return "I currently have 4 windows open up' and I don't know why.";
                 case 336: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
-                case 337: return "Sometimes it is better to just walk away from things and go back to them later when you’re in a better frame of mind.";
+                case 337: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
                 case 338: return "Is it free?";
                 case 339: return "We have never been to Asia, nor have we visited Africa.";
                 case 340: return "There were white out conditions in the town; subsequently, the roads were impassable.";
@@ -712,21 +743,21 @@ namespace BadMedicine.Datasets
                 case 346: return "The book is in front of the table.";
                 case 347: return "Tom got a small piece of pie.";
                 case 348: return "Writing a list of random sentences is harder than I initially thought it would be.";
-                case 349: return "It was getting dark, and we weren’t there yet.";
+                case 349: return "It was getting dark, and we weren't there yet.";
                 case 350: return "The stranger officiates the meal.";
-                case 351: return "I would have gotten the promotion, but my attendance wasn’t good enough.";
+                case 351: return "I would have gotten the promotion, but my attendance wasn't good enough.";
                 case 352: return "I love eating toasted cheese and tuna sandwiches.";
                 case 353: return "I want more detailed information.";
                 case 354: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 355: return "He didn’t want to go to the dentist, yet he went anyway.";
+                case 355: return "He didn't want to go to the dentist, yet he went anyway.";
                 case 356: return "Two seats were vacant.";
-                case 357: return "Last Friday in three week’s time I saw a spotted striped blue worm shake hands with a legless lizard.";
+                case 357: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
                 case 358: return "Rock music approaches at high velocity.";
                 case 359: return "Yeah, I think it's a good environment for learning English.";
-                case 360: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn’t so bad after all.";
+                case 360: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
                 case 361: return "Cats are good pets, for they are clean and are not noisy.";
                 case 362: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
-                case 363: return "If I don’t like something, I’ll stay away from it.";
+                case 363: return "If I don't like something, I'll stay away from it.";
                 case 364: return "I really want to go to work, but I am too sick to drive.";
                 case 365: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
                 case 366: return "I am happy to take your donation; any amount will be greatly appreciated.";
@@ -751,8 +782,8 @@ namespace BadMedicine.Datasets
             File.WriteAllText(Path.Combine(dir.FullName,"z_chiStatus.csv"),
 @"""C"",""The current record - it contains the approved CHI Number and which contains the GP with whom the patient is currently registered or was last registered with before transfer out of Scotland or death.
 ""R"",""Redundant records are former records that were cancelled from use, mainly because the date of birth within the number was incorrect.""
-""L"",""Local copy records are records copied by Trusts (usually) from the current record’s CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
-""Y"",""Local copy records are records copied by Trusts (usually) from the current record’s CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
+""L"",""Local copy records are records copied by Trusts (usually) from the current record's CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
+""Y"",""Local copy records are records copied by Trusts (usually) from the current record's CHI to another CHI, keeping the same CHI Number but allowing the Trust to access locally, without accessing other CHIs.  This has allowed Trusts to record a local temporary address on the CHI and is useful where the local CHI needs to be in step with a local demographic database.""
 ""H"",""Historical records are previously used records for the same patient on different CHIs.   These will have different CHI Numbers if transferred across Scotland before 1997, when they had to be registered again with a different CHI Number.  If transferred from 1997 onwards, they should have been transferred electronically from one CHI to another, keeping the same CHI Number. ""
 ""D"",""Deleted"""
 );
@@ -837,6 +868,189 @@ Z,Shetland");
 4,IV
 9,Nil
 8,Not applicable");
+
+            File.WriteAllText(Path.Combine(dir.FullName, "z_Specialty.csv"),
+@"Code,Specialty
+A1,General Medicine
+A11,Acute Medicine
+A2,Cardiology
+A21,Paediatric Cardiology
+A3,Clinical Genetics
+A4,Tropical Medicine
+A5,Clinical Pharmacology & Therapeutics
+A6,Infectious Diseases
+A7,Dermatology
+A8,Endocrinology & Diabetes
+A81,Endocrinology
+A82,Diabetes
+A9,Gastroenterology
+AA,Genito-Urinary Medicine
+AB,Geriatric Medicine
+AC,Homeopathy
+AD,Medical Oncology
+AF,Paediatrics
+AFA,Community Child Health
+AG,Renal Medicine
+AH,Neurology
+AJ,Integrative Care
+AK,Occupational Medicine
+AM,Palliative Medicine
+AN,Public Health Medicine
+AP,Rehabilitation Medicine
+AQ,Respiratory Medicine
+AR,Rheumatology
+AS,Sport & Exercise Medicine
+AT,Medical Ophthalmology
+AV,Clinical Neurophysiology
+AW,Allergy
+C1,General Surgery
+C11,General Surgery (excl Vascular, Maxillofacial)
+C12,Vascular Surgery
+C13,Oral and Maxillofacial Surgery
+C14,Major Trauma
+C2,Accident & Emergency
+C3,Anaesthetics
+C31,Pain Management
+C4,Cardiothoracic Surgery
+C41,Cardiac Surgery
+C42,Thoracic Surgery
+C5,Ear, Nose & Throat (ENT)
+C51,Audiological Medicine
+C6,Neurosurgery
+C7,Ophthalmology
+C8,Trauma and Orthopaedic Surgery
+C9,Plastic Surgery
+C91,Cleft Lip and Palate Surgery
+CA,Paediatric Surgery
+CB,Urology
+CC,Intensive Care Medicine
+D1,Community Dental Practice
+D2,General Dental Practice
+D3,Oral Surgery
+D4,Oral Medicine
+D5,Orthodontics
+D6,Restorative Dentistry
+D61,Restorative Dentistry - Endodontics
+D62,Restorative Dentistry - Periodontics
+D63,Restorative Dentistry - Prosthodontics
+D7,Dental Public Health
+D8,Paediatric Dentistry
+D9,Oral Pathology
+DA,Oral Microbiology
+DB,Dental & Maxillofacial Radiology
+DC,Surgical Dentistry
+DD,Fixed & Removable Prosthodontics
+DE,Special Care Dentistry
+E1,General Practice
+E11,GP Obstetrics
+E12,GP Other than Obstetrics
+F1,Obstetrics & Gynaecology
+F1A,Well Woman Service
+F1B,Family Planning Service
+F2,Gynaecology
+F3,Obstetrics
+F31,Obstetrics Ante-Natal
+F32,Obstetrics Post-Natal
+F4,Community Sexual & Reproductive Health
+G1,General Psychiatry (Mental Illness)
+G1A,Community Psychiatry
+G2,Child & Adolescent Psychiatry
+G21,Child Psychiatry
+G22,Adolescent Psychiatry
+G3,Forensic Psychiatry
+G4,Psychiatry of Old Age
+G5,Learning Disability
+G6,Psychotherapy
+G61,Behavioural Psychotherapy
+G62,Child and Adolescent Psychotherapy
+G63,Adult Psychotherapy
+H1,Clinical Radiology
+H1A,Breast Screening Service
+H2,Clinical Oncology
+J1,Histopathology
+J2,Blood Transfusion
+J3,Chemical Pathology
+J4,Haematology
+J5,Immunology
+J6,Medical Microbiology & Virology
+J61,Microbiology
+J62,Virology
+J7,Diagnostic Neuropathology
+J8,Forensic Histopathology
+J9,Paediatric and Perinatal Pathology
+R1,Chiropody/Podiatry
+R11,Surgical Podiatry
+R2,Clinical psychology
+R3,Dietetics
+R4,Occupational Therapy
+R41,Industrial therapists
+R5,Physiotherapy
+R6,Speech and Language Therapy
+R7,Ambulancemen/women â€“ Accident & Emergency
+R8,Audiological science
+R81,Hearing aids
+R82,Audiometry
+R9,Medical physics
+RA,Pharmacy
+RB,Physiology
+RC,Dental Hygiene
+RD,Dental Surgery Assistance
+RE,Physiological Measurement
+RF,Prosthetics/orthotics
+RF1,Prosthetics
+RF2,Orthotics
+RG,Dispensing optometry
+RH,Optometry
+RJ,Orthoptics
+RK,Diagnostic radiography
+RK1,Electroencephalography
+RK2,Electrocardiography
+RK3,Ultrasonics
+RK4,Nuclear medicine
+RL,Therapeutic radiography
+RM,Medical photography
+RP,Paramedics
+RS,Dental therapy
+RT,Pharmaceutical Medicine
+RU,Arts Therapies
+RU1,Art Therapy
+RU2,Drama Therapy
+RU3,Music Therapy
+RU4,Dance Therapy
+RU5,Mistletoe Therapy
+RU6,Acupuncture
+RU7,Bowen Therapy
+RU8,Counselling
+T1,General nursing
+T11,School nursing
+T2,Midwifery
+T21,Community Midwifery
+T3,Mental health nursing
+T31,Community psychiatric nursing
+T4,Learning disability nursing
+T41,Community learning disability nursing
+T5,Community nursing (district nursing)
+T6,Health visiting
+T7,Sick children's nursing
+T8,Nursery nursing
+XSU,Unspecified
+XX,Others"                
+                );
+
+
+            File.WriteAllText(Path.Combine(dir.FullName, "z_MaritalStatus.csv"),
+@"Code,Meaning
+A,Never married nor registered civil partnership
+B,Married
+C,Registered civil partnership
+D,Separated, but still married
+E,Separated, but still in civil partnership
+F,Divorced
+G,Dissolved civil partnership
+H,Widowed
+J,Surviving civil partner
+Y,Other
+Z,Not known");
         }
 
     }

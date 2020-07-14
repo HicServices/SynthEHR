@@ -54,9 +54,9 @@ namespace BadMedicine
         
         
         /// <summary>
-        /// Returns the description of the dataset <typeparamref name="T"/> (or null if no metadata exists)
+        /// Returns the description of the dataset (or null if no metadata exists)
         /// </summary>
-        /// <typeparam name="T">Dataset you want the description of</typeparam>
+        /// <param name="dataset">Dataset you want the description of</param>
         /// <returns></returns>
         public string Get(string dataset)
         {
