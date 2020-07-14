@@ -96,18 +96,18 @@ namespace BadMedicine.Datasets
 
         private void Initialize()
         {
-            DataTable dt = new DataTable();
-            
-            DataGenerator.EmbeddedCsvToDataTable(typeof(Maternity),"Maternity.csv",dt);
-
-            foreach (DataRow row in dt.Rows)
+            using (DataTable dt = new DataTable())
             {
-                AddRow(row,"Location",_locations);
-                AddRow(row,"MaritalStatusNumeric",_maritalStatusOld);
-                AddRow(row,"MaritalStatusAlpha",_maritalStatusNew);
-                AddRow(row,"Specialty",_specialties);
+                DataGenerator.EmbeddedCsvToDataTable(typeof(Maternity), "Maternity.csv", dt);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    AddRow(row, "Location", _locations);
+                    AddRow(row, "MaritalStatusNumeric", _maritalStatusOld);
+                    AddRow(row, "MaritalStatusAlpha", _maritalStatusNew);
+                    AddRow(row, "Specialty", _specialties);
+                }
             }
-                
         }
 
         private void AddRow(DataRow row, string key, BucketList<string> bucketList)

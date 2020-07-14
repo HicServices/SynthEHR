@@ -62,8 +62,6 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
-            int totalPeople = cohort.People.Length;
-
             int linesWritten;
             using(StreamWriter sw = new StreamWriter(target.FullName))
             {
@@ -126,8 +124,6 @@ namespace BadMedicine.Datasets
 
             foreach (var h in GetHeaders())
                 dt.Columns.Add(h);
-
-            int totalPeople = cohort.People.Length;
 
             for (int i = 0; i < numberOfRecords; i++)
                 dt.Rows.Add(GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)));
