@@ -117,8 +117,7 @@ namespace BadMedicine.Datasets
 
             if(string.IsNullOrWhiteSpace(freq.ToString()))
                 return;
-            else
-                bucketList.Add(Convert.ToInt32(freq),val);
+            bucketList.Add(Convert.ToInt32(freq),val);
         }
     }
 }
