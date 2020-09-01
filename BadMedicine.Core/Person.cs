@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using BadMedicine.Datasets;
 
 namespace BadMedicine
@@ -184,12 +185,13 @@ namespace BadMedicine
 
         private string GenerateANOCHI(Random r)
         {
-            string toreturn = "";
+            var toreturn = new StringBuilder();
 
             for (int i = 0; i < 10; i++)
-                toreturn += r.Next(10);
+                toreturn.Append(r.Next(10));
 
-            return toreturn + "_A";
+            toreturn.Append("_A");
+            return toreturn.ToString();
         }
 
         /// <summary>
