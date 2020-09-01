@@ -101,10 +101,7 @@ namespace BadMedicine
         /// <returns></returns>
         public string GetRandomForename(Random r)
         {
-            if(Gender == 'F')
-                return CommonGirlForenames[r.Next(100)];
-            
-            return CommonBoyForenames[r.Next(100)];
+            return Gender == 'F' ? CommonGirlForenames[r.Next(100)] : CommonBoyForenames[r.Next(100)];
         }
 
         /// <summary>
@@ -206,13 +203,17 @@ namespace BadMedicine
 
             int genderDigit = r.Next(10);
 
-            //odd last number for girls
-            if (Gender == 'F' && genderDigit % 2 == 0)
-                genderDigit = 1;
-
-            //even last number for guys
-            if (Gender == 'M' && genderDigit % 2 == 1)
-                genderDigit = 2;
+            switch (Gender)
+            {
+                //odd last number for girls
+                case 'F' when genderDigit % 2 == 0:
+                    genderDigit = 1;
+                    break;
+                //even last number for guys
+                case 'M' when genderDigit % 2 == 1:
+                    genderDigit = 2;
+                    break;
+            }
 
             int checkDigit = r.Next(0, 9);
 
