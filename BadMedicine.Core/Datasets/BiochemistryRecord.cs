@@ -98,16 +98,17 @@ namespace BadMedicine.Datasets
         }
         private void Initialize()
         {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("RecordCount",typeof(int));
+            using (DataTable dt = new DataTable())
+            {
+                dt.Columns.Add("RecordCount",typeof(int));
             
-            DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
+                DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
              
-            _bucketList = new BucketList<BiochemistryRandomDataRow>();
+                _bucketList = new BucketList<BiochemistryRandomDataRow>();
 
-            foreach (DataRow row in dt.Rows)
-                _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
-
+                foreach (DataRow row in dt.Rows)
+                    _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
+            }
         }
         
         private class BiochemistryRandomDataRow

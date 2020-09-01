@@ -325,27 +325,29 @@ namespace BadMedicine.Datasets
             if (lookup == null)
                 throw new Exception("Could not find embedded resource file " + resourceFileName);
           
-            CsvReader r = new CsvReader(new StreamReader(lookup),new CsvConfiguration(CultureInfo.CurrentCulture){Delimiter =","});
             
             var toReturn = dt?? new DataTable();
 
-            r.Read();
-            r.ReadHeader();
-
-            foreach (string header in r.Context.HeaderRecord)
-                if(!toReturn.Columns.Contains(header))
-                    toReturn.Columns.Add(header);
-
-            r.Read();
-
-            do
+            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) {Delimiter = ","}))
             {
-                var row = toReturn.Rows.Add();
-                foreach (DataColumn col in toReturn.Columns)
+                r.Read();
+                r.ReadHeader();
+
+                foreach (string header in r.Context.HeaderRecord)
+                    if(!toReturn.Columns.Contains(header))
+                        toReturn.Columns.Add(header);
+
+                r.Read();
+
+                do
                 {
-                    row[col] = r[col.ColumnName];
-                }
-            } while (r.Read());
+                    var row = toReturn.Rows.Add();
+                    foreach (DataColumn col in toReturn.Columns)
+                    {
+                        row[col] = r[col.ColumnName];
+                    }
+                } while (r.Read());
+            }
 
             return toReturn;
         }
