@@ -50,7 +50,7 @@ namespace BadMedicine.Datasets
         }
 
         /// <summary>
-        /// Returns true if it is elligible to generate rows in the dataset for the given <paramref name="p"/>
+        /// Returns true if it is eligible to generate rows in the dataset for the given <paramref name="p"/>
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
