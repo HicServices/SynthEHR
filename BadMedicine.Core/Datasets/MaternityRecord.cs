@@ -54,7 +54,7 @@ namespace BadMedicine.Datasets
         /// <summary>
         /// Generates a new random biochemistry test.
         /// </summary>
-        /// <param name="p">The person who is undergoing maternity activity.  Should be Female and of a sufficient age that the operation could have taken place during thier lifetime (see <see cref="Maternity.IsEligible(Person)"/></param>
+        /// <param name="p">The person who is undergoing maternity activity.  Should be Female and of a sufficient age that the operation could have taken place during thier lifetime (see <see cref="Maternity.IsEligible(BadMedicine.Person)"/></param>
         /// <param name="r"></param>
         public MaternityRecord(Person p,Random r)
         {
