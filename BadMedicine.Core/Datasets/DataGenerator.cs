@@ -68,7 +68,6 @@ namespace BadMedicine.Datasets
                 WriteHeaders(sw);
 
                 Stopwatch stopwatch = new Stopwatch();
-                string task = "Populate " + target.Name;
                 stopwatch.Start();
 
                 using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
