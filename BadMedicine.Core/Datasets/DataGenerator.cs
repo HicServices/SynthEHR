@@ -310,7 +310,7 @@ namespace BadMedicine.Datasets
 
         /// <summary>
         /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>.  Will also work 
-        /// if you have an embedded resoruce file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
+        /// if you have an embedded resource file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
         /// 
         /// </summary>
         /// <param name="requestingType"></param>
