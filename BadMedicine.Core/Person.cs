@@ -154,8 +154,7 @@ namespace BadMedicine
         /// <returns></returns>
         private string GetNovelANOCHI(Random r)
         {
-            string anochi;
-            anochi = GenerateANOCHI(r);
+            var anochi = GenerateANOCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedANOCHIs.Contains(anochi))
                 anochi = GenerateANOCHI(r);            
@@ -171,8 +170,7 @@ namespace BadMedicine
         /// <returns></returns>
         private string GetNovelCHI(Random r)
         {
-            string chi;
-            chi = GetRandomCHI(r);
+            var chi = GetRandomCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedCHIs.Contains(chi))
                 chi = GetRandomCHI(r);        
