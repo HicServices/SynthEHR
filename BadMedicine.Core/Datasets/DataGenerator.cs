@@ -298,9 +298,9 @@ namespace BadMedicine.Datasets
         {
             switch (r.Next(0, 5))
             {
-                case 0:return 'C';
+                case 0: return 'C';
                 case 1: return 'H';
-                case 2:return null;
+                case 2: return null;
                 case 3: return 'L';
                 case 4: return 'R';
                 default:
