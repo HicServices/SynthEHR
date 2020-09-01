@@ -62,7 +62,6 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
-            int linesWritten;
             using(StreamWriter sw = new StreamWriter(target.FullName))
             {
                 WriteHeaders(sw);
@@ -72,6 +71,7 @@ namespace BadMedicine.Datasets
 
                 using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
                 {
+                    int linesWritten;
                     for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
                     {                       
                         foreach (object o in GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)))
