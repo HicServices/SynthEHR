@@ -50,7 +50,7 @@ namespace BadMedicine.Datasets
         }
 
         /// <summary>
-        /// Returns true if it is elligible to generate rows in the dataset for the given <paramref name="p"/>
+        /// Returns true if it is eligible to generate rows in the dataset for the given <paramref name="p"/>
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
@@ -62,17 +62,16 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
         {
-            int linesWritten;
             using(StreamWriter sw = new StreamWriter(target.FullName))
             {
                 WriteHeaders(sw);
 
                 Stopwatch stopwatch = new Stopwatch();
-                string task = "Populate " + target.Name;
                 stopwatch.Start();
 
                 using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
                 {
+                    int linesWritten;
                     for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
                     {                       
                         foreach (object o in GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)))
@@ -299,9 +298,9 @@ namespace BadMedicine.Datasets
         {
             switch (r.Next(0, 5))
             {
-                case 0:return 'C';
+                case 0: return 'C';
                 case 1: return 'H';
-                case 2:return null;
+                case 2: return null;
                 case 3: return 'L';
                 case 4: return 'R';
                 default:
@@ -311,7 +310,7 @@ namespace BadMedicine.Datasets
 
         /// <summary>
         /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>.  Will also work 
-        /// if you have an embedded resoruce file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
+        /// if you have an embedded resource file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
         /// 
         /// </summary>
         /// <param name="requestingType"></param>
@@ -326,27 +325,29 @@ namespace BadMedicine.Datasets
             if (lookup == null)
                 throw new Exception("Could not find embedded resource file " + resourceFileName);
           
-            CsvReader r = new CsvReader(new StreamReader(lookup),new CsvConfiguration(CultureInfo.CurrentCulture){Delimiter =","});
             
             var toReturn = dt?? new DataTable();
 
-            r.Read();
-            r.ReadHeader();
-
-            foreach (string header in r.Context.HeaderRecord)
-                if(!toReturn.Columns.Contains(header))
-                    toReturn.Columns.Add(header);
-
-            r.Read();
-
-            do
+            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) {Delimiter = ","}))
             {
-                var row = toReturn.Rows.Add();
-                foreach (DataColumn col in toReturn.Columns)
+                r.Read();
+                r.ReadHeader();
+
+                foreach (string header in r.Context.HeaderRecord)
+                    if(!toReturn.Columns.Contains(header))
+                        toReturn.Columns.Add(header);
+
+                r.Read();
+
+                do
                 {
-                    row[col] = r[col.ColumnName];
-                }
-            } while (r.Read());
+                    var row = toReturn.Rows.Add();
+                    foreach (DataColumn col in toReturn.Columns)
+                    {
+                        row[col] = r[col.ColumnName];
+                    }
+                } while (r.Read());
+            }
 
             return toReturn;
         }

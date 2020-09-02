@@ -45,7 +45,7 @@ namespace BadMedicine.Datasets
             results[14] = 0; //R_IC_STEN_D
             results[15] = 0; //R_IC_STEN_S
             results[16] = Concat(r,0,3,()=>GetRandomSentence(r),Environment.NewLine + Environment.NewLine); //COMMENT
-            results[17] = GetRandomSentence(r); ; //REPORT
+            results[17] = GetRandomSentence(r); //REPORT
             results[18] = id++; //id
             results[19] = p.CHI; //PatientID
             results[20] = 0; //SUMMARY
@@ -78,21 +78,21 @@ namespace BadMedicine.Datasets
             results[47] = GetGaussian(0,4); //L_IC_PEAK_SYS
             results[48] = GetGaussian(0,4); //L_IC_END_DIA
             results[49] = Math.Max(1, GetGaussianInt(0, 9)); //L_EC_STENOSIS
-            results[50] = Swap(Math.Max(1, GetGaussianInt(0, 9)), new[] { 5,6,7 }, 9); ; //L_PLAQUE
+            results[50] = Swap(Math.Max(1, GetGaussianInt(0, 9)), new[] { 5,6,7 }, 9); //L_PLAQUE
             results[51] = Math.Min(GetGaussianInt(1, 20), 8); //L_SYMPTOMS
             results[52] = 0; //L_BRUIT
             results[53] = 0; //L_CC_STEN_A
             results[54] = 0; //ON_STEN_STUDY
-            results[55] = Math.Max(1, GetGaussianInt(-5, 4)); ; //R_VERT_ARTERY
+            results[55] = Math.Max(1, GetGaussianInt(-5, 4)); //R_VERT_ARTERY
             results[56] = 0; //R_BRUIT
             results[57] = Math.Min(GetGaussianInt(1, 20), 8); //R_SYMPTOMS
             results[58] = Swap(Math.Max(1, GetGaussianInt(0, 9)), new[] { 5, 6, 7 }, 9);//R_PLAQUE
             results[59] = 0; //L_CC_STEN_C
-            results[60] = Math.Max(1, GetGaussianInt(-5, 9)); ; //R_EC_STENOSIS
+            results[60] = Math.Max(1, GetGaussianInt(-5, 9)); //R_EC_STENOSIS
             results[61] = 0; //R_IC_PEAK_SYS
             results[62] = Swap(GetGaussianInt(1, 8),new[]{7},9); //R_IC_STENOSIS
             results[63] = GetGaussian(0,0.2); //R_CC_END_DIA
-            results[64] = GetGaussian(0, 2); ; //R_CC_PEAK_SYS
+            results[64] = GetGaussian(0, 2); //R_CC_PEAK_SYS
             results[65] = Swap(Math.Max(1, GetGaussianInt(-5, 9)),new []{6,7,8},1); //R_CC_STENOSIS
             results[66] = Math.Max(1, GetGaussianInt(-5, 4)); //L_VERT_ARTERY
             results[67] = GetGaussian(0, 2); //R_IC_END_DIA
