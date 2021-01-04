@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump MathNet.Numerics from 4.13.0 to 4.14.0
+
 ...
 
 ## [0.1.6] - 2020-05-20
