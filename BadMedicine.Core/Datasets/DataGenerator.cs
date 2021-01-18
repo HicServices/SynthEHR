@@ -333,7 +333,7 @@ namespace BadMedicine.Datasets
                 r.Read();
                 r.ReadHeader();
 
-                foreach (string header in r.Context.HeaderRecord)
+                foreach (string header in r.HeaderRecord)
                     if(!toReturn.Columns.Contains(header))
                         toReturn.Columns.Add(header);
 
