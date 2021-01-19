@@ -1,7 +1,5 @@
 extraction:
   csharp:
     index:
-      vstools_version: "16"
-      msbuild:
-        configuration: "release"
-        platform: "Any CPU"
+      dotnet:
+        version: 5.0.2
