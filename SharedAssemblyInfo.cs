@@ -12,3 +12,8 @@ using System.Reflection;
 [assembly: AssemblyVersion("0.1.6")]
 [assembly: AssemblyFileVersion("0.1.6")]
 [assembly: AssemblyInformationalVersion("0.1.6")]
+
+namespace System.Runtime.CompilerServices
+{
+    public class IsExternalInit { }
+}
