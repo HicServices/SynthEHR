@@ -1,0 +1,16 @@
+name: Build, test and package
+
+on: [push, pull_request]
+
+jobs:
+  package:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test
+        run: dotnet test
+      - name: Package
+        run: |
+          (cd BadMedicine && dotnet publish -r win-x64 -c Release -o Publish)
+          (cd BadMedicine && dotnet publish -r linux-x64 -c Release -o Publish)
+          (cd BadMedicine.Core && nuget pack BadMedicine.nuspec -Properties Configuration=Release -IncludeReferencedProjects -Symbols -Version $(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs|cut -d'"' -f2))
