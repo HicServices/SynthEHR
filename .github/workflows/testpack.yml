@@ -13,4 +13,4 @@ jobs:
         run: |
           (cd BadMedicine && dotnet publish -r win-x64 -c Release -o Publish)
           (cd BadMedicine && dotnet publish -r linux-x64 -c Release -o Publish)
-          (cd BadMedicine.Core && nuget pack BadMedicine.nuspec -Properties Configuration=Release -IncludeReferencedProjects -Symbols -Version $(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs|cut -d'"' -f2))
+          (cd BadMedicine.Core && nuget pack BadMedicine.nuspec -Properties Configuration=Release -IncludeReferencedProjects -Symbols -Version $(fgrep AssemblyInformationalVersion ../SharedAssemblyInfo.cs|cut -d'"' -f2))
