@@ -328,12 +328,12 @@ namespace BadMedicine.Datasets
             
             var toReturn = dt?? new DataTable();
 
-            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) {Delimiter = ","}))
+            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) with {Delimiter = ","}))
             {
                 r.Read();
                 r.ReadHeader();
 
-                foreach (string header in r.Context.HeaderRecord)
+                foreach (string header in r.HeaderRecord)
                     if(!toReturn.Columns.Contains(header))
                         toReturn.Columns.Add(header);
 
