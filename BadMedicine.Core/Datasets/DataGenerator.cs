@@ -328,7 +328,7 @@ namespace BadMedicine.Datasets
             
             var toReturn = dt?? new DataTable();
 
-            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) {Delimiter = ","}))
+            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) with {Delimiter = ","}))
             {
                 r.Read();
                 r.ReadHeader();
