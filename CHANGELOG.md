@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump MathNet.Numerics from 4.13.0 to 4.14.0
 - Bump CsvHelper from 19.0.0 to 21.2.0
+- Bump CsvHelper from 21.2.0 to 21.2.1
 
 ## [0.1.6] - 2020-05-20
 
