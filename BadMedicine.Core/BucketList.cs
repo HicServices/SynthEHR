@@ -43,6 +43,7 @@ namespace BadMedicine
         /// Returns a random bucket from the element indices provided (based on the probability of each bucket)
         /// </summary>
         /// <param name="usingOnlyIndices"></param>
+        /// <param name="r"></param>
         /// <returns></returns>
         public T GetRandom(IEnumerable<int> usingOnlyIndices, Random r)
         {

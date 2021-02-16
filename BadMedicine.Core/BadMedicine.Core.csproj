@@ -12,9 +12,12 @@
     <AssemblyName>BadMedicine.Core</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-                                                                                                                                                                              </PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-                                                                                                                                                                              </PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -23,6 +26,7 @@
   <ItemGroup>
     <None Remove="Datasets\Aggregates.zip" />
     <None Remove="Datasets\HospitalAdmissionsOperations.csv" />
+    <None Remove="Datasets\Maternity.csv" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
@@ -32,10 +36,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Datasets\Aggregates.zip" />
+    <EmbeddedResource Include="Datasets\Maternity.csv" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.5" />
-    <PackageReference Include="MathNet.Numerics" Version="4.9.1" />
+    <PackageReference Include="CsvHelper" Version="23.0.0" />
+    <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

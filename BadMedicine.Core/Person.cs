@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using BadMedicine.Datasets;
 
 namespace BadMedicine
@@ -49,6 +50,7 @@ namespace BadMedicine
         /// does not already exist in the <paramref name="collection"/> (in terms of CHI / ANOCHI numbers).
         /// </summary>
         /// <param name="r"></param>
+        /// <param name="collection"></param>
         public Person(Random r,PersonCollection collection):this(r)
         {
             _parent = collection;
@@ -99,10 +101,7 @@ namespace BadMedicine
         /// <returns></returns>
         public string GetRandomForename(Random r)
         {
-            if(Gender == 'F')
-                return CommonGirlForenames[r.Next(100)];
-            
-            return CommonBoyForenames[r.Next(100)];
+            return Gender == 'F' ? CommonGirlForenames[r.Next(100)] : CommonBoyForenames[r.Next(100)];
         }
 
         /// <summary>
@@ -155,8 +154,7 @@ namespace BadMedicine
         /// <returns></returns>
         private string GetNovelANOCHI(Random r)
         {
-            string anochi;
-            anochi = GenerateANOCHI(r);
+            var anochi = GenerateANOCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedANOCHIs.Contains(anochi))
                 anochi = GenerateANOCHI(r);            
@@ -172,8 +170,7 @@ namespace BadMedicine
         /// <returns></returns>
         private string GetNovelCHI(Random r)
         {
-            string chi;
-            chi = GetRandomCHI(r);
+            var chi = GetRandomCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedCHIs.Contains(chi))
                 chi = GetRandomCHI(r);        
@@ -183,12 +180,13 @@ namespace BadMedicine
 
         private string GenerateANOCHI(Random r)
         {
-            string toreturn = "";
+            var toreturn = new StringBuilder();
 
             for (int i = 0; i < 10; i++)
-                toreturn += r.Next(10);
+                toreturn.Append(r.Next(10));
 
-            return toreturn + "_A";
+            toreturn.Append("_A");
+            return toreturn.ToString();
         }
 
         /// <summary>
@@ -203,13 +201,17 @@ namespace BadMedicine
 
             int genderDigit = r.Next(10);
 
-            //odd last number for girls
-            if (Gender == 'F' && genderDigit % 2 == 0)
-                genderDigit = 1;
-
-            //even last number for guys
-            if (Gender == 'M' && genderDigit % 2 == 1)
-                genderDigit = 2;
+            switch (Gender)
+            {
+                //odd last number for girls
+                case 'F' when genderDigit % 2 == 0:
+                    genderDigit = 1;
+                    break;
+                //even last number for guys
+                case 'M' when genderDigit % 2 == 1:
+                    genderDigit = 2;
+                    break;
+            }
 
             int checkDigit = r.Next(0, 9);
 

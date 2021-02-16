@@ -19,6 +19,7 @@ The following synthetic datasets can be produced.
 | Prescribing      | Prescription data of prescribed drugs |
 | Carotid Artery Scan      | Scan results for Carotid Artery |
 | Hospital Admissions | ICD9 and ICD10 codes for admission to hospital |
+| Maternity | Records of births etc |
 
 ## Usage:
 
