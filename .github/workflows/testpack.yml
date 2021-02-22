@@ -25,4 +25,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_paths: 'badmedicine-cli-win-x64.zip'
+          asset_paths: '["badmedicine-cli-win-x64.zip"]'
