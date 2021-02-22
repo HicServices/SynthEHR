@@ -18,7 +18,7 @@ jobs:
           (cd win-x64 && zip -9r ../badmedicine-cli-win-x64.zip .)
       - name: Nuget push
         if: contains(github.ref,'refs/tags/')
-        run: (cd BadMedicine.Core && nuget push HIC.*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }})
+        run: (cd BadMedicine.Core && nuget push HIC.*.nupkg -skipDuplicate -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }})
       - name: Upload release binaries
         if: contains(github.ref,'refs/tags/')
         uses: alexellis/upload-assets@0.2.2
