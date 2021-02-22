@@ -14,3 +14,6 @@ jobs:
           (cd BadMedicine && dotnet publish -r win-x64 -c Release -o Publish)
           (cd BadMedicine && dotnet publish -r linux-x64 -c Release -o Publish)
           (cd BadMedicine.Core && nuget pack BadMedicine.nuspec -Properties Configuration=Release -IncludeReferencedProjects -Symbols -Version $(fgrep AssemblyInformationalVersion ../SharedAssemblyInfo.cs|cut -d'"' -f2))
+      - name: Nuget push
+        if: contains(github.ref,'refs/tags/')
+        run: (cd BadMedicine.Core && nuget push HIC.*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
