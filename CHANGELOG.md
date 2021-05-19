@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- Bump CsvHelper from 24.0.1 to 27.0.3
+- Bump CsvHelper from 24.0.1 to 27.0.4
 
 ## [1.0.0] - 2021-02-16
 
