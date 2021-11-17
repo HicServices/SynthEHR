@@ -11,10 +11,9 @@ jobs:
         run: dotnet test
       - name: Package
         run: |
-          (cd BadMedicine && dotnet publish -r win-x64 -c Release -o Publish)
-          (cd BadMedicine && dotnet publish -r linux-x64 -c Release -o Publish)
           (cd BadMedicine.Core && nuget pack BadMedicine.nuspec -Properties Configuration=Release -IncludeReferencedProjects -Symbols -Version $(fgrep AssemblyInformationalVersion ../SharedAssemblyInfo.cs|cut -d'"' -f2))
           dotnet publish --runtime win-x64 -c Release --self-contained true -o win-x64
+          dotnet publish --runtime linux-x64 -c Release --self-contained true -o linux-x64
           (cd win-x64 && zip -9r ../badmedicine-cli-win-x64.zip .)
           (tar -zcvf badmedicine-cli-linux-x64.tar.gz ./linux-x64 .)
       - name: Nuget push
