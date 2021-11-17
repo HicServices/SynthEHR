@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-...
+### Dependencies
+
+- Bump CsvHelper from 24.0.1 to 27.1.1
+
+### Fixed
+
+- Fixed formatting and missing headers in lookup z_chiStatus.csv
 
 ## [1.0.0] - 2021-02-16
 
 ### Changed
-
 
 - Bump MathNet.Numerics from 4.13.0 to 4.14.0
 - Bump CsvHelper from 19.0.0 to 24.0.1
