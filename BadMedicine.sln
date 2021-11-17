@@ -11,12 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BadMedicine", "BadMedicine\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDE7D1ED-61F4-46F6-A1B8-BF6751B3A060}"
 	ProjectSection(SolutionItems) = preProject
-		.travis.yml = .travis.yml
 		CHANGELOG.md = CHANGELOG.md
+		.github\dependabot.yml = .github\dependabot.yml
 		Packages.md = Packages.md
-		rakeconfig.rb = rakeconfig.rb
-		rakefile.rb = rakefile.rb
 		README.md = README.md
+		.github\workflows\testpack.yml = .github\workflows\testpack.yml
 	EndProjectSection
 EndProject
 Global
