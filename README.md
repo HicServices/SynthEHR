@@ -1,6 +1,6 @@
 # BadMedicine
 
-[![Build Status](https://travis-ci.org/HicServices/BadMedicine.svg?branch=master)](https://travis-ci.org/HicServices/BadMedicine) [![NuGet Badge](https://buildstats.info/nuget/HIC.BadMedicine)](https://www.nuget.org/packages/HIC.BadMedicine/)  [![Total alerts](https://img.shields.io/lgtm/alerts/g/HicServices/BadMedicine.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/HicServices/BadMedicine/alerts/)
+[![Build Status](https://github.com/HICServices/BadMedicine/actions/workflows/testpack.yml/badge.svg?branch=develop)](https://travis-ci.org/HicServices/BadMedicine) [![NuGet Badge](https://buildstats.info/nuget/HIC.BadMedicine)](https://www.nuget.org/packages/HIC.BadMedicine/)  [![Total alerts](https://img.shields.io/lgtm/alerts/g/HicServices/BadMedicine.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/HicServices/BadMedicine/alerts/)
 
 Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system.  It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
 

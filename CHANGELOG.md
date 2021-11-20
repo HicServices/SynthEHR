@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed formatting and missing headers in lookup z_chiStatus.csv
 
+### Fixed
+
+- Fixed `--help` not rendering correctly for some command line arguments
+
 ## [1.0.0] - 2021-02-16
 
 ### Changed
