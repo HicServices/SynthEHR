@@ -9,14 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- Bump CsvHelper from 24.0.1 to 27.2.0
+- Bump CsvHelper from 24.0.1 to 27.2.1
+- Build nupkg using csproj metadata instead of separate nuspec
 
 ### Fixed
 
-- Fixed formatting and missing headers in lookup z_chiStatus.csv
-
-### Fixed
-
+- Fixed formatting and missing headers in lookup z\_chiStatus.csv
 - Fixed `--help` not rendering correctly for some command line arguments
 
 ## [1.0.0] - 2021-02-16
