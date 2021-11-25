@@ -8,12 +8,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Test
-        run: dotnet test
+        run: dotnet test --nologo
       - name: Package
         run: |
           (cd BadMedicine.Core && dotnet pack -p:PackageVersion=$(fgrep AssemblyInformationalVersion ../SharedAssemblyInfo.cs|cut -d'"' -f2) -o . --include-source --include-symbols --nologo -c Release)
-          (cd BadMedicine && dotnet publish --runtime win-x64 -c Release --self-contained true -o ../win-x64)
-          (cd BadMedicine && dotnet publish --runtime linux-x64 -c Release --self-contained true -o ../linux-x64)
+          (cd BadMedicine && dotnet publish --nologo --runtime win-x64 -c Release --self-contained true -o ../win-x64)
+          (cd BadMedicine && dotnet publish --nologo --runtime linux-x64 -c Release --self-contained true -o ../linux-x64)
           (cd win-x64 && zip -9r ../badmedicine-cli-win-x64.zip .)
           (tar czf badmedicine-cli-linux-x64.tgz ./linux-x64)
       - name: Nuget push
