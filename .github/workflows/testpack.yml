@@ -21,7 +21,7 @@ jobs:
         run: (cd BadMedicine.Core && nuget push HIC.*.nupkg -skipDuplicate -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }})
       - name: Upload release binaries
         if: contains(github.ref,'refs/tags/')
-        uses: alexellis/upload-assets@0.2.2
+        uses: alexellis/upload-assets@0.3.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
