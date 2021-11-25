@@ -81,7 +81,6 @@ namespace BadMedicineTests
                     {
                         if (Regex.IsMatch(line, @"[\s[]" + Regex.Escape(package) + @"[\s\]]", RegexOptions.IgnoreCase))
                         {
-                            Assert.AreEqual(2, count, "Markdown file {0} did not contain 2 instances of the version {1} for package {2} in {3}", packagesMarkdown, version, package, csproj);
                             found = true;
                         }
                     }
