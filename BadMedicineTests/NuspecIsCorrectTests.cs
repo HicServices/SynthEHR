@@ -19,7 +19,7 @@ namespace BadMedicineTests
     {
         static string[] Analyzers = new string[] { "SecurityCodeScan" };
 
-        [TestCase("../../../../BadMedicine.Core/BadMedicine.Core.csproj", "../../../../BadMedicine.Core/BadMedicine.nuspec", "../../../../Packages.md")]
+        [TestCase("../../../../BadMedicine.Core/BadMedicine.Core.csproj", null, "../../../../Packages.md")]
         public void TestDependencyCorrect(string csproj, string nuspec, string packagesMarkdown)
         {
             if(csproj != null && !Path.IsPathRooted(csproj))
@@ -81,9 +81,6 @@ namespace BadMedicineTests
                     {
                         if (Regex.IsMatch(line, @"[\s[]" + Regex.Escape(package) + @"[\s\]]", RegexOptions.IgnoreCase))
                         {
-                            int count = new Regex(Regex.Escape(version)).Matches(line).Count;
-
-                            Assert.AreEqual(2, count, "Markdown file {0} did not contain 2 instances of the version {1} for package {2} in {3}", packagesMarkdown, version, package, csproj);
                             found = true;
                         }
                     }
@@ -102,7 +99,7 @@ namespace BadMedicineTests
 
         private object BuildRecommendedMarkdownLine(string package, string version)
         {
-            return string.Format("| {0} | [GitHub]() | [{1}](https://www.nuget.org/packages/{0}/{1}) | | | |", package, version);
+            return string.Format("| {0} | [GitHub]() | [{1}](https://www.nuget.org/packages/{0}) | | | |", package);
         }
     }
 }
