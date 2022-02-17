@@ -20,9 +20,11 @@ jobs:
         if: contains(github.ref,'refs/tags/')
         run: (cd BadMedicine.Core && nuget push HIC.*.nupkg -skipDuplicate -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }})
       - name: Upload release binaries
-        if: contains(github.ref,'refs/tags/')
-        uses: alexellis/upload-assets@0.3.0
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        uses: svenstaro/upload-release-action@2.2.1
+        if: contains(github.ref, 'refs/tags/v')
         with:
-          asset_paths: '["badmedicine-cli-win-x64.zip","badmedicine-cli-linux-x64.tgz"]'
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: badmedicine-cli-*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
