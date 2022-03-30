@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2022-03-30
+
 ### Added
 
 - Added support for creating to database
@@ -52,7 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.0.1...develop
+[1.0.1]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/HicServices/BadMedicine/compare/v0.1.6...v1.0.0
 [0.1.6]: https://github.com/HicServices/BadMedicine/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/HicServices/BadMedicine/compare/v0.1.4...v0.1.5
