@@ -62,6 +62,23 @@ First build BadMedicine.csproj
 dotnet publish BadMedicine.csproj -r win-x64 --self-contained
 cd .\bin\Debug\netcoreapp2.2\win-x64\
 ```
+## Direct to Database
+
+You can generate data directly into a relational database (instead of onto disk).
+
+To turn this mode on rename the file `BadMedicine.template.yaml` to `BadMedicine.yaml` and provide the connection strings to your database e.g.:
+
+```yaml
+Database:
+  # Set to true to drop and recreate tables described in the Template
+  DropTables: false
+  # The connection string to your database
+  ConnectionString: server=(localdb)\MSSQLLocalDB;Integrated Security=true;
+  # Your DBMS provider ('MySql', 'PostgreSql','Oracle' or 'MicrosoftSQLServer')
+  DatabaseType: MicrosoftSQLServer
+  # Database to create/use on the server
+  DatabaseName: BadMedicineTestData
+```
 
 ## Library Usage
 
