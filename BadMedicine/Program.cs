@@ -4,14 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using BadMedicine.Configuration;
 using BadMedicine.Datasets;
 using CommandLine;
+using FAnsi.Discovery;
+using FAnsi.Implementation;
+using FAnsi.Implementations.MicrosoftSQL;
+using FAnsi.Implementations.MySql;
+using FAnsi.Implementations.Oracle;
+using FAnsi.Implementations.PostgreSql;
+using YamlDotNet.Serialization;
 
 namespace BadMedicine
 {
     class Program
     {
         private static int returnCode;
+        public const string ConfigFile = "./BadMedicine.yaml";
 
         public static int Main(string[] args)
         {
@@ -37,6 +46,25 @@ namespace BadMedicine
                 opts.NumberOfPatients = 500;
             if (opts.NumberOfRows <= 0)
                 opts.NumberOfRows = 2000;
+
+            Config config = null;
+
+            if (File.Exists(ConfigFile))
+            {
+                try
+                {
+                    var d = new Deserializer();
+                    config = d.Deserialize<Config>(File.ReadAllText(ConfigFile));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error deserializing '{ConfigFile}'");
+                    Console.Write(e.ToString());
+                    returnCode = -1;
+                    return;
+                }
+            }
+
 
             var dir = Directory.CreateDirectory(opts.OutputDirectory);
 
@@ -70,15 +98,40 @@ namespace BadMedicine
                     generators = new List<Type>(new []{match});
                 }
 
-                
-
-                //for each generator
-                foreach (var g in generators)
+                // if we are not going to write out to a database
+                if (config?.Database != null)
                 {
-                    var instance = factory.Create(g,r);
+                    try
+                    {
+                        //for each generator
+                        foreach (var g in generators)
+                        {
+                            var instance = factory.Create(g, r);
+                            returnCode = Math.Min(RunDatabaseTarget(identifiers,config.Database, instance,opts.NumberOfRows),returnCode);
+                        }
 
-                    var targetFile = new FileInfo(Path.Combine(dir.FullName, g.Name + ".csv"));
-                    instance.GenerateTestDataFile(identifiers,targetFile,opts.NumberOfRows);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+
+                        Console.WriteLine(e);
+                        returnCode = 3;
+                        return;
+                    }
+                }
+                else
+                {
+                    // we are writting out to CSV
+
+                    //for each generator
+                    foreach (var g in generators)
+                    {
+                        var instance = factory.Create(g, r);
+
+                        var targetFile = new FileInfo(Path.Combine(dir.FullName, g.Name + ".csv"));
+                        instance.GenerateTestDataFile(identifiers, targetFile, opts.NumberOfRows);
+                    }
                 }
             
             }
@@ -90,6 +143,66 @@ namespace BadMedicine
             }
 
             returnCode = 0;
+        }
+
+        private static int RunDatabaseTarget(IPersonCollection cohort,TargetDatabase configDatabase, IDataGenerator generator, int numberOfRows)
+        {
+
+            ImplementationManager.Load<MySqlImplementation>();
+            ImplementationManager.Load<PostgreSqlImplementation>();
+            ImplementationManager.Load<OracleImplementation>();
+            ImplementationManager.Load<MicrosoftSQLImplementation>();
+
+            var server = new DiscoveredServer(configDatabase.ConnectionString, configDatabase.DatabaseType);
+
+            try
+            {
+                server.TestConnection(10000);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not reach target server '{server.Name}'");
+                Console.WriteLine(e);
+                return -2;
+            }
+
+
+            var db = server.ExpectDatabase(configDatabase.DatabaseName);
+
+            if (!db.Exists())
+            {
+                Console.WriteLine($"Creating Database '{db.GetRuntimeName()}'");
+                db.Create();
+                Console.WriteLine("Database Created");
+            }
+            else
+            {
+                Console.WriteLine($"Found Database '{db.GetRuntimeName()}'");
+            }
+
+            var tblName = generator.GetType().Name;
+
+            if(db.ExpectTable(tblName).Exists())
+            {
+
+                Console.WriteLine($"Found Existing Table '{tblName}'");
+
+                if(configDatabase.DropTables)
+                    db.ExpectTable(tblName).Drop();
+                else
+                {
+                    Console.WriteLine("Skipping table because it already existed and DropTables is false");
+                    return -3;
+                }
+            }
+
+            Console.WriteLine($"Creating Table '{tblName}'");
+
+            var dt = generator.GetDataTable(cohort, numberOfRows);
+            var tbl = db.CreateTable(tblName, dt);
+
+            Console.WriteLine($"Finished Creating '{tblName}'.  It had '{tbl.GetRowCount()}' rows");
+            return 0;
         }
     }
 }

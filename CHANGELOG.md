@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added support for creating to database
+
 ### Dependencies
 
 - Bump CsvHelper from 24.0.1 to 27.2.1
