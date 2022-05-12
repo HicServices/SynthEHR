@@ -22,21 +22,16 @@ namespace BadMedicine.Datasets
             array[0] = Interlocked.Increment(ref autonum);
             array[1] = p.CHI;
 
-            for (int i = 2; i < array.Length; i++)
+            for (var i = 2; i < array.Length; i++)
             {
-                if (i < 4_000)
-                    array[i] = r.Next();
-                else
-                if (i < 8_000)
-                    array[i] = r.NextDouble();
-                else
-                if (i < 16_000)
-                    array[i] = GetRandomSentence(r);
-                else
-                if (i < 19_500)
-                    array[i] = GetRandomGPCode(r);
-                else
-                    array[i] = GetGaussianInt(50, 50000);
+                array[i] = i switch
+                {
+                    < 4_000 => r.Next(),
+                    < 8_000 => r.NextDouble(),
+                    < 16_000 => GetRandomSentence(r),
+                    < 19_500 => GetRandomGPCode(r),
+                    _ => GetGaussianInt(50, 50000)
+                };
             }
 
             return array;
@@ -49,7 +44,7 @@ namespace BadMedicine.Datasets
             array[0] = "id";
             array[1] = "chi";
 
-            for (int i = 2; i < array.Length; i++)
+            for (var i = 2; i < array.Length; i++)
             {
                 array[i] = $"col{i}";
             }
