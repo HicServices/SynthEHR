@@ -835,4 +835,24 @@ Carotid ultrasound tests for blocked or narrowed carotid arteries, which can inc
 	</summary>
 	</Field>
   </HospitalAdmissions>
+	<UltraWide>
+		<summary>
+			Generates a dataset with 20,000 columns of data in a veriety of formats.  This is useful for testing very wide tables that are too wide for most RDBMS without special treatment (e.g. SPARSE columns).
+		</summary>
+		<Field name="id">
+			<summary>
+				Incremental int primary key for the dataset
+			</summary>
+		</Field>
+	</UltraWide>
+	<Wide>
+		<summary>
+			Generates a dataset with 980 columns of data in a veriety of formats.  This is useful for testing very wide tables that still fit into most RDBMS without special treatment (e.g. SPARSE columns).
+		</summary>
+		<Field name="id">
+			<summary>
+				Incremental int primary key for the dataset
+			</summary>
+		</Field>
+	</Wide>
 </Datasets>

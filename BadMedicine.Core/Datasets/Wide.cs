@@ -3,11 +3,7 @@ using System.Threading;
 
 namespace BadMedicine.Datasets
 {
-    /// <summary>
-    /// Generates a dataset with 980 columns of data in a veriety of formats.  This
-    /// is useful for testing very wide tables that still fit into most RDBMS without 
-    /// special treatment (e.g. SPARSE columns).
-    /// </summary>
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Wide'/>
     public class Wide : DataGenerator
     {
         int autonum = 1;
