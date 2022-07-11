@@ -13,6 +13,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>embedded</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>BadMedicine</RootNamespace>
     <AssemblyName>BadMedicine.Core</AssemblyName>
