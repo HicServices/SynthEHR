@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2022-07-11
+
 ### Added
 
 - Added support for creating to database
@@ -14,7 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Dependencies
 
-- Bump CsvHelper from 24.0.1 to 27.2.1
+- Bump CsvHelper from 24.0.1 to 28.0.0
+- Bump MathNet.Numerics from 4.15.0 to 5.0.0
 - Build nupkg using csproj metadata instead of separate nuspec
 
 ### Fixed
@@ -53,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.0...develop
+[1.1.0]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/HicServices/BadMedicine/compare/v0.1.6...v1.0.0
 [0.1.6]: https://github.com/HicServices/BadMedicine/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/HicServices/BadMedicine/compare/v0.1.4...v0.1.5
