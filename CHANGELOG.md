@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added support for creating to database
 - Added the Wide and UltraWide datasets
+- Added Microsoft.SourceLink.GitHub 1.1.1 (build time only) for easier debugging
 
 ### Dependencies
 
