@@ -33,7 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="HIC.FAnsiSql" Version="2.0.4" />
+    <PackageReference Include="HIC.FAnsiSql" Version="2.0.5" />
     <PackageReference Include="YamlDotNet" Version="12.0.0" />
   </ItemGroup>
   <ItemGroup>
