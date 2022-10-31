@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2022-10-31
+
+### Dependencies
+
+- Bump CvsHelper from 28.0.0 to 30.0.0
+- Bump HIC.FAnsiSql from 2.0.4 to 3.0.1
+- Bump YamlDotNet from 11.2.1 to 12.0.2
+
 ## [1.1.0] - 2022-07-11
 
 ### Added
@@ -49,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.4] - 2019-07-02
 
 ### Changed
+
 - CI changes only (no changes to codebase)
 
 ## [0.1.3] - 2019-07-02
@@ -57,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.0...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.1...develop
+[1.1.1]: https://github.com/HicServices/BadMedicine/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/HicServices/BadMedicine/compare/v0.1.6...v1.0.0
 [0.1.6]: https://github.com/HicServices/BadMedicine/compare/v0.1.5...v0.1.6
