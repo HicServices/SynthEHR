@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2022-11-22
+
+### Dependencies
+
+- Bump CvsHelper from 30.0.0 to 30.0.1
+
 ## [1.1.1] - 2022-10-31
 
 ### Dependencies
@@ -66,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.1...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.2...develop
+[1.1.2]: https://github.com/HicServices/BadMedicine/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/HicServices/BadMedicine/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/HicServices/BadMedicine/compare/v0.1.6...v1.0.0
