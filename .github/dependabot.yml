@@ -13,5 +13,4 @@ updates:
   open-pull-requests-limit: 10
   target-branch: develop
   reviewers:
-  - tznind
   - jas88
