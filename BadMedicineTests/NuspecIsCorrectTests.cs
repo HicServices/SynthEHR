@@ -99,7 +99,7 @@ namespace BadMedicineTests
 
         private object BuildRecommendedMarkdownLine(string package, string version)
         {
-            return string.Format("| {0} | [GitHub]() | [{1}](https://www.nuget.org/packages/{0}) | | | |", package);
+            return $"| {package} | [GitHub]() | [{package}](https://www.nuget.org/packages/{package}) | | | |";
         }
     }
 }
