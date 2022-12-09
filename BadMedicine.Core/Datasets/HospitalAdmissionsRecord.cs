@@ -143,19 +143,20 @@ namespace BadMedicine.Datasets
             }
 
             //if the condition is one that is often treated in a specific way
-            if(ConditionsToOperationsMap.ContainsKey(MainCondition))
-            {
-                string[] operations = ConditionsToOperationsMap[MainCondition].GetRandom(r);
-                
-                MainOperation = operations[0];
-                MainOperationB = operations[1];
-                OtherOperation1 = operations[2];
-                OtherOperation1B = operations[3];
-                OtherOperation2 = operations[4];
-                OtherOperation2B = operations[5];
-                OtherOperation3 = operations[6];
-                OtherOperation3B = operations[7];
-            }
+            lock(ConditionsToOperationsMap)
+                if(ConditionsToOperationsMap.TryGetValue(MainCondition,out var operationsList))
+                {
+                    var operations = operationsList.GetRandom(r);
+                    
+                    MainOperation = operations[0];
+                    MainOperationB = operations[1];
+                    OtherOperation1 = operations[2];
+                    OtherOperation1B = operations[3];
+                    OtherOperation2 = operations[4];
+                    OtherOperation2B = operations[5];
+                    OtherOperation3 = operations[6];
+                    OtherOperation3B = operations[7];
+                }
         }
 
         private void Initialize()
