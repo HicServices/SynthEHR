@@ -23,7 +23,7 @@ namespace BadMedicine
         {
             People = new Person[numberOfUniqueIndividuals];
 
-            for (int i = 0; i < numberOfUniqueIndividuals; i++)
+            for (var i = 0; i < numberOfUniqueIndividuals; i++)
                 People[i]=new Person(random,this);
         }
     }

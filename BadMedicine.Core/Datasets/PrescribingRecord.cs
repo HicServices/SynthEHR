@@ -18,7 +18,7 @@ namespace BadMedicine.Datasets
     public class PrescribingRecord
     {
           /// <summary>
-        /// every row in data table has a weigth (the number of records in our bichemistry with this sample type, this dictionary lets you input
+        /// every row in data table has a weight (the number of records in our biochemistry with this sample type, this dictionary lets you input
         /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
         /// </summary>
         private static Dictionary<int, int> weightToRow;
@@ -28,17 +28,17 @@ namespace BadMedicine.Datasets
         static PrescribingRecord()
         {
             lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(PrescribingRecord),"Prescribing.csv");
-                       
+
             weightToRow = new Dictionary<int, int>();
 
-            int currentWeight = 0;
-            for (int i = 0; i < lookupTable.Rows.Count; i++)
+            var currentWeight = 0;
+            for (var i = 0; i < lookupTable.Rows.Count; i++)
             {
-                int frequency = int.Parse(lookupTable.Rows[i]["frequency"].ToString());
-                
+                var frequency = int.Parse(lookupTable.Rows[i]["frequency"].ToString());
+
                 if(frequency == 0)
                     continue;
-                
+
                 currentWeight += frequency;
 
                 weightToRow.Add(currentWeight, i);
@@ -54,7 +54,7 @@ namespace BadMedicine.Datasets
         public PrescribingRecord(Random r)
         {
             //get a random row from the lookup table - based on its representation within our biochemistry dataset
-            DataRow row = GetRandomRowUsingWeight(r);
+            var row = GetRandomRowUsingWeight(r);
 
             ResSeqNo = row["res_seqno"].ToString();
             Name = row["name"].ToString();
@@ -82,11 +82,11 @@ namespace BadMedicine.Datasets
 
         private DataRow GetRandomRowUsingWeight(Random r)
         {
-            int weightToGet = r.Next(maxWeight);
+            var weightToGet = r.Next(maxWeight);
 
             //get the first key with a cumulative frequency above the one you are trying to get
-            int row =  weightToRow.First(kvp => kvp.Key > weightToGet).Value;
-            
+            var row =  weightToRow.First(kvp => kvp.Key > weightToGet).Value;
+
             return lookupTable.Rows[row];
         }
 

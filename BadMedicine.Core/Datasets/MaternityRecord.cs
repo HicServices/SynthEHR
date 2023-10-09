@@ -19,10 +19,10 @@ namespace BadMedicine.Datasets
         private static BucketList<string> _maritalStatusOld = new BucketList<string>();
         private static BucketList<string> _maritalStatusNew = new BucketList<string>();
         private static BucketList<string> _specialties = new BucketList<string>();
-        
+
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="Location"]'/>
         public string Location {get;set;}
-        
+
         /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity/Field[@name="SendingLocation"]'/>
         public string SendingLocation {get;set;}
 
@@ -44,7 +44,7 @@ namespace BadMedicine.Datasets
         /// Chi numbers of up to 3 babies involved.  Always contains 3 elements with nulls e.g. if twins then first 2 elements are populated and third is null.
         /// </summary>
         public string[] BabyChi { get; } = new string[3];
-        
+
 
         /// <summary>
         /// The date at which the data collector stopped using numeric marital status codes (in favour of alphabetical)
@@ -54,7 +54,7 @@ namespace BadMedicine.Datasets
         /// <summary>
         /// Generates a new random biochemistry test.
         /// </summary>
-        /// <param name="p">The person who is undergoing maternity activity.  Should be Female and of a sufficient age that the operation could have taken place during thier lifetime (see <see cref="Maternity.IsEligible(BadMedicine.Person)"/></param>
+        /// <param name="p">The person who is undergoing maternity activity.  Should be Female and of a sufficient age that the operation could have taken place during their lifetime (see <see cref="Maternity.IsEligible(BadMedicine.Person)"/></param>
         /// <param name="r"></param>
         public MaternityRecord(Person p,Random r)
         {
@@ -65,10 +65,10 @@ namespace BadMedicine.Datasets
                 initialized = true;
             }
             Person = p;
-            
+
             var youngest = p.DateOfBirth.AddYears(MinAge);
             var oldest =  p.DateOfDeath ?? p.DateOfBirth.AddYears(MaxAge);
-            
+
             // No future dates
             oldest = oldest > DataGenerator.Now ? DataGenerator.Now : oldest;
 
@@ -80,7 +80,7 @@ namespace BadMedicine.Datasets
             MaritalStatus = Date < MaritalStatusSwitchover ? _maritalStatusOld.GetRandom(r) : _maritalStatusNew.GetRandom(r);
 
             BabyChi[0] = new Person(r){DateOfBirth = Date }.GetRandomCHI(r);
-                       
+
             // One in 30 are twins
             if(r.Next(30) == 0)
             {
@@ -96,7 +96,7 @@ namespace BadMedicine.Datasets
 
         private void Initialize()
         {
-            using (DataTable dt = new DataTable())
+            using (var dt = new DataTable())
             {
                 DataGenerator.EmbeddedCsvToDataTable(typeof(Maternity), "Maternity.csv", dt);
 
@@ -113,7 +113,7 @@ namespace BadMedicine.Datasets
         private void AddRow(DataRow row, string key, BucketList<string> bucketList)
         {
             var val = Convert.ToString(row[key]);
-            var freq = row[key + "_RecordCount"];
+            var freq = row[$"{key}_RecordCount"];
 
             if(string.IsNullOrWhiteSpace(freq.ToString()))
                 return;

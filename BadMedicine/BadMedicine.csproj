@@ -1,14 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <StartupObject></StartupObject>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject>BadMedicine.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -34,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="HIC.FAnsiSql" Version="3.1.1" />
-    <PackageReference Include="YamlDotNet" Version="13.4.0" />
+    <PackageReference Include="YamlDotNet" Version="13.5.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

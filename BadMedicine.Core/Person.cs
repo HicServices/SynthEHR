@@ -5,7 +5,6 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 using BadMedicine.Datasets;
 
@@ -16,7 +15,7 @@ namespace BadMedicine
     /// </summary>
     public class Person : IEquatable<Person>
     {
-        
+
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
         public string Forename { get; set; }
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Surname"]'/>
@@ -29,14 +28,14 @@ namespace BadMedicine
         public DateTime DateOfBirth = new DateTime();
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="DateOfDeath"]'/>
         public DateTime? DateOfDeath;
-        
+
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Gender"]'/>
         public char Gender { get; set; }
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Address"]'/>
         public DemographyAddress Address { get; set; }
         /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="PreviousAddress"]'/>
         public DemographyAddress PreviousAddress { get; set; }
-        
+
         public const int MinimumYearOfBirth = 1914;
         public const int MaximumYearOfBirth = 2014;
 
@@ -76,7 +75,7 @@ namespace BadMedicine
             Surname = GetRandomSurname(r);
 
             DateOfBirth = DataGenerator.GetRandomDate(new DateTime(MinimumYearOfBirth,1,1),new DateTime(MaximumYearOfBirth,1,1),r);
-            
+
             //1 in 10 patients is dead
             if (r.Next(10) == 0)
                 DateOfDeath = DataGenerator.GetRandomDateAfter(DateOfBirth, r);
@@ -126,9 +125,9 @@ namespace BadMedicine
         {
             return CommonSurnames[r.Next(100)];
         }
-        
+
         /// <summary>
-        /// If the person died before onDate it returns NULL (as of onDate we did not know when the person would die).  if onDate is > date of death it 
+        /// If the person died before onDate it returns NULL (as of onDate we did not know when the person would die).  if onDate is > date of death it
         /// returns the date of death (we knew when they died - you cannot predict the future but you can remember the past)
         /// </summary>
         /// <param name="onDate"></param>
@@ -138,7 +137,7 @@ namespace BadMedicine
             //patient is alive today
             if (DateOfDeath == null)
                 return null;
-            
+
             //retrospective
             if (onDate >= DateOfDeath)
                 return DateOfDeath;
@@ -157,8 +156,8 @@ namespace BadMedicine
             var anochi = GenerateANOCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedANOCHIs.Contains(anochi))
-                anochi = GenerateANOCHI(r);            
-            
+                anochi = GenerateANOCHI(r);
+
             return anochi;
 
         }
@@ -173,8 +172,8 @@ namespace BadMedicine
             var chi = GetRandomCHI(r);
 
             while(_parent != null && _parent.AlreadyGeneratedCHIs.Contains(chi))
-                chi = GetRandomCHI(r);        
-            
+                chi = GetRandomCHI(r);
+
             return chi;
         }
 
@@ -182,7 +181,7 @@ namespace BadMedicine
         {
             var toreturn = new StringBuilder();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
                 toreturn.Append(r.Next(10));
 
             toreturn.Append("_A");
@@ -197,9 +196,9 @@ namespace BadMedicine
         /// <returns></returns>
         public string GetRandomCHI( Random r)
         {
-            string toreturn = DateOfBirth.ToString("ddMMyy" + r.Next(10, 99));
+            var toreturn = DateOfBirth.ToString($"ddMMyy{r.Next(10, 99)}");
 
-            int genderDigit = r.Next(10);
+            var genderDigit = r.Next(10);
 
             switch (Gender)
             {
@@ -213,7 +212,7 @@ namespace BadMedicine
                     break;
             }
 
-            int checkDigit = r.Next(0, 9);
+            var checkDigit = r.Next(0, 9);
 
             return toreturn + genderDigit + checkDigit;
         }
@@ -233,20 +232,7 @@ namespace BadMedicine
             return Equals((Person) obj);
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (Forename != null ? Forename.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (Surname != null ? Surname.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (CHI != null ? CHI.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (ANOCHI != null ? ANOCHI.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Gender.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Address != null ? Address.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (PreviousAddress != null ? PreviousAddress.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Forename, Surname, CHI, ANOCHI, Gender, Address, PreviousAddress);
 
         private static readonly string[] CommonGirlForenames = new[]
         {

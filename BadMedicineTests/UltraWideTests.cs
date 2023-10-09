@@ -3,24 +3,23 @@ using BadMedicine;
 using BadMedicine.Datasets;
 using NUnit.Framework;
 
-namespace BadMedicineTests
+namespace BadMedicineTests;
+
+class UltraWideTests
 {
-    class UltraWideTests
+    [Test]
+    public void TestUltraWide()
     {
-        [Test]
-        public void TestUltraWide()
-        {
-            var r1 = new Random(500);
+        var r1 = new Random(500);
 
-            PersonCollection persons = new PersonCollection();
-            persons.GeneratePeople(500, r1);
+        var persons = new PersonCollection();
+        persons.GeneratePeople(500, r1);
 
-            var f = new DataGeneratorFactory();
-            var generator = f.Create<UltraWide>(r1);
+        var f = new DataGeneratorFactory();
+        var generator = f.Create<UltraWide>(r1);
 
-            using var dt = generator.GetDataTable(persons, 500);
-            Assert.AreEqual(20000, dt.Columns.Count);
-            Assert.AreEqual(500, dt.Rows.Count);
-        }
+        using var dt = generator.GetDataTable(persons, 500);
+        Assert.AreEqual(20000, dt.Columns.Count);
+        Assert.AreEqual(500, dt.Rows.Count);
     }
 }

@@ -20,19 +20,19 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person person)
         {
-            //leave off data load run ID 
+            //leave off data load run ID
             var values = new object[39];
-            
+
             values[0] = person.CHI;
             values[1] = GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
-            
+
             if(r.Next(0, 2) == 0)
                 values[2] = true;
             else
                 values[2] = false;
 
             values[3] = "Random record";
-            
+
             if(r.Next(0,10 )== 0)//one in 10 records has one of these (an ALIAS chi)
                 values[4] = person.GetRandomCHI(r);
 
@@ -44,8 +44,8 @@ namespace BadMedicine.Datasets
 
 
             var randomAddress = new DemographyAddress(r);
-            
-            //if person is dead and dtCreated is after they died use the same address otehrwise use a random one (all records after a person dies have same address)
+
+            //if person is dead and dtCreated is after they died use the same address otherwise use a random one (all records after a person dies have same address)
             values[10] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line1: randomAddress.Line1;
             values[11] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line2: randomAddress.Line2;
             values[12] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line3: randomAddress.Line3;
@@ -54,11 +54,11 @@ namespace BadMedicine.Datasets
 
             //if the person is dead and the dtCreated of the record is greater than the date of death populate it
             values[15] = person.GetDateOfDeathOrNullOn((DateTime)values[1]); //pass record creation date and get isdead date back
-                
+
             //if we got a date put the source in as R
             if(values[15] != null)
                 values[16] = 'R';
-            
+
 
             if(!string.IsNullOrWhiteSpace(person.Address.Postcode.District))
                 values[17] = person.Address.Postcode.District.Substring(0, 1);
@@ -69,12 +69,12 @@ namespace BadMedicine.Datasets
             if((char)values[18] == 'A')
                 if (values[8] != null)
                     while (values[8].ToString().Length < 10)
-                        values[8] = values[8] + " ";
+                        values[8] = $"{values[8]} ";
 
-            //in healthboard 'B' they give us both forename and suranme in the same field! - and surname is always blank
+            //in healthboard 'B' they give us both forename and surname in the same field! - and surname is always blank
             if ((char)values[18] == 'B')
             {
-                values[8] = values[8] + " " +values[7];
+                values[8] = $"{values[8]} {values[7]}";
                 values[7] = null;
             }
 
@@ -85,10 +85,10 @@ namespace BadMedicine.Datasets
                 values[20] = Person.GetRandomSurname(r);
             if (r.Next(0, 10) == 0)
                 values[21] = Person.GetRandomSurname(r);
-            
+
             if (r.Next(0, 3) == 0)
                 values[22] = person.GetRandomForename(r); //random gender appropriate middle name for 1 person in 3
-            
+
             if (r.Next(0, 5) == 0)
                 values[23] = person.GetRandomForename(r); //alternate forename
 
@@ -117,8 +117,8 @@ namespace BadMedicine.Datasets
             //an always null field, why not?!
             values[31] = null;
 
-            DateTime gp_accept_date = GetRandomDateAfter(person.DateOfBirth, r);
-            
+            var gp_accept_date = GetRandomDateAfter(person.DateOfBirth, r);
+
             //current_gp_accept_date
             values[32] = gp_accept_date;
 
@@ -127,7 +127,7 @@ namespace BadMedicine.Datasets
             if (gp_accept_date.Year < 1980)
                 if (r.Next(gp_accept_date.Year - Person.MinimumYearOfBirth) == 0)//the farther back you go the more likely they are to be missing a forename
                         values[8] = null;//some people are randomly missing a forename
-            
+
             if(r.Next(0,3)==0)
             {
                 values[33] = GetRandomGPCode(r);

@@ -7,70 +7,69 @@ using System.Data;
 using System.Linq;
 using System.Text;
 
-namespace BadMedicineTests
+namespace BadMedicineTests;
+
+class MaternityTests
 {
-    class MaternityTests
+    [Test]
+    public void Test_IsEligible()
     {
-        [Test]
-        public void Test_IsEligible()
-        {
-            var r = new Random(100);
-            var pc = new PersonCollection();
-            pc.GeneratePeople(100,r);
-            
-            var m = new Maternity(r);
-            
-            Assert.IsTrue(pc.People.Where(m.IsEligible).All(e=>e.Gender == 'F'));                       
-            Assert.LessOrEqual(pc.People.Count(m.IsEligible),47, "Expected less than 50:50 due to restrictions on both Gender and age");
-        }
+        var r = new Random(100);
+        var pc = new PersonCollection();
+        pc.GeneratePeople(100,r);
 
-        [Test]
-        public void Test_GetDataTable()
-        {
-            var r = new Random(100);
-            var m = new Maternity(r);
+        var m = new Maternity(r);
 
-            var pc = new PersonCollection();
-            pc.GeneratePeople(100,r);
+        Assert.IsTrue(pc.People.Where(m.IsEligible).All(e=>e.Gender == 'F'));
+        Assert.LessOrEqual(pc.People.Count(m.IsEligible),47, "Expected less than 50:50 due to restrictions on both Gender and age");
+    }
 
-            //get 50k records
-            var dt = m.GetDataTable(pc,50000);
-            Assert.AreEqual(50000,dt.Rows.Count);
+    [Test]
+    public void Test_GetDataTable()
+    {
+        var r = new Random(100);
+        var m = new Maternity(r);
 
-            int countFromPopularLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T101H"));
-            int countFromRareLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T306H"));
+        var pc = new PersonCollection();
+        pc.GeneratePeople(100,r);
 
-            Assert.Greater(countFromPopularLocation,0);
-            Assert.Greater(countFromRareLocation,0);
+        //get 50k records
+        var dt = m.GetDataTable(pc,50000);
+        Assert.AreEqual(50000,dt.Rows.Count);
 
-            // should be more from popular location
-            Assert.Greater(countFromPopularLocation , countFromRareLocation);
+        var countFromPopularLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T101H"));
+        var countFromRareLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T306H"));
 
-            // like a lot more!
-            Assert.Greater(countFromPopularLocation , countFromRareLocation * 10);            
-        }
+        Assert.Greater(countFromPopularLocation,0);
+        Assert.Greater(countFromRareLocation,0);
 
-        [Test]
-        public void Test_MaternityRecord()
-        {
-            var r = new Random(100);
-            var m = new Maternity(r);
+        // should be more from popular location
+        Assert.Greater(countFromPopularLocation , countFromRareLocation);
 
-            var pc = new PersonCollection();
-            pc.GeneratePeople(100,r);
+        // like a lot more!
+        Assert.Greater(countFromPopularLocation , countFromRareLocation * 10);
+    }
 
-            var eligible = pc.People.Where(m.IsEligible);
-            var dict = eligible.ToDictionary(k=>k,v=>new MaternityRecord(v,r));
+    [Test]
+    public void Test_MaternityRecord()
+    {
+        var r = new Random(100);
+        var m = new Maternity(r);
 
-            //gave birth after being born themselves
-            Assert.IsTrue(dict.All(kv=>kv.Key.DateOfBirth < kv.Value.Date));
+        var pc = new PersonCollection();
+        pc.GeneratePeople(100,r);
 
-            //no future dates
-            Assert.IsTrue(dict.All(kv=> kv.Value.Date <= DataGenerator.Now));
+        var eligible = pc.People.Where(m.IsEligible);
+        var dict = eligible.ToDictionary(k=>k,v=>new MaternityRecord(v,r));
+
+        //gave birth after being born themselves
+        Assert.IsTrue(dict.All(kv=>kv.Key.DateOfBirth < kv.Value.Date));
+
+        //no future dates
+        Assert.IsTrue(dict.All(kv=> kv.Value.Date <= DataGenerator.Now));
 
 
-
-        }
 
     }
+
 }

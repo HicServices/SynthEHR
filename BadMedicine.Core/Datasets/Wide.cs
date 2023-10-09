@@ -43,7 +43,7 @@ namespace BadMedicine.Datasets
             var array = new string[980];
             array[0] = "id";
             array[1] = "chi";
-            
+
             for (var i = 2; i < array.Length; i++)
             {
                 array[i] = $"col{i}";
