@@ -24,10 +24,10 @@ namespace BadMedicine.Datasets
         /// <returns></returns>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] values = new object[12];
+            var values = new object[12];
 
-            PrescribingRecord prescription = new PrescribingRecord(r);
-            
+            var prescription = new PrescribingRecord(r);
+
             values[0] = p.CHI;
             values[1] = p.GetRandomDateDuringLifetime(r);
             values[2] = prescription.Quantity;

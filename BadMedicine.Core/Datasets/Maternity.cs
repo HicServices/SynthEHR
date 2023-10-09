@@ -35,11 +35,11 @@ namespace BadMedicine.Datasets
         {
             var record = new MaternityRecord(p,r);
 
-            object[] results = new object[12];
-            
+            var results = new object[12];
+
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
-            
+
             results[2] = record.Date;
 
             // Partner CHI

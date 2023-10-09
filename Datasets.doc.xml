@@ -52,7 +52,7 @@
 	</Field>
     <Field name="PartnerCHI">
 		<summary>  
-			Unique identifier of the second contributor of genetic material for the babie(s) being born or null if baby is a clone
+			Unique identifier of the second contributor of genetic material for the babies being born or null if baby is a clone
         </summary>
 	</Field>
         <Field name="BabyCHI1">
@@ -152,7 +152,7 @@
     </Field>
     <Field name="ANOCHI">
       <summary>
-        Annonymous identifier that has replaced the identifiable CHI.  Typically represented as aaa1234567 where the first three letters uniquely identify a project (allowing for project specific anonymisation)
+        Anonymous identifier that has replaced the identifiable CHI.  Typically represented as aaa1234567 where the first three letters uniquely identify a project (allowing for project specific anonymisation)
       </summary>
     </Field>
     <Field name="DateOfBirth">
@@ -162,7 +162,7 @@
     </Field>
     <Field name="DateOfDeath">
       <summary>
-        If the patient is dead then this date will be filled in with the date it occured
+        If the patient is dead then this date will be filled in with the date it occurred
       </summary>
     </Field>
     <Field name="Gender">
@@ -182,12 +182,12 @@
     </Field>
 	<Field name="dtCreated">
 	<summary>
-	The date the patient registerd with the GP (when the chi record was created).
+	The date the patient registered with the GP (when the chi record was created).
 	</summary>
 	</Field>
 	<Field name="current_record">
 	<summary>
-	1 if the record is still active in the given healthboard (e.g.. Tayside) or 0 if a more recent record exists in another healthboard (i.e. they are known to have moved out of the area or if ISD no longer supplies the record). Note that if your research project only covers Tayside then you would not nessesarily get a record with 1 if they moved to Glasgow but would still get the old record from Tayside with 0 for current record. 
+	1 if the record is still active in the given healthboard (e.g.. Tayside) or 0 if a more recent record exists in another healthboard (i.e. they are known to have moved out of the area or if ISD no longer supplies the record). Note that if your research project only covers Tayside then you would not necessarily get a record with 1 if they moved to Glasgow but would still get the old record from Tayside with 0 for current record. 
 	</summary>
 	</Field>
 	<Field name="notes">
@@ -197,7 +197,7 @@
 	</Field>
 	<Field name="chi_num_of_curr_record">
 	<summary>
-	Indicates that the chi number recorded (in the chi field) is out of date and that the person should actually be known by this alias.  This occurs when a patient doesn't know thier chi or is unable to 
+	Indicates that the chi number recorded (in the chi field) is out of date and that the person should actually be known by this alias.  This occurs when a patient doesn't know their chi or is unable to 
 	supply it (e.g. an emergency appointment while on holiday).
 	</summary>
 	</Field>
@@ -308,7 +308,7 @@
 	</Field>
 	<Field name="date_address_changed">
 	<summary>
-	The date when the patient moved from thier previous address to the current address.
+	The date when the patient moved from their previous address to the current address.
 	</summary>
 	</Field>
 	<Field name="adr">
@@ -773,20 +773,20 @@ Carotid ultrasound tests for blocked or narrowed carotid arteries, which can inc
 	</summary>
 	</Field><Field name="MainCondition">
 	<summary>
-	The primary presenting condition and the reason for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceeded by a minus symbol to distinguish them.
+	The primary presenting condition and the reason for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceded by a minus symbol to distinguish them.
 	</summary>
 	</Field><Field name="OtherCondition1">
 	<summary>
-	The second condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceeded by a minus symbol to distinguish them.
+	The second condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceded by a minus symbol to distinguish them.
 	</summary>
 	</Field><Field name="OtherCondition2">
 	<summary>
-	The tertiary condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceeded by a minus symbol to distinguish them.
+	The tertiary condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceded by a minus symbol to distinguish them.
 	</summary>
 	</Field>
 	<Field name="OtherCondition3">
 	<summary>
-	The forth condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceeded by a minus symbol to distinguish them.
+	The forth condition for hospitalisation.  This is either an ICD10 code or an ICD9 code.  ICD9 codes are preceded by a minus symbol to distinguish them.
 	</summary>
 	</Field>
 	<Field name="Comment">
@@ -837,7 +837,7 @@ Carotid ultrasound tests for blocked or narrowed carotid arteries, which can inc
   </HospitalAdmissions>
 	<UltraWide>
 		<summary>
-			Generates a dataset with 20,000 columns of data in a veriety of formats.  This is useful for testing very wide tables that are too wide for most RDBMS without special treatment (e.g. SPARSE columns).
+			Generates a dataset with 20,000 columns of data in a variety of formats.  This is useful for testing very wide tables that are too wide for most RDBMS without special treatment (e.g. SPARSE columns).
 		</summary>
 		<Field name="id">
 			<summary>
@@ -847,7 +847,7 @@ Carotid ultrasound tests for blocked or narrowed carotid arteries, which can inc
 	</UltraWide>
 	<Wide>
 		<summary>
-			Generates a dataset with 980 columns of data in a veriety of formats.  This is useful for testing very wide tables that still fit into most RDBMS without special treatment (e.g. SPARSE columns).
+			Generates a dataset with 980 columns of data in a variety of formats.  This is useful for testing very wide tables that still fit into most RDBMS without special treatment (e.g. SPARSE columns).
 		</summary>
 		<Field name="id">
 			<summary>

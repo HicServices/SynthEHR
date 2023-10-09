@@ -12,7 +12,7 @@ namespace BadMedicine.Datasets
 {
     /// <summary>
     /// Random record for when a <see cref="BadMedicine.Person"/> entered hospital.  Basic logic is implemented here to ensure that <see cref="DischargeDate"/>
-    /// is after <see cref="AdmissionDate"/> and that the person was alive at the time.    
+    /// is after <see cref="AdmissionDate"/> and that the person was alive at the time.
     /// </summary>
     public class HospitalAdmissionsRecord
     {
@@ -36,7 +36,7 @@ namespace BadMedicine.Datasets
 
         /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="OtherCondition3"]'/>
         public string OtherCondition3 { get; private set; }
-        
+
         /// <include file='../../Datasets.doc.xml' path='Datasets/HospitalAdmissions/Field[@name="MainOperation"]'/>
         public string MainOperation {get;private set;}
 
@@ -68,7 +68,7 @@ namespace BadMedicine.Datasets
 
         static object oLockInitialize = new object();
         private static bool initialized = false;
-        
+
         /// <summary>
         /// Maps ColumnAppearingIn to each month we might want to generate random data in (Between <see cref="MinimumDate"/> and <see cref="MaximumDate"/>)
         /// to the row numbers which were active at that time (based on AverageMonthAppearing and StandardDeviationMonthAppearing)
@@ -81,7 +81,7 @@ namespace BadMedicine.Datasets
         private static BucketList<string> ICD10Rows;
 
         /// <summary>
-        /// Maps a given MAIN_CONDITION code (doesn't cover other conditons) to popular operations for that condition.  The string array is always length 8 and corresponds to
+        /// Maps a given MAIN_CONDITION code (doesn't cover other conditions) to popular operations for that condition.  The string array is always length 8 and corresponds to
         /// MAIN_OPERATION,MAIN_OPERATION_B,OTHER_OPERATION_1,OTHER_OPERATION_1B,OTHER_OPERATION_2,OTHER_OPERATION_2B,OTHER_OPERATION_3,OTHER_OPERATION_3B
         /// </summary>
         private static Dictionary<string,BucketList<string[]>> ConditionsToOperationsMap = new Dictionary<string, BucketList<string[]>>();
@@ -97,7 +97,7 @@ namespace BadMedicine.Datasets
         public static readonly DateTime MaximumDate = new DateTime(2018,1,1);
 
         /// <summary>
-        /// Creates a new record for the given <paramref name="person"/> 
+        /// Creates a new record for the given <paramref name="person"/>
         /// </summary>
         /// <param name="person"></param>
         /// <param name="afterDateX"></param>
@@ -114,9 +114,9 @@ namespace BadMedicine.Datasets
             Person = person;
             if (person.DateOfBirth > afterDateX)
                 afterDateX = person.DateOfBirth;
-                
+
             AdmissionDate = DataGenerator.GetRandomDate(afterDateX.Max(MinimumDate), MaximumDate, r);
-            
+
             DischargeDate = AdmissionDate.AddHours(r.Next(240));//discharged after random number of hours between 0 and 240 = 10 days
 
             //Condition 1 always populated
@@ -131,7 +131,7 @@ namespace BadMedicine.Datasets
                 if (r.Next(2) == 0)
                 {
                     OtherCondition2 = GetRandomICDCode("OTHER_CONDITION_2",r);
-                    
+
                     //12.5% chance of all conditions
                     if (r.Next(2) == 0)
                         OtherCondition3 = GetRandomICDCode("OTHER_CONDITION_3",r);
@@ -147,7 +147,7 @@ namespace BadMedicine.Datasets
                 if(ConditionsToOperationsMap.TryGetValue(MainCondition,out var operationsList))
                 {
                     var operations = operationsList.GetRandom(r);
-                    
+
                     MainOperation = operations[0];
                     MainOperationB = operations[1];
                     OtherOperation1 = operations[2];
@@ -163,13 +163,13 @@ namespace BadMedicine.Datasets
         {
             ICD10Rows = new BucketList<string>();
 
-            DataTable dt = new DataTable();
+            var dt = new DataTable();
             dt.Columns.Add("AverageMonthAppearing", typeof(double));
             dt.Columns.Add("StandardDeviationMonthAppearing", typeof(double));
             dt.Columns.Add("CountAppearances", typeof(int));
 
             lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(HospitalAdmissionsRecord), "HospitalAdmissions.csv",dt);
-            
+
             ICD10MonthHashMap = new Dictionary<string, Dictionary<int, List<int>>>
             {
                 {"MAIN_CONDITION", new Dictionary<int, List<int>>()},
@@ -182,44 +182,44 @@ namespace BadMedicine.Datasets
             //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
 
             //get all the months we might be asked for
-            int from = (MinimumDate.Year - 1900) * 12 + MinimumDate.Month;
-            int to = (MaximumDate.Year - 1900) * 12 + MaximumDate.Month;
+            var from = (MinimumDate.Year - 1900) * 12 + MinimumDate.Month;
+            var to = (MaximumDate.Year - 1900) * 12 + MaximumDate.Month;
 
 
             foreach (var columnKey in ICD10MonthHashMap.Keys)
             {
-                for (int i = from; i <= to; i++)
+                for (var i = from; i <= to; i++)
                 {
                     ICD10MonthHashMap[columnKey].Add(i, new List<int>());
                 }
             }
 
-            int rowCount = 0;
+            var rowCount = 0;
 
             //for each row in the sample data
             foreach (DataRow row in lookupTable.Rows)
             {
                 //calculate 2 standard deviations in months
-                int monthFrom = Convert.ToInt32((double) row["AverageMonthAppearing"] - (2 * (double) row["StandardDeviationMonthAppearing"]));
-                int monthTo = Convert.ToInt32((double) row["AverageMonthAppearing"] + (2 * (double) row["StandardDeviationMonthAppearing"]));
+                var monthFrom = Convert.ToInt32((double) row["AverageMonthAppearing"] - (2 * (double) row["StandardDeviationMonthAppearing"]));
+                var monthTo = Convert.ToInt32((double) row["AverageMonthAppearing"] + (2 * (double) row["StandardDeviationMonthAppearing"]));
 
                 //2 standard deviations might take us beyond the beginning or start so only build hashmap for dates we will be asked for
                 monthFrom = Math.Max(monthFrom, from);
                 monthTo = Math.Min(monthTo, to);
 
                 //for each month add row to the hashmap (for the correct column and month in the range)
-                for (int i = monthFrom; i <= monthTo; i++)
+                for (var i = monthFrom; i <= monthTo; i++)
                 {
                     if(monthFrom < from)
                         continue;
 
                     if(monthTo > to)
                         break;
-                    
+
                     ICD10MonthHashMap[(string)row["ColumnAppearingIn"]][i].Add(rowCount);
                 }
 
-                ICD10Rows.Add((int) row["CountAppearances"], (string) row["TestCode"]); 
+                ICD10Rows.Add((int) row["CountAppearances"], (string) row["TestCode"]);
                 rowCount++;
             }
 
@@ -227,15 +227,15 @@ namespace BadMedicine.Datasets
             operationsTable.Columns.Add("CountOfRecords",typeof(int));
 
             DataGenerator.EmbeddedCsvToDataTable(typeof(HospitalAdmissionsRecord),"HospitalAdmissionsOperations.csv",operationsTable);
-                        
+
             foreach(DataRow r in operationsTable.Rows)
             {
-                string key = (string)r["MAIN_CONDITION"];
+                var key = (string)r["MAIN_CONDITION"];
                 if(!ConditionsToOperationsMap.ContainsKey(key))
                 {
                     ConditionsToOperationsMap.Add(key,new BucketList<string[]>());
 
-                    ConditionsToOperationsMap[key].Add((int)r["CountOfRecords"],new []{ 
+                    ConditionsToOperationsMap[key].Add((int)r["CountOfRecords"],new []{
                         r["MAIN_OPERATION"] as string,
                         r["MAIN_OPERATION_B"] as string,
                         r["OTHER_OPERATION_1"] as string,
@@ -248,13 +248,13 @@ namespace BadMedicine.Datasets
                 }
             }
         }
-        
+
 
         private string GetRandomICDCode(string field, Random random)
         {
-            
+
             //The number of months since 1/1/1900 (this is the measure of field AverageMonthAppearing)
-            int monthsSinceZeroDay = (AdmissionDate.Year - 1900) * 12 + AdmissionDate.Month;
+            var monthsSinceZeroDay = (AdmissionDate.Year - 1900) * 12 + AdmissionDate.Month;
 
             return ICD10Rows.GetRandom(ICD10MonthHashMap[field][monthsSinceZeroDay],random);
         }

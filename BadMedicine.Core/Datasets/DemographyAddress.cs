@@ -49,7 +49,7 @@ namespace BadMedicine.Datasets
 
             //1 in 10 houses does not have a house number
             if (r.Next(0, 10) != 0)
-                Line1 = r.Next(0, 100) + " " + Line1;
+                Line1 = $"{r.Next(0, 100)} {Line1}";
 
             Postcode = DundeePostcodes[r.Next(0, DundeePostcodes.Length)];
 

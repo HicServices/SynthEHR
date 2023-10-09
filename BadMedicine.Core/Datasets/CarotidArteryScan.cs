@@ -24,10 +24,10 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] results = new object[68];
-            
+            var results = new object[68];
+
             var appointment = new Appointment(p,r);
-            
+
             results[0] = appointment.Identifier; //RECORD_NUMBER
             results[1] = 0; //R_CC_STEN_A
             results[2] = 0; //R_CC_STEN_B
@@ -74,7 +74,7 @@ namespace BadMedicine.Datasets
             results[43] = Swap(Math.Max(1, GetGaussianInt(-5, 9)), new[] { 6, 7, 8 }, 1); //L_CC_STENOSIS   (lots of 1's some non ones but no 6,7 or 8s
             results[44] = GetGaussian(0,2); //L_CC_PEAK_SYS
             results[45] = GetGaussian(0,0.09); //L_GetGaussian(0,2);
-            results[46] = Swap(GetGaussianInt(1,8),new[]{7},9); //L_IC_STENOSIS   
+            results[46] = Swap(GetGaussianInt(1,8),new[]{7},9); //L_IC_STENOSIS
             results[47] = GetGaussian(0,4); //L_IC_PEAK_SYS
             results[48] = GetGaussian(0,4); //L_IC_END_DIA
             results[49] = Math.Max(1, GetGaussianInt(0, 9)); //L_EC_STENOSIS
@@ -177,5 +177,5 @@ namespace BadMedicine.Datasets
                 "R_IC_END_DIA"      //67
             };
         }
-    }                                 
+    }
 }                                     
