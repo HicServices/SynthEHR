@@ -25,6 +25,6 @@ namespace BadMedicine
         /// <param name="numberOfUniqueIndividuals">Number of <see cref="People"/> to generate</param>
         /// <param name="random">The seed upon which to generate data</param>
         void GeneratePeople(int numberOfUniqueIndividuals, Random random );
-        
+
     }
 }

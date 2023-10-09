@@ -44,15 +44,15 @@ namespace BadMedicine
         public IEnumerable<KeyValuePair<string,string>> GetAll(string dataset)
         {
             var ds = _doc.Root?.Element(_ns + dataset);
-            
+
             if(ds == null)
                 yield break;
 
             foreach(var x in ds.Elements(_ns + "Field"))
                 yield return new KeyValuePair<string,string>(x.Attribute(_ns + "name").Value,x.Value);
         }
-        
-        
+
+
         /// <summary>
         /// Returns the description of the dataset (or null if no metadata exists)
         /// </summary>
@@ -62,7 +62,7 @@ namespace BadMedicine
         {
             return _doc.Root?.Element(_ns + dataset)?.Element(_ns + "summary")?.Value;
         }
-            
+
 
         /// <summary>
         /// Returns the description of the dataset <typeparamref name="T"/> (or null if no metadata exists)
@@ -81,7 +81,7 @@ namespace BadMedicine
         /// <param name="field"></param>
         /// <returns></returns>
         public string Get<T>(string field) where T:IDataGenerator
-        {            
+        {
             return Get(typeof(T).Name,field);
         }
 
@@ -92,14 +92,14 @@ namespace BadMedicine
         /// <param name="field"></param>
         /// <returns></returns>
         public string Get(string dataset,string field)
-        {   
-            return 
+        {
+            return
                 //return from the dataset fields
                 _doc.Root.Element(_ns + dataset)?.Elements(_ns + "Field")?
-                
+
                 //the one whose name attribute matches
                 .SingleOrDefault(e=>string.Equals(e.Attribute(_ns + "name")?.Value,field,StringComparison.CurrentCultureIgnoreCase))?.Value
-                
+
                 //or from Common if it's not in the dataset.
                 ?? (dataset != "Common" ? Get("Common",field):null); //null if we are already trying Common
 

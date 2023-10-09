@@ -20,10 +20,10 @@ namespace BadMedicine.Datasets
         /// <inheritdoc/>
         public override object[] GenerateTestDataRow(Person p)
         {
-            object[] results = new object[13];
+            var results = new object[13];
 
-            BiochemistryRecord randomSample = new BiochemistryRecord(r);
-            
+            var randomSample = new BiochemistryRecord(r);
+
             results[0] = p.CHI;
             results[1] = randomSample.Healthboard;
             results[2] = p.GetRandomDateDuringLifetime(r);

@@ -29,7 +29,7 @@ namespace BadMedicine.Datasets
 
         /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Result"]'/>
         public string Result;
-        
+
         /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ReadCodeValue"]'/>
         public string ReadCodeValue;
 
@@ -82,35 +82,35 @@ namespace BadMedicine.Datasets
             QuantityUnit = row.QuantityUnit;
             RangeHighValue = row.RangeHighValue.HasValue ? row.RangeHighValue.ToString():"NULL";
             RangeLowValue = row.RangeLowValue.HasValue ? row.RangeLowValue.ToString():"NULL";
-            
+
             Healthboard = row.hb_extract;
             ReadCodeValue = row.ReadCodeValue;
         }
 
-        
+
 
         private string GetRandomLabNumber(Random r )
         {
             if(r.Next(0,2)==0)
-                return "CC" + r.Next(0, 1000000);
+                return $"CC{r.Next(0, 1000000)}";
 
-            return "BC" + r.Next(0, 1000000);
+            return $"BC{r.Next(0, 1000000)}";
         }
         private void Initialize()
         {
-            using (DataTable dt = new DataTable())
+            using (var dt = new DataTable())
             {
                 dt.Columns.Add("RecordCount",typeof(int));
-            
+
                 DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
-             
+
                 _bucketList = new BucketList<BiochemistryRandomDataRow>();
 
                 foreach (DataRow row in dt.Rows)
                     _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
             }
         }
-        
+
         private class BiochemistryRandomDataRow
         {
             public string LocalClinicalCodeValue;
@@ -134,10 +134,10 @@ namespace BadMedicine.Datasets
                 ArithmeticComparator    =(string) row["ArithmeticComparator"];
                 Interpretation          =(string) row["Interpretation"];
                 QuantityUnit            =(string) row["QuantityUnit"];
-                
+
                 RangeHighValue = double.TryParse(row["RangeHighValue"].ToString(),out var rangeLow) ? rangeLow:(double?) null;
                 RangeLowValue = double.TryParse(row["RangeLowValue"].ToString(),out var rangeHigh) ? rangeHigh:(double?) null;
-                
+
                 QVAverage = double.TryParse(row["QVAverage"].ToString(),out var min) ? min:(double?) null;
                 QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(),out var dev) ? dev:(double?) null;
 
@@ -153,7 +153,7 @@ namespace BadMedicine.Datasets
             {
                 if(QVAverage.HasValue && QVStandardDev.HasValue)
                    return new Normal(QVAverage.Value, QVStandardDev.Value,r).Sample().ToString();
-                 
+
                 return null;
             }
         }

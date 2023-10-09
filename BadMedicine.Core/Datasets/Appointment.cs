@@ -30,7 +30,7 @@ namespace BadMedicine.Datasets
         /// <param name="r"></param>
         public Appointment(Person testPerson, Random r)
         {
-            Identifier = "APPT_" + Guid.NewGuid();
+            Identifier = $"APPT_{Guid.NewGuid()}";
             StartDate = testPerson.GetRandomDateDuringLifetime(r);
         }
     }
