@@ -5,21 +5,17 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Demography'/>
+/// <inheritdoc/>
+public class Demography(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Demography'/>
-    public class Demography : DataGenerator
-    {
-        /// <inheritdoc/>
-        public Demography(Random rand) : base(rand)
-        {
-        }
 
-        /// <inheritdoc/>
-        public override object[] GenerateTestDataRow(Person person)
-        {
+    /// <inheritdoc/>
+    public override object[] GenerateTestDataRow(Person person)
+    {
             //leave off data load run ID
             var values = new object[39];
 
@@ -37,7 +33,7 @@ namespace BadMedicine.Datasets
                 values[4] = person.GetRandomCHI(r);
 
             values[5] = GetRandomCHIStatus(r);
-            values[6] = person.DateOfBirth.Year.ToString().Substring(0,2);
+            values[6] = person.DateOfBirth.Year.ToString()[..2];
             values[7] = person.Surname;
             values[8] = person.Forename;
             values[9] = person.Gender;
@@ -61,14 +57,14 @@ namespace BadMedicine.Datasets
 
 
             if(!string.IsNullOrWhiteSpace(person.Address.Postcode.District))
-                values[17] = person.Address.Postcode.District.Substring(0, 1);
+                values[17] = person.Address.Postcode.District[..1];
 
             values[18] = GetRandomLetter(true,r);
 
             //healthboard 'A' use padding on the name field (to a length of 10!)
             if((char)values[18] == 'A')
                 if (values[8] != null)
-                    while (values[8].ToString().Length < 10)
+                    while (values[8].ToString()?.Length < 10)
                         values[8] = $"{values[8]} ";
 
             //in healthboard 'B' they give us both forename and surname in the same field! - and surname is always blank
@@ -144,8 +140,8 @@ namespace BadMedicine.Datasets
             return values;
         }
 
-        private static DateTime GetMinimum(DateTime? date1, DateTime date2)
-        {
+    private static DateTime GetMinimum(DateTime? date1, DateTime date2)
+    {
             if (date1 == null)
                 return date2;
 
@@ -155,10 +151,10 @@ namespace BadMedicine.Datasets
             return date2;
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
-            return new string[]{
+    /// <inheritdoc/>
+    protected override string[] GetHeaders()
+    {
+            return [
             "chi",                                                  //0
             "dtCreated",                                            //1
             "current_record",                                       //2
@@ -198,8 +194,7 @@ namespace BadMedicine.Datasets
             "date_of_birth",                                        //36
             "patient_triage_score",                                 //37
             "hic_dataLoadRunID"                                     //38
-            };
+            ];
         }
 
-    }
 }

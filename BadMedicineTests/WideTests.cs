@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace BadMedicineTests;
 
-class WideTests
+internal sealed class WideTests
 {
     [Test]
     public void TestWide()
@@ -15,11 +15,13 @@ class WideTests
         var persons = new PersonCollection();
         persons.GeneratePeople(500, r1);
 
-        var f = new DataGeneratorFactory();
-        var generator = f.Create<Wide>(r1);
+        var generator = DataGeneratorFactory.Create<Wide>(r1);
 
         using var dt = generator.GetDataTable(persons, 500);
-        Assert.AreEqual(980,dt.Columns.Count);
-        Assert.AreEqual(500, dt.Rows.Count);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dt.Columns, Has.Count.EqualTo(980));
+            Assert.That(dt.Rows, Has.Count.EqualTo(500));
+        });
     }
 }

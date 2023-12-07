@@ -15,26 +15,25 @@ using YamlDotNet.Serialization;
 
 namespace BadMedicine;
 
-class Program
+internal static class Program
 {
-    private static int returnCode;
-    public const string ConfigFile = "./BadMedicine.yaml";
+    private static int _returnCode;
+    private const string ConfigFile = "./BadMedicine.yaml";
 
     public static int Main(string[] args)
     {
-        returnCode = 0;
+        _returnCode = 0;
 
         Parser.Default.ParseArguments<ProgramOptions>(args)
-            .WithParsed<ProgramOptions>(static opts => RunOptionsAndReturnExitCode(opts))
-            .WithNotParsed<ProgramOptions>(static (errs) => HandleParseError(errs));
+            .WithParsed(static opts => RunOptionsAndReturnExitCode(opts))
+            .WithNotParsed(static _ => HandleParseError());
 
-
-        return returnCode;
+        return _returnCode;
     }
 
-    private static void HandleParseError(IEnumerable<Error> errs)
+    private static void HandleParseError()
     {
-        returnCode = 500;
+        _returnCode = 500;
     }
 
     private static void RunOptionsAndReturnExitCode(ProgramOptions opts)
@@ -58,7 +57,7 @@ class Program
             {
                 Console.WriteLine($"Error deserializing '{ConfigFile}'");
                 Console.Write(e.ToString());
-                returnCode = -1;
+                _returnCode = -1;
                 return;
             }
         }
@@ -75,11 +74,10 @@ class Program
             var r = opts.Seed == -1 ? new Random() : new Random(opts.Seed);
 
             //create a cohort of people
-            IPersonCollection identifiers = new PersonCollection();
+            var identifiers = new PersonCollection();
             identifiers.GeneratePeople(opts.NumberOfPatients,r);
 
-            var factory = new DataGeneratorFactory();
-            var generators = factory.GetAvailableGenerators().ToList();
+            var generators = DataGeneratorFactory.GetAvailableGenerators().ToList();
 
             //if the user only wants to extract a single dataset
             if(!string.IsNullOrEmpty(opts.Dataset))
@@ -89,12 +87,12 @@ class Program
                 {
                     Console.WriteLine($"Could not find dataset called '{opts.Dataset}'");
                     Console.WriteLine(
-                        $"Generators found were:{Environment.NewLine}{string.Join(Environment.NewLine, generators.Select(g => g.Name))}");
-                    returnCode = 2;
+                        $"Generators found were:{Environment.NewLine}{string.Join(Environment.NewLine, generators.Select(static g => g.Name))}");
+                    _returnCode = 2;
                     return;
                 }
 
-                generators = new List<Type>(new []{match});
+                generators = [..new[] { match }];
             }
 
             // if we are not going to write out to a database
@@ -103,10 +101,9 @@ class Program
                 try
                 {
                     //for each generator
-                    foreach (var g in generators)
+                    foreach (var instance in generators.Select(g => DataGeneratorFactory.Create(g, r)))
                     {
-                        var instance = factory.Create(g, r);
-                        returnCode = Math.Min(RunDatabaseTarget(identifiers,config.Database, instance,opts.NumberOfRows),returnCode);
+                        _returnCode = Math.Min(RunDatabaseTarget(identifiers,config.Database, instance,opts.NumberOfRows),_returnCode);
                     }
 
                     return;
@@ -115,33 +112,30 @@ class Program
                 {
 
                     Console.WriteLine(e);
-                    returnCode = 3;
+                    _returnCode = 3;
                     return;
                 }
             }
-            else
+            // we are writing out to CSV
+
+            //for each generator
+            foreach (var g in generators)
             {
-                // we are writing out to CSV
+                var instance = DataGeneratorFactory.Create(g, r);
 
-                //for each generator
-                foreach (var g in generators)
-                {
-                    var instance = factory.Create(g, r);
-
-                    var targetFile = new FileInfo(Path.Combine(dir.FullName, $"{g.Name}.csv"));
-                    instance.GenerateTestDataFile(identifiers, targetFile, opts.NumberOfRows);
-                }
+                var targetFile = new FileInfo(Path.Combine(dir.FullName, $"{g.Name}.csv"));
+                instance.GenerateTestDataFile(identifiers, targetFile, opts.NumberOfRows);
             }
 
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            returnCode = 2;
+            _returnCode = 2;
             return;
         }
 
-        returnCode = 0;
+        _returnCode = 0;
     }
 
     private static int RunDatabaseTarget(IPersonCollection cohort,TargetDatabase configDatabase, IDataGenerator generator, int numberOfRows)

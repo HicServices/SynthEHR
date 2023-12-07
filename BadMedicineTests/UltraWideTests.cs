@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace BadMedicineTests;
 
-class UltraWideTests
+internal sealed class UltraWideTests
 {
     [Test]
     public void TestUltraWide()
@@ -15,11 +15,13 @@ class UltraWideTests
         var persons = new PersonCollection();
         persons.GeneratePeople(500, r1);
 
-        var f = new DataGeneratorFactory();
-        var generator = f.Create<UltraWide>(r1);
+        var generator = DataGeneratorFactory.Create<UltraWide>(r1);
 
         using var dt = generator.GetDataTable(persons, 500);
-        Assert.AreEqual(20000, dt.Columns.Count);
-        Assert.AreEqual(500, dt.Rows.Count);
+        Assert.Multiple(() =>
+        {
+            Assert.That(dt.Columns, Has.Count.EqualTo(20000));
+            Assert.That(dt.Rows, Has.Count.EqualTo(500));
+        });
     }
 }

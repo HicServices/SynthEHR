@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Threading;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/UltraWide'/>
+/// <inheritdoc/>
+public sealed class UltraWide(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/UltraWide'/>
-    public class UltraWide : DataGenerator
+    int autonum = 1;
+
+    /// <inheritdoc/>
+    public override object[] GenerateTestDataRow(Person p)
     {
-        int autonum = 1;
-
-        /// <inheritdoc/>
-        public UltraWide(Random rand) : base(rand)
-        {
-        }
-
-        /// <inheritdoc/>
-        public override object[] GenerateTestDataRow(Person p)
-        {
             r.Next();
 
             var array = new object[20_000];
@@ -37,9 +33,9 @@ namespace BadMedicine.Datasets
             return array;
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
+    /// <inheritdoc/>
+    protected override string[] GetHeaders()
+    {
             var array = new string[20_000];
             array[0] = "id";
             array[1] = "chi";
@@ -51,5 +47,4 @@ namespace BadMedicine.Datasets
 
             return array;
         }
-    }
 }
