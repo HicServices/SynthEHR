@@ -11,16 +11,39 @@ namespace BadMedicine.Datasets;
 public class DataGeneratorFactory
 {
     /// <summary>
+    /// Trivial type wrapper as workaround for https://github.com/dotnet/sdk/issues/27997
+    /// </summary>
+    public readonly struct GeneratorType(Type type)
+    {
+        /// <summary>
+        /// Actual generator type
+        /// </summary>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+        public readonly Type Type = type;
+    }
+
+    /// <summary>
+    /// List of generator types. Add yourself to this if outside BadMedicine.Core, to avoid reliance on reflection breaking AOT.
+    /// </summary>
+    public static readonly List<GeneratorType> Generators =
+    [
+        new GeneratorType(typeof(Biochemistry)),
+        new GeneratorType(typeof(CarotidArteryScan)),
+        new GeneratorType(typeof(Demography)),
+        new GeneratorType(typeof(HospitalAdmissions)),
+        new GeneratorType(typeof(Maternity)),
+        new GeneratorType(typeof(Prescribing)),
+        new GeneratorType(typeof(UltraWide)),
+        new GeneratorType(typeof(Wide))
+    ];
+
+    /// <summary>
     /// Finds all concrete implementations of <see cref="IDataGenerator"/>.
     /// </summary>
     /// <returns></returns>
-    public static IEnumerable<Type> GetAvailableGenerators()
+    public static IEnumerable<GeneratorType> GetAvailableGenerators()
     {
-        //find all generators in the assembly
-        return typeof(IDataGenerator).Assembly.GetExportedTypes()
-            .Where(static t => typeof(IDataGenerator).IsAssignableFrom(t)
-                               && !t.IsAbstract
-                               && t.IsClass);
+        return Generators;
     }
 
     /// <summary>

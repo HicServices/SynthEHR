@@ -7,13 +7,14 @@
 using System;
 using System.Text;
 using BadMedicine.Datasets;
+using Equ;
 
 namespace BadMedicine;
 
 /// <summary>
 /// Randomly generated person for whom datasets can be built
 /// </summary>
-public sealed class Person : IEquatable<Person>
+public sealed class Person : PropertywiseEquatable<Person>
 {
 
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
@@ -178,13 +179,13 @@ public sealed class Person : IEquatable<Person>
 
     private static string GenerateANOCHI(Random r)
     {
-        var toreturn = new StringBuilder();
+        var toReturn = new StringBuilder();
 
         for (var i = 0; i < 10; i++)
-            toreturn.Append(r.Next(10));
+            toReturn.Append(r.Next(10));
 
-        toreturn.Append("_A");
-        return toreturn.ToString();
+        toReturn.Append("_A");
+        return toReturn.ToString();
     }
 
     /// <summary>
@@ -216,27 +217,6 @@ public sealed class Person : IEquatable<Person>
         return $"{toReturn}{genderDigit}{checkDigit}";
     }
 
-    /// <inheritdoc />
-    public bool Equals(Person other)
-    {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
-
-        return string.Equals(Forename, other.Forename) && string.Equals(Surname, other.Surname) && string.Equals(CHI, other.CHI) && string.Equals(ANOCHI, other.ANOCHI) && Gender == other.Gender && Equals(Address, other.Address) && Equals(PreviousAddress, other.PreviousAddress);
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != GetType()) return false;
-
-        return Equals((Person) obj);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(Forename, Surname, CHI, ANOCHI, Gender, Address, PreviousAddress);
 
     private static readonly string[] CommonGirlForenames =
     [

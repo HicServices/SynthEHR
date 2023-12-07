@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using BadMedicine.Configuration;
@@ -82,12 +83,12 @@ internal static class Program
             //if the user only wants to extract a single dataset
             if(!string.IsNullOrEmpty(opts.Dataset))
             {
-                var match = generators.FirstOrDefault(g => g.Name.Equals(opts.Dataset));
-                if(match == null)
+                var match = generators.FirstOrDefault(g => g.Type.Name.Equals(opts.Dataset));
+                if(match.Type == null)
                 {
                     Console.WriteLine($"Could not find dataset called '{opts.Dataset}'");
                     Console.WriteLine(
-                        $"Generators found were:{Environment.NewLine}{string.Join(Environment.NewLine, generators.Select(static g => g.Name))}");
+                        $"Generators found were:{Environment.NewLine}{string.Join(Environment.NewLine, generators.Select(static g => g.Type.Name))}");
                     _returnCode = 2;
                     return;
                 }
@@ -101,7 +102,7 @@ internal static class Program
                 try
                 {
                     //for each generator
-                    foreach (var instance in generators.Select(g => DataGeneratorFactory.Create(g, r)))
+                    foreach (var instance in generators.Select(([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] g) => DataGeneratorFactory.Create(g.Type, r)))
                     {
                         _returnCode = Math.Min(RunDatabaseTarget(identifiers,config.Database, instance,opts.NumberOfRows),_returnCode);
                     }
@@ -121,9 +122,9 @@ internal static class Program
             //for each generator
             foreach (var g in generators)
             {
-                var instance = DataGeneratorFactory.Create(g, r);
+                var instance = DataGeneratorFactory.Create(g.Type, r);
 
-                var targetFile = new FileInfo(Path.Combine(dir.FullName, $"{g.Name}.csv"));
+                var targetFile = new FileInfo(Path.Combine(dir.FullName, $"{g.Type.Name}.csv"));
                 instance.GenerateTestDataFile(identifiers, targetFile, opts.NumberOfRows);
             }
 

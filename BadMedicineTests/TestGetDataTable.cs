@@ -20,7 +20,7 @@ internal sealed class TestGetDataTable
         people.GeneratePeople(5000,r);
 
         //each dataset
-        foreach (var dt in DataGeneratorFactory.GetAvailableGenerators().Select(t => DataGeneratorFactory.Create(t, r))
+        foreach (var dt in DataGeneratorFactory.GetAvailableGenerators().Select(t => DataGeneratorFactory.Create(t.Type, r))
                      .Select(instance => instance.GetDataTable(people, 500)))
         {
             Assert.That(dt.Rows, Has.Count.EqualTo(500));

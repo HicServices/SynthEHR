@@ -80,7 +80,7 @@ internal sealed class DescriptionsTests
     [Test]
     public void Test_GetAllDescriptions_AllDatasets()
     {
-        foreach(var g in DataGeneratorFactory.GetAvailableGenerators())
+        foreach(var g in DataGeneratorFactory.GetAvailableGenerators().Select(static t=>t.Type))
         {
             Assert.Multiple(() =>
             {

@@ -5,6 +5,7 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
 
 namespace BadMedicine.Datasets;
 
@@ -66,14 +67,14 @@ public class CarotidArteryScan(Random rand) : DataGenerator(rand)
             results[40] = GetGaussian(0,3); //L_AC_RATIO
             results[41] = GetGaussian(0,10); //R_BD_RATIO
             results[42] = GetGaussian(0,5); //R_AC_RATIO
-            results[43] = Swap(Math.Max(1, GetGaussianInt(-5, 9)), new[] { 6, 7, 8 }, 1); //L_CC_STENOSIS   (lots of 1's some non ones but no 6,7 or 8s
+            results[43] = Swap(Math.Max(1, GetGaussianInt(-5, 9)), Enumerable.Range(6,3), 1); //L_CC_STENOSIS   (lots of 1's some non ones but no 6,7 or 8s
             results[44] = GetGaussian(0,2); //L_CC_PEAK_SYS
             results[45] = GetGaussian(0,0.09); //L_GetGaussian(0,2);
-            results[46] = Swap(GetGaussianInt(1,8),new[]{7},9); //L_IC_STENOSIS
+            results[46] = Swap(GetGaussianInt(1,8),Enumerable.Range(7,1),9); //L_IC_STENOSIS
             results[47] = GetGaussian(0,4); //L_IC_PEAK_SYS
             results[48] = GetGaussian(0,4); //L_IC_END_DIA
             results[49] = Math.Max(1, GetGaussianInt(0, 9)); //L_EC_STENOSIS
-            results[50] = Swap(Math.Max(1, GetGaussianInt(0, 9)), new[] { 5,6,7 }, 9); //L_PLAQUE
+            results[50] = Swap(Math.Max(1, GetGaussianInt(0, 9)), Enumerable.Range(5,3), 9); //L_PLAQUE
             results[51] = Math.Min(GetGaussianInt(1, 20), 8); //L_SYMPTOMS
             results[52] = 0; //L_BRUIT
             results[53] = 0; //L_CC_STEN_A
@@ -81,14 +82,14 @@ public class CarotidArteryScan(Random rand) : DataGenerator(rand)
             results[55] = Math.Max(1, GetGaussianInt(-5, 4)); //R_VERT_ARTERY
             results[56] = 0; //R_BRUIT
             results[57] = Math.Min(GetGaussianInt(1, 20), 8); //R_SYMPTOMS
-            results[58] = Swap(Math.Max(1, GetGaussianInt(0, 9)), new[] { 5, 6, 7 }, 9);//R_PLAQUE
+            results[58] = Swap(Math.Max(1, GetGaussianInt(0, 9)), Enumerable.Range(5, 3), 9);//R_PLAQUE
             results[59] = 0; //L_CC_STEN_C
             results[60] = Math.Max(1, GetGaussianInt(-5, 9)); //R_EC_STENOSIS
             results[61] = 0; //R_IC_PEAK_SYS
-            results[62] = Swap(GetGaussianInt(1, 8),new[]{7},9); //R_IC_STENOSIS
+            results[62] = Swap(GetGaussianInt(1, 8),Enumerable.Range(7,1),9); //R_IC_STENOSIS
             results[63] = GetGaussian(0,0.2); //R_CC_END_DIA
             results[64] = GetGaussian(0, 2); //R_CC_PEAK_SYS
-            results[65] = Swap(Math.Max(1, GetGaussianInt(-5, 9)),new []{6,7,8},1); //R_CC_STENOSIS
+            results[65] = Swap(Math.Max(1, GetGaussianInt(-5, 9)), Enumerable.Range(6, 3),1); //R_CC_STENOSIS
             results[66] = Math.Max(1, GetGaussianInt(-5, 4)); //L_VERT_ARTERY
             results[67] = GetGaussian(0, 2); //R_IC_END_DIA
 
