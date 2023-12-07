@@ -7,24 +7,23 @@
 using System;
 using System.Collections.Generic;
 
-namespace BadMedicine
+namespace BadMedicine;
+
+/// <inheritdoc/>
+public class PersonCollection : IPersonCollection
 {
     /// <inheritdoc/>
-    public class PersonCollection:IPersonCollection
+    public Person[] People { get; private set; }
+
+    internal readonly HashSet<string> AlreadyGeneratedCHIs = [];
+    internal readonly HashSet<string> AlreadyGeneratedANOCHIs = [];
+
+    /// <inheritdoc/>
+    public void GeneratePeople(int numberOfUniqueIndividuals, Random random)
     {
-        /// <inheritdoc/>
-        public Person[] People { get; private set; }
+        People = new Person[numberOfUniqueIndividuals];
 
-        public HashSet<string> AlreadyGeneratedCHIs = new HashSet<string>();
-        public HashSet<string> AlreadyGeneratedANOCHIs = new HashSet<string>();
-
-        /// <inheritdoc/>
-        public void GeneratePeople(int numberOfUniqueIndividuals, Random random)
-        {
-            People = new Person[numberOfUniqueIndividuals];
-
-            for (var i = 0; i < numberOfUniqueIndividuals; i++)
-                People[i]=new Person(random,this);
-        }
+        for (var i = 0; i < numberOfUniqueIndividuals; i++)
+            People[i] = new Person(random, this);
     }
 }

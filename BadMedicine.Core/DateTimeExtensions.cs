@@ -1,35 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace BadMedicine
+namespace BadMedicine;
+
+/// <summary>
+/// Extension methods for the <see cref="DateTime"/> class
+/// </summary>
+public static class DateTimeExtensions
 {
     /// <summary>
-    /// Extension methods for the <see cref="DateTime"/> class
+    /// Returns a new <see cref="DateTime"/> representing the maximum of <paramref name="a"/> and <paramref name="b"/>
     /// </summary>
-    public static class DateTimeExtensions
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static DateTime Max(this DateTime a, DateTime b)
     {
-        /// <summary>
-        /// Returns a new <see cref="DateTime"/> representing the maximum of <paramref name="a"/> and <paramref name="b"/>
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static DateTime Max(this DateTime a, DateTime b)
-        {
             return new DateTime(Math.Max(a.Ticks, b.Ticks));
         }
 
-        /// <summary>
-        /// Returns a new <see cref="DateTime"/> representing the minimum of <paramref name="a"/> and <paramref name="b"/>
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static DateTime Min(this DateTime a, DateTime b)
-        {
+    /// <summary>
+    /// Returns a new <see cref="DateTime"/> representing the minimum of <paramref name="a"/> and <paramref name="b"/>
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    public static DateTime Min(this DateTime a, DateTime b)
+    {
             return new DateTime(Math.Min(a.Ticks, b.Ticks));
         }
 
-    }
 }

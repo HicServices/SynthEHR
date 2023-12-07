@@ -6,25 +6,24 @@
 
 using System;
 
-namespace BadMedicine
+namespace BadMedicine;
+
+/// <summary>
+/// A factory and collection for <see cref="Person"/>.  Pass around to ensure all datasets share the same
+/// patient identifiers.
+/// </summary>
+public interface IPersonCollection
 {
     /// <summary>
-    /// A factory and collection for <see cref="Person"/>.  Pass around to ensure all datasets share the same
-    /// patient identifiers.
+    /// The last set of randomly generated patients
     /// </summary>
-    public interface IPersonCollection
-    {
-        /// <summary>
-        /// The last set of randomly generated patients
-        /// </summary>
-        Person[] People { get; }
+    Person[] People { get; }
 
-        /// <summary>
-        /// Generates <paramref name="numberOfUniqueIndividuals"/> random people (populating <see cref="People"/>).
-        /// </summary>
-        /// <param name="numberOfUniqueIndividuals">Number of <see cref="People"/> to generate</param>
-        /// <param name="random">The seed upon which to generate data</param>
-        void GeneratePeople(int numberOfUniqueIndividuals, Random random );
+    /// <summary>
+    /// Generates <paramref name="numberOfUniqueIndividuals"/> random people (populating <see cref="People"/>).
+    /// </summary>
+    /// <param name="numberOfUniqueIndividuals">Number of <see cref="People"/> to generate</param>
+    /// <param name="random">The seed upon which to generate data</param>
+    void GeneratePeople(int numberOfUniqueIndividuals, Random random );
 
-    }
 }

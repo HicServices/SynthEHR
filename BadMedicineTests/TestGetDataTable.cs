@@ -6,15 +6,13 @@ using NUnit.Framework;
 
 namespace BadMedicineTests;
 
-class TestGetDataTable
+internal sealed class TestGetDataTable
 {
     [Test]
     public void Test_GetDataTableForAllDatasets_ReturnsCorrectRowCount()
     {
-        var factory = new DataGeneratorFactory();
-
         //there should be some supported datasets
-        Assert.Greater(factory.GetAvailableGenerators().Count(),0);
+        Assert.That(DataGeneratorFactory.GetAvailableGenerators().Count(), Is.GreaterThan(0));
 
         var r = new Random(500);
 
@@ -22,19 +20,10 @@ class TestGetDataTable
         people.GeneratePeople(5000,r);
 
         //each dataset
-        foreach (var t in factory.GetAvailableGenerators())
+        foreach (var dt in DataGeneratorFactory.GetAvailableGenerators().Select(t => DataGeneratorFactory.Create(t.Type, r))
+                     .Select(instance => instance.GetDataTable(people, 500)))
         {
-            try
-            {
-                var instance = factory.Create(t, r);
-                var dt = instance.GetDataTable(people,500);
-                Assert.AreEqual(500,dt.Rows.Count);
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Test failed for Type '{t.Name}'",e);
-
-            }
+            Assert.That(dt.Rows, Has.Count.EqualTo(500));
         }
     }
 }

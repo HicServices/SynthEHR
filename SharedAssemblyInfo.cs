@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using System.Reflection;
 
 [assembly: AssemblyCompany("Health Informatics Centre, University of Dundee")]
@@ -12,8 +10,3 @@ using System.Reflection;
 [assembly: AssemblyVersion("1.1.2")]
 [assembly: AssemblyFileVersion("1.1.2")]
 [assembly: AssemblyInformationalVersion("1.1.2")]
-
-namespace System.Runtime.CompilerServices
-{
-    public class IsExternalInit { }
-}

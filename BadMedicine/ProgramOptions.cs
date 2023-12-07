@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using CommandLine;
 using CommandLine.Text;
 
 namespace BadMedicine;
 
-class ProgramOptions
+internal sealed class ProgramOptions
 {
     [Value(0,HelpText = "Output directory to create CSV files in",Required=true)]
     public string OutputDirectory { get; set; }
@@ -32,13 +30,13 @@ class ProgramOptions
         get
         {
             yield return
-                new Example("Generate test data", new ProgramOptions { OutputDirectory = @"c:/temp" });
+                new Example("Generate test data", new ProgramOptions { OutputDirectory = "c:/temp" });
 
             yield return
-                new Example("Generate a custom amount of data", new ProgramOptions { OutputDirectory = @"c:/temp",NumberOfPatients = 5000, NumberOfRows = 20000});
+                new Example("Generate a custom amount of data", new ProgramOptions { OutputDirectory = "c:/temp",NumberOfPatients = 5000, NumberOfRows = 20000});
 
             yield return
-                new Example("Generate only a single dataset", new ProgramOptions { OutputDirectory = @"c:/temp",NumberOfPatients = 5000, NumberOfRows = 20000, Dataset = "TestDemography"});
+                new Example("Generate only a single dataset", new ProgramOptions { OutputDirectory = "c:/temp",NumberOfPatients = 5000, NumberOfRows = 20000, Dataset = "TestDemography"});
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿namespace BadMedicine.Configuration;
 
-class Config
+internal class Config
 {
     public TargetDatabase Database { get;set; }
 }

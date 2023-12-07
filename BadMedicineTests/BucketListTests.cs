@@ -1,23 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using BadMedicine;
 using NUnit.Framework;
 
 namespace BadMedicineTests;
 
-class BucketListTests
+internal sealed class BucketListTests
 {
+    private static readonly int[] ZeroOne = [0, 1];
+    private static readonly int[] Zero = [0];
+
     [Test]
     public void Test_BucketList_OneElement()
     {
         var r = new Random(100);
 
-        var list = new BucketList<string>();
-        list.Add(1,"fish");
+        var list = new BucketList<string>
+        {
+            { 1, "fish" }
+        };
 
-        Assert.AreEqual("fish",list.GetRandom(r));
-        Assert.AreEqual("fish",list.GetRandom(new []{0},r));
+        Assert.Multiple(() =>
+        {
+            Assert.That(list.GetRandom(r), Is.EqualTo("fish"));
+            Assert.That(list.GetRandom(Zero, r), Is.EqualTo("fish"));
+        });
     }
 
     [TestCase(true)]
@@ -25,18 +31,19 @@ class BucketListTests
     public void Test_BucketList_TwoElements(bool passIndices)
     {
         var r = new Random(100);
-        var list = new BucketList<string>();
-
-        //we expect twice as many blue as red
-        list.Add(1,"red");
-        list.Add(2,"blue");
+        var list = new BucketList<string>
+        {
+            //we expect twice as many blue as red
+            { 1, "red" },
+            { 2, "blue" }
+        };
 
         var countRed = 0;
         var countBlue = 0;
 
         for (var i = 0; i < 1000; i++)
         {
-            switch (passIndices ? list.GetRandom(r) : list.GetRandom(new[] {0, 1},r))
+            switch (passIndices ? list.GetRandom(r) : list.GetRandom(ZeroOne,r))
             {
                 case "red":
                     countRed++;
@@ -50,8 +57,11 @@ class BucketListTests
             }
         }
 
-        Assert.AreEqual(311,countRed);
-        Assert.AreEqual(689,countBlue);
+        Assert.Multiple(() =>
+        {
+            Assert.That(countRed, Is.EqualTo(311));
+            Assert.That(countBlue, Is.EqualTo(689));
+        });
 
     }
 }

@@ -8,39 +8,38 @@ using System;
 using System.Data;
 using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <summary>
+/// Interface for classes which generate test data to disk.
+/// </summary>
+public interface IDataGenerator
 {
     /// <summary>
-    /// Interface for classes which generate test data to disk.
+    /// Periodically fired when writing out rows
     /// </summary>
-    public interface IDataGenerator
-    {
-        /// <summary>
-        /// Periodically fired when writing out rows
-        /// </summary>
-        event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
+    event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
 
-        /// <summary>
-        /// Create the dataset in the given file location using person identifiers in the <paramref name="cohort"/>
-        /// </summary>
-        /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
-        /// <param name="target">The file that will be created</param>
-        /// <param name="numberOfRecords">The number of fake data records that should appear in the file created</param>
-        void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords);
+    /// <summary>
+    /// Create the dataset in the given file location using person identifiers in the <paramref name="cohort"/>
+    /// </summary>
+    /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
+    /// <param name="target">The file that will be created</param>
+    /// <param name="numberOfRecords">The number of fake data records that should appear in the file created</param>
+    void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords);
 
-        /// <summary>
-        /// Returns a single row of data for writing to the output CSV.  This can include string elements with newlines, quotes etc.
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        object[] GenerateTestDataRow(Person p);
+    /// <summary>
+    /// Returns a single row of data for writing to the output CSV.  This can include string elements with newlines, quotes etc.
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    object[] GenerateTestDataRow(Person p);
 
-        /// <summary>
-        /// Create the dataset in memory using the person identifiers in the <paramref name="cohort"/>
-        /// </summary>
-        /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
-        /// <param name="numberOfRecords">The number of fake data records that should be in the table returned</param>
-        /// <returns></returns>
-        DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords);
-    }
+    /// <summary>
+    /// Create the dataset in memory using the person identifiers in the <paramref name="cohort"/>
+    /// </summary>
+    /// <param name="cohort">All people in the test data cohort, allows linkage between different randomly generated test datasets</param>
+    /// <param name="numberOfRecords">The number of fake data records that should be in the table returned</param>
+    /// <returns></returns>
+    DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords);
 }

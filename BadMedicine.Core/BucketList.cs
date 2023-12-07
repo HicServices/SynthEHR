@@ -1,81 +1,96 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 
-namespace BadMedicine
+namespace BadMedicine;
+
+/// <summary>
+/// Picks random object of Type T based on a specified probability for each element.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public sealed class BucketList<T> : IEnumerable<(T item,int probability)>
 {
+    private Lazy<int> _total;
+    private readonly List<(T item, int probability)> _list=[];
+
     /// <summary>
-    /// Picks random object of Type T based on a specified probability for each element.
+    /// Construct an empty BucketList
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class BucketList<T>
+    public BucketList()
     {
+        _total = new Lazy<int>(GetTotal,LazyThreadSafetyMode.ExecutionAndPublication);
+    }
 
-        readonly List<T> _buckets = new List<T>();
-        readonly List<int> _probabilities = new List<int>();
+    private int GetTotal() => _list.Sum(static t => t.probability);
 
-        private int? _total = null;
+    /// <summary>
+    /// Returns a random bucket (based on the probability of each bucket)
+    /// </summary>
+    /// <returns></returns>
+    public T GetRandom(Random r)
+    {
+        var toPick = r.Next(0, _total.Value);
 
-        /// <summary>
-        /// Returns a random bucket (based on the probability of each bucket)
-        /// </summary>
-        /// <returns></returns>
-        public T GetRandom(Random r)
+        for (var i = 0; i < _list.Count; i++)
         {
-            //cache the total
-            _total = _total??_probabilities.Sum();
-
-            var toPick = r.Next(0, _total.Value);
-
-            for (var i = 0; i < _probabilities.Count; i++)
-            {
-                toPick -= _probabilities[i];
-                if (toPick < 0)
-                    return _buckets[i];
-            }
-
-            throw new Exception("Could not GetRandom");
+            toPick -= _list[i].probability;
+            if (toPick < 0)
+                return _list[i].item;
         }
 
+        throw new Exception("Could not GetRandom");
+    }
 
-        /// <summary>
-        /// Returns a random bucket from the element indices provided (based on the probability of each bucket)
-        /// </summary>
-        /// <param name="usingOnlyIndices"></param>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public T GetRandom(IEnumerable<int> usingOnlyIndices, Random r)
+
+    /// <summary>
+    /// Returns a random bucket from the element indices provided (based on the probability of each bucket)
+    /// </summary>
+    /// <param name="usingOnlyIndices"></param>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public T GetRandom(IEnumerable<int> usingOnlyIndices, Random r)
+    {
+        var idx = usingOnlyIndices.ToList();
+
+        var total = idx.Sum(t => _list[t].probability);
+
+        var toPick = r.Next(0, total);
+
+        foreach (var i in idx)
         {
-            var idx = usingOnlyIndices.ToList();
-
-            var total = idx.Sum(t=>_probabilities[t]);
-
-            var toPick = r.Next(0, total);
-
-            foreach (var i in idx)
-            {
-                toPick -= _probabilities[i];
-                if (toPick < 0)
-                    return _buckets[i];
-            }
-
-            throw new Exception("Could not GetRandom");
+            toPick -= _list[i].probability;
+            if (toPick < 0)
+                return _list[i].item;
         }
 
+        throw new Exception("Could not GetRandom");
+    }
 
 
-        /// <summary>
-        /// Adds a new bucket to the list which will be returned using the total <paramref name="probability"/> ratio (relative
-        /// to the other buckets).
-        /// </summary>
-        /// <param name="probability"></param>
-        /// <param name="toAdd"></param>
-        public void Add(int probability, T toAdd)
-        {
-            _probabilities.Add(probability);
-            _buckets.Add(toAdd);
-            _total = null;
-        }
+
+    /// <summary>
+    /// Adds a new bucket to the list which will be returned using the total <paramref name="probability"/> ratio (relative
+    /// to the other buckets).
+    /// </summary>
+    /// <param name="probability"></param>
+    /// <param name="toAdd"></param>
+    public void Add(int probability, T toAdd)
+    {
+        _list.Add((toAdd,probability));
+        if (_total.IsValueCreated)
+            _total = new Lazy<int>(GetTotal, LazyThreadSafetyMode.ExecutionAndPublication);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<(T item, int probability)> GetEnumerator()
+    {
+        return ((IEnumerable<(T item, int probability)>)_list).GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)_list).GetEnumerator();
     }
 }

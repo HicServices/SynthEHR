@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace BadMedicineTests;
 
-public class TestAdmissionTests
+public sealed class TestAdmissionTests
 {
     [Test]
     public void Test_GetRandomIcdCode()
@@ -20,13 +20,13 @@ public class TestAdmissionTests
         //Create test data for that person
         var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
 
-        Assert.IsNotNull(a.Person.CHI);
-        Assert.IsNotNull(a.Person.DateOfBirth);
-        Assert.IsNotNull(a.Person.Address.Line1);
-        Assert.IsNotNull(a.Person.Address.Postcode);
-        Assert.IsNotNull(a.AdmissionDate);
-        Assert.IsNotNull(a.DischargeDate);
-        Assert.IsNotNull(a.MainCondition);
+        Assert.Multiple(() =>
+        {
+            Assert.That(a.Person.CHI, Is.Not.Null);
+            Assert.That(a.Person.Address.Line1, Is.Not.Null);
+            Assert.That(a.Person.Address.Postcode, Is.Not.Null);
+            Assert.That(a.MainCondition, Is.Not.Null);
+        });
     }
 
     [Test]
@@ -37,14 +37,14 @@ public class TestAdmissionTests
 
         var swSetup = Stopwatch.StartNew();
         //first is always slow
-        var first= new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
+        _= new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
 
         Console.WriteLine($"Setup took{swSetup.ElapsedMilliseconds}ms");
 
         var sw = Stopwatch.StartNew();
         for (var i = 0; i < 100000; i++)
         {
-            var a = new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
+            _=new HospitalAdmissionsRecord(person,person.DateOfBirth,r);
         }
 
         Console.WriteLine($"Remainder took:{sw.ElapsedMilliseconds}ms");

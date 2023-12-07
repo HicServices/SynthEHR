@@ -2,14 +2,12 @@
 using BadMedicine.Datasets;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace BadMedicineTests;
 
-class MaternityTests
+internal sealed class MaternityTests
 {
     [Test]
     public void Test_IsEligible()
@@ -20,8 +18,11 @@ class MaternityTests
 
         var m = new Maternity(r);
 
-        Assert.IsTrue(pc.People.Where(m.IsEligible).All(e=>e.Gender == 'F'));
-        Assert.LessOrEqual(pc.People.Count(m.IsEligible),47, "Expected less than 50:50 due to restrictions on both Gender and age");
+        Assert.Multiple(() =>
+        {
+            Assert.That(pc.People.Where(m.IsEligible).All(static e => e.Gender == 'F'), Is.True);
+            Assert.That(pc.People.Count(m.IsEligible), Is.LessThanOrEqualTo(47), "Expected less than 50:50 due to restrictions on both Gender and age");
+        });
     }
 
     [Test]
@@ -35,19 +36,22 @@ class MaternityTests
 
         //get 50k records
         var dt = m.GetDataTable(pc,50000);
-        Assert.AreEqual(50000,dt.Rows.Count);
+        Assert.That(dt.Rows, Has.Count.EqualTo(50000));
 
-        var countFromPopularLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T101H"));
-        var countFromRareLocation = dt.Rows.Cast<DataRow>().Count(row => row["SendingLocation"].Equals("T306H"));
+        var countFromPopularLocation = dt.Rows.Cast<DataRow>().Count(static row => row["SendingLocation"].Equals("T101H"));
+        var countFromRareLocation = dt.Rows.Cast<DataRow>().Count(static row => row["SendingLocation"].Equals("T306H"));
 
-        Assert.Greater(countFromPopularLocation,0);
-        Assert.Greater(countFromRareLocation,0);
+        Assert.Multiple(() =>
+        {
+            Assert.That(countFromPopularLocation, Is.GreaterThan(0));
+            Assert.That(countFromRareLocation, Is.GreaterThan(0));
+        });
 
         // should be more from popular location
-        Assert.Greater(countFromPopularLocation , countFromRareLocation);
+        Assert.That(countFromPopularLocation, Is.GreaterThan(countFromRareLocation));
 
         // like a lot more!
-        Assert.Greater(countFromPopularLocation , countFromRareLocation * 10);
+        Assert.That(countFromPopularLocation, Is.GreaterThan(countFromRareLocation * 10));
     }
 
     [Test]
@@ -60,13 +64,16 @@ class MaternityTests
         pc.GeneratePeople(100,r);
 
         var eligible = pc.People.Where(m.IsEligible);
-        var dict = eligible.ToDictionary(k=>k,v=>new MaternityRecord(v,r));
+        var dict = eligible.ToDictionary(static k=>k,v=>new MaternityRecord(v,r));
 
-        //gave birth after being born themselves
-        Assert.IsTrue(dict.All(kv=>kv.Key.DateOfBirth < kv.Value.Date));
+        Assert.Multiple(() =>
+        {
+            //gave birth after being born themselves
+            Assert.That(dict.All(static kv => kv.Key.DateOfBirth < kv.Value.Date), Is.True);
 
-        //no future dates
-        Assert.IsTrue(dict.All(kv=> kv.Value.Date <= DataGenerator.Now));
+            //no future dates
+            Assert.That(dict.All(static kv => kv.Value.Date <= DataGenerator.Now), Is.True);
+        });
 
 
 
