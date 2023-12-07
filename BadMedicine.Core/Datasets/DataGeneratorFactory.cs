@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace BadMedicine.Datasets;
 
 /// <summary>
 /// Finds Types and Creates instances of <see cref="IDataGenerator"/> implementations
 /// </summary>
-public class DataGeneratorFactory
+public static class DataGeneratorFactory
 {
     /// <summary>
     /// Trivial type wrapper as workaround for https://github.com/dotnet/sdk/issues/27997

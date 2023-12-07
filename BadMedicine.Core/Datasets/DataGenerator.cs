@@ -20,7 +20,7 @@ using MathNet.Numerics.Distributions;
 namespace BadMedicine.Datasets;
 
 /// <summary>
-/// Base class for all randomly generated datasets.  Handles generating random datatypes and writing
+/// Base class for all randomly generated datasets.  Handles generating random data types and writing
 /// out to csv etc.
 /// </summary>
 public abstract class DataGenerator : IDataGenerator
@@ -95,19 +95,21 @@ public abstract class DataGenerator : IDataGenerator
     /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligible then returns a random person.
     /// </summary>
     /// <param name="people"></param>
-    /// <param name="r"></param>
+    /// <param name="random"></param>
     /// <returns></returns>
-    public Person GetRandomEligiblePerson(Person[] people, Random r)
+    public Person GetRandomEligiblePerson(Person[] people, Random random=null)
     {
+        random ??= r;
+
         if (people.Length == 0)
             throw new ArgumentException("Must pass at least 1 person to GetRandomEligiblePerson", nameof(people));
 
         var eligible = people.Where(IsEligible).ToArray();
 
         return
-            eligible.Length != 0 ? eligible[r.Next(eligible.Length)]
+            eligible.Length != 0 ? eligible[random.Next(eligible.Length)]
                 //if nobody is eligible then everyone is!
-                : people[r.Next(people.Length)];
+                : people[random.Next(people.Length)];
     }
 
     /// <inheritdoc/>

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Improve BucketList performance
+- Some bugfixes change random data generation, cross-version consistency not preserved
+- Add Equ 2.3.0
+- BadMedicine itself now AOT/trim clean, but dependencies are not
+
 ## [1.1.2] - 2022-11-22
 
 ### Dependencies
