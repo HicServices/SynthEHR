@@ -43,7 +43,7 @@
     <EmbeddedResource Include="Datasets\Maternity.csv" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="30.0.3" />
+    <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="Equ" Version="2.3.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
