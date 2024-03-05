@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2024-03-06
 
 - Now targets .Net 8.0
-- Improve BucketList performance
 - Some bugfixes change random data generation, cross-version consistency not preserved
-- Add Equ 2.3.0
 - BadMedicine itself now AOT/trim clean, but dependencies are not
-- Bump HIC.FAnsiSql from 3.0.1 to 3.1.1
+- Improve BucketList performance
+- Add Equ 2.3.0
+- Bump HIC.FAnsiSql from 3.0.1 to 3.2.0
+- Bump CvsHelper from 30.0.1 to 31.0.2
 
 ## [1.1.2] - 2022-11-22
 
@@ -81,7 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Patient birth dates now go from 1914 (Person.MinimumYearOfBirth) allowing for patients aged up to 100 years
 
-[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.1.2...develop
+[Unreleased]: https://github.com/HicServices/BadMedicine/compare/v1.2.0...develop
+[1.2.0]: https://github.com/HicServices/BadMedicine/compare/v1.1.2...v1.2.0
 [1.1.2]: https://github.com/HicServices/BadMedicine/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/HicServices/BadMedicine/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/HicServices/BadMedicine/compare/v1.0.0...v1.1.0
