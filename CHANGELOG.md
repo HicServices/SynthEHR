@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2024-03-06
+
+- Now targets .Net 8.0
 - Improve BucketList performance
 - Some bugfixes change random data generation, cross-version consistency not preserved
 - Add Equ 2.3.0
 - BadMedicine itself now AOT/trim clean, but dependencies are not
+- Bump HIC.FAnsiSql from 3.0.1 to 3.1.1
 
 ## [1.1.2] - 2022-11-22
 
