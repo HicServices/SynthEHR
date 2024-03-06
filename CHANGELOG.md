@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Equ 2.3.0
 - Bump HIC.FAnsiSql from 3.0.1 to 3.2.0
 - Bump CvsHelper from 30.0.1 to 31.0.2
+- Bump YamlDotNet from 12.0.2 to 15.1.2
 
 ## [1.1.2] - 2022-11-22
 
