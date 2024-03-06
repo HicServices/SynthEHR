@@ -5,157 +5,122 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using MathNet.Numerics.Distributions;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <summary>
+/// Data class representing a single row in <see cref="Biochemistry"/> (use if you want to use randomly generated data directly
+/// rather than generate it into a file).
+/// </summary>
+public sealed class BiochemistryRecord
 {
-    /// <summary>
-    /// Data class representing a single row in <see cref="Biochemistry"/> (use if you want to use randomly generated data directly
-    /// rather than generate it into a file).
-    /// </summary>
-    public class BiochemistryRecord
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="LabNumber"]'/>
+    public readonly string LabNumber;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="SampleType"]'/>
+    public readonly string SampleType;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="TestCode"]'/>
+    public readonly string TestCode;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Result"]'/>
+    public readonly string Result;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ReadCodeValue"]'/>
+    public readonly string ReadCodeValue;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Healthboard"]'/>
+    public readonly string Healthboard;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ArithmeticComparator"]'/>
+    public readonly string ArithmeticComparator;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Interpretation"]'/>
+    public readonly string Interpretation;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="QuantityUnit"]'/>
+    public readonly string QuantityUnit;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeHighValue"]'/>
+    public readonly string RangeHighValue;
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeLowValue"]'/>
+    public readonly string RangeLowValue;
+
+    private static readonly BucketList<BiochemistryRandomDataRow> BucketList;
+    static BiochemistryRecord()
     {
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="LabNumber"]'/>
-        public string LabNumber;
+        using var dt = new DataTable();
+        dt.Columns.Add("RecordCount", typeof(int));
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="SampleType"]'/>
-        public string SampleType;
+        DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord), "Biochemistry.csv", dt);
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="TestCode"]'/>
-        public string TestCode;
+        BucketList = [];
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Result"]'/>
-        public string Result;
-        
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ReadCodeValue"]'/>
-        public string ReadCodeValue;
+        foreach (var row in dt.Rows.Cast<DataRow>().OrderByDescending(static row => (int)row["RecordCount"]))
+            BucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
+    }
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Healthboard"]'/>
-        public string Healthboard;
+    /// <summary>
+    /// Generates a new random biochemistry test.
+    /// </summary>
+    /// <param name="r"></param>
+    public BiochemistryRecord(Random r)
+    {
+        //get a random row from the lookup table - based on its representation within our biochemistry dataset
+        var row = BucketList.GetRandom(r);
+        LabNumber = GetRandomLabNumber(r);
+        TestCode = row.LocalClinicalCodeValue;
+        SampleType = row.SampleName;
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="ArithmeticComparator"]'/>
-        public string ArithmeticComparator;
+        Result = row.GetQVResult(r);
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="Interpretation"]'/>
-        public string Interpretation;
+        ArithmeticComparator = row.ArithmeticComparator;
+        Interpretation = row.Interpretation;
+        QuantityUnit = row.QuantityUnit;
+        RangeHighValue = row.RangeHighValue.HasValue ? row.RangeHighValue.ToString() : "NULL";
+        RangeLowValue = row.RangeLowValue.HasValue ? row.RangeLowValue.ToString() : "NULL";
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="QuantityUnit"]'/>
-        public string QuantityUnit;
+        Healthboard = row.hb_extract;
+        ReadCodeValue = row.ReadCodeValue;
+    }
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeHighValue"]'/>
-        public string RangeHighValue;
 
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry/Field[@name="RangeLowValue"]'/>
-        public string RangeLowValue;
 
-        static object oLockInitialize = new object();
-        private static bool initialized;
+    private static string GetRandomLabNumber(Random r)
+    {
+        return r.Next(0, 2) == 0 ? $"CC{r.Next(0, 1000000)}" : $"BC{r.Next(0, 1000000)}";
+    }
 
-        private  static BucketList<BiochemistryRandomDataRow> _bucketList;
+    private sealed class BiochemistryRandomDataRow(DataRow row)
+    {
+        public readonly string LocalClinicalCodeValue = (string)row["LocalClinicalCodeValue"];
+        public readonly string ReadCodeValue = (string)row["ReadCodeValue"];
+        public readonly string hb_extract = (string)row["hb_extract"];
+        public readonly string SampleName = (string)row["SampleName"];
+        public readonly string ArithmeticComparator = (string)row["ArithmeticComparator"];
+        public readonly string Interpretation = (string)row["Interpretation"];
+        public readonly string QuantityUnit = (string)row["QuantityUnit"];
+        public double? RangeHighValue = double.TryParse(row["RangeHighValue"].ToString(), out var rangeLow) ? rangeLow : null;
+        public double? RangeLowValue = double.TryParse(row["RangeLowValue"].ToString(), out var rangeHigh) ? rangeHigh : null;
+        private readonly double? QVAverage = double.TryParse(row["QVAverage"].ToString(), out var min) ? min : null;
+        private readonly double? QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(), out var dev) ? dev : null;
 
         /// <summary>
-        /// Generates a new random biochemistry test.
+        /// Returns a new QV value using the <see cref="QVAverage"/> and <see cref="QVStandardDev"/> seeded with the provided
+        /// <paramref name="r"/>.  Returns null if <see cref="QVAverage"/> or <see cref="QVStandardDev"/> are null.
         /// </summary>
         /// <param name="r"></param>
-        public BiochemistryRecord(Random r)
+        /// <returns></returns>
+        internal string GetQVResult(Random r)
         {
-            lock (oLockInitialize)
-            {
-                if (!initialized)
-                    Initialize();
-                initialized = true;
-            }
-
-            //get a random row from the lookup table - based on its representation within our biochemistry dataset
-            var row = _bucketList.GetRandom(r);
-            LabNumber = GetRandomLabNumber(r);
-            TestCode = row.LocalClinicalCodeValue;
-            SampleType = row.SampleName;
-
-            Result = row.GetQVResult(r);
-
-            ArithmeticComparator = row.ArithmeticComparator;
-            Interpretation = row.Interpretation;
-            QuantityUnit = row.QuantityUnit;
-            RangeHighValue = row.RangeHighValue.HasValue ? row.RangeHighValue.ToString():"NULL";
-            RangeLowValue = row.RangeLowValue.HasValue ? row.RangeLowValue.ToString():"NULL";
-            
-            Healthboard = row.hb_extract;
-            ReadCodeValue = row.ReadCodeValue;
-        }
-
-        
-
-        private string GetRandomLabNumber(Random r )
-        {
-            if(r.Next(0,2)==0)
-                return "CC" + r.Next(0, 1000000);
-
-            return "BC" + r.Next(0, 1000000);
-        }
-        private void Initialize()
-        {
-            using (DataTable dt = new DataTable())
-            {
-                dt.Columns.Add("RecordCount",typeof(int));
-            
-                DataGenerator.EmbeddedCsvToDataTable(typeof(BiochemistryRecord),"Biochemistry.csv",dt);
-             
-                _bucketList = new BucketList<BiochemistryRandomDataRow>();
-
-                foreach (DataRow row in dt.Rows)
-                    _bucketList.Add((int)row["RecordCount"], new BiochemistryRandomDataRow(row));
-            }
-        }
-        
-        private class BiochemistryRandomDataRow
-        {
-            public string LocalClinicalCodeValue;
-            public string ReadCodeValue;
-            public string hb_extract;
-            public string SampleName;
-            public string ArithmeticComparator;
-            public string Interpretation;
-            public string QuantityUnit;
-            public double? RangeHighValue;
-            public double? RangeLowValue;
-            public double? QVAverage;
-            public double? QVStandardDev;
-
-            public BiochemistryRandomDataRow(DataRow row)
-            {
-                LocalClinicalCodeValue  =(string) row["LocalClinicalCodeValue"];
-                ReadCodeValue           =(string) row["ReadCodeValue"];
-                hb_extract              =(string) row["hb_extract"];
-                SampleName              =(string) row["SampleName"];
-                ArithmeticComparator    =(string) row["ArithmeticComparator"];
-                Interpretation          =(string) row["Interpretation"];
-                QuantityUnit            =(string) row["QuantityUnit"];
-                
-                RangeHighValue = double.TryParse(row["RangeHighValue"].ToString(),out var rangeLow) ? rangeLow:(double?) null;
-                RangeLowValue = double.TryParse(row["RangeLowValue"].ToString(),out var rangeHigh) ? rangeHigh:(double?) null;
-                
-                QVAverage = double.TryParse(row["QVAverage"].ToString(),out var min) ? min:(double?) null;
-                QVStandardDev = double.TryParse(row["QVStandardDev"].ToString(),out var dev) ? dev:(double?) null;
-
-            }
-
-            /// <summary>
-            /// Returns a new QV value using the <see cref="QVAverage"/> and <see cref="QVStandardDev"/> seeded with the provided
-            /// <paramref name="r"/>.  Returns null if <see cref="QVAverage"/> or <see cref="QVStandardDev"/> are null.
-            /// </summary>
-            /// <param name="r"></param>
-            /// <returns></returns>
-            internal string GetQVResult(Random r)
-            {
-                if(QVAverage.HasValue && QVStandardDev.HasValue)
-                   return new Normal(QVAverage.Value, QVStandardDev.Value,r).Sample().ToString();
-                 
-                return null;
-            }
+            return !QVAverage.HasValue || !QVStandardDev.HasValue
+                ? null
+                : new Normal(QVAverage.Value, QVStandardDev.Value, r).Sample().ToString(CultureInfo.CurrentCulture);
         }
     }
 }

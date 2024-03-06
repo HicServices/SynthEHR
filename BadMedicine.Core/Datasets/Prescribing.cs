@@ -5,29 +5,25 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
+/// <inheritdoc/>
+public class Prescribing(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
-    public class Prescribing : DataGenerator
+
+    /// <summary>
+    /// Creates a new demography record (GP registration) for the <paramref name="p"/>
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public override object[] GenerateTestDataRow(Person p)
     {
-        /// <inheritdoc/>
-        public Prescribing(Random rand) : base(rand)
-        {
-        }
+            var values = new object[12];
 
-        /// <summary>
-        /// Creates a new demography record (GP registration) for the <paramref name="p"/>
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public override object[] GenerateTestDataRow(Person p)
-        {
-            object[] values = new object[12];
+            var prescription = new PrescribingRecord(r);
 
-            PrescribingRecord prescription = new PrescribingRecord(r);
-            
             values[0] = p.CHI;
             values[1] = p.GetRandomDateDuringLifetime(r);
             values[2] = prescription.Quantity;
@@ -44,25 +40,20 @@ namespace BadMedicine.Datasets
             return values;
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
-            return new string[]
-            {
-                "chi",
-                "PrescribedDate",
-                "Quantity",
-                "Strength",
-                "StrengthNumerical",
-                "FormulationCode",
-                "MeasureCode",
-                "Name",
-                "ApprovedName",
-                "BnfCode",
-                "FormattedBnfCode",
-                "BnfDescription"
-            };
-        }
-
-    }
+    /// <inheritdoc/>
+    protected override string[] GetHeaders() =>
+    [
+        "chi",
+        "PrescribedDate",
+        "Quantity",
+        "Strength",
+        "StrengthNumerical",
+        "FormulationCode",
+        "MeasureCode",
+        "Name",
+        "ApprovedName",
+        "BnfCode",
+        "FormattedBnfCode",
+        "BnfDescription"
+    ];
 }

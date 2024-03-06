@@ -1,88 +1,92 @@
 ﻿using BadMedicine;
 using BadMedicine.Datasets;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace BadMedicineTests
+namespace BadMedicineTests;
+
+internal sealed class DescriptionsTests
 {
-    class DescriptionsTests
+    [Test]
+    public void Test_GetDescription_Dataset()
     {
-        [Test]
-        public void Test_GetDescription_Dataset()
+        Assert.That(Descriptions.Get<Biochemistry>(), Does.Contain("Tayside and Fife labs biochemistry data"));
+    }
+
+    [Test]
+    public void Test_GetDescription_Field()
+    {
+        Assert.Multiple(static () =>
         {
-            var desc = new Descriptions();
+            Assert.That(Descriptions.Get<Biochemistry>("Healthboard"), Does.Contain("Health Board code"));
+            Assert.That(Descriptions.Get("Biochemistry", "Healthboard"), Does.Contain("Health Board code"));
+        });
+    }
 
-            StringAssert.Contains("Tayside and Fife labs biochemistry data",desc.Get<Biochemistry>());
-        }
-
-        [Test]
-        public void Test_GetDescription_Field()
+    [Test]
+    public void Test_GetDescription_FieldNotFound()
+    {
+        Assert.Multiple(static () =>
         {
-            var desc = new Descriptions();
-
-            StringAssert.Contains("Health Board code",desc.Get<Biochemistry>("Healthboard"));
-            StringAssert.Contains("Health Board code",desc.Get("Biochemistry","Healthboard"));
-        }
-
-        [Test]
-        public void Test_GetDescription_FieldNotFound()
+            Assert.That(Descriptions.Get<Biochemistry>("ZappyZappyZappy"), Is.Null);
+            Assert.That(Descriptions.Get("Biochemistry", "ZappyZappyZappy"), Is.Null);
+        });
+    }
+    [Test]
+    public void Test_GetDescription_FieldNotFoundAndDatasetNotFound()
+    {
+        Assert.Multiple(static () =>
         {
-            var desc = new Descriptions();
+            Assert.That(Descriptions.Get("Happy", "ZappyZappyZappy"), Is.Null);
 
-            Assert.IsNull(desc.Get<Biochemistry>("ZappyZappyZappy"));
-            Assert.IsNull(desc.Get("Biochemistry","ZappyZappyZappy"));
-        }
-        [Test]
-        public void Test_GetDescription_FieldNotFoundAndDatasetNotFound()
+            Assert.That(Descriptions.GetAll("Happy"), Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// This tests when the field is in CommonFields not under the dataset
+    /// </summary>
+    [Test]
+    public void Test_GetDescription_ChiField()
+    {
+        Assert.Multiple(static () =>
         {
-            var desc = new Descriptions();
-            Assert.IsNull(desc.Get("Happy","ZappyZappyZappy"));
+            Assert.That(Descriptions.Get<Biochemistry>("chi"), Does.Contain("Community Health Index (CHI) number is a unique personal identifier "));
+            Assert.That(Descriptions.Get("Biochemistry", "chi"), Does.Contain("Community Health Index (CHI) number is a unique personal identifier "));
+        });
+    }
 
-            Assert.IsEmpty(desc.GetAll("Happy"));
-        }
-
-        /// <summary>
-        /// This tests when the field is in CommonFields not under the dataset
-        /// </summary>
-        [Test]
-        public void Test_GetDescription_ChiField()
+    [Test]
+    public void Test_GetAllDescriptions_Biochemistry()
+    {
+        Assert.Multiple(static () =>
         {
-            var desc = new Descriptions();
-            StringAssert.Contains("Community Health Index (CHI) number is a unique personal identifier ",desc.Get<Biochemistry>("chi"));
-            StringAssert.Contains("Community Health Index (CHI) number is a unique personal identifier ",desc.Get("Biochemistry","chi"));
-        }
+            Assert.That(Descriptions.GetAll<Biochemistry>().ToArray(), Has.Length.GreaterThanOrEqualTo(5));
+            Assert.That(Descriptions.GetAll("Biochemistry").ToArray(), Has.Length.GreaterThanOrEqualTo(5));
+            Assert.That(Descriptions.GetAll("Common").ToArray(), Is.Not.Empty);
+        });
 
-        [Test]
-        public void Test_GetAllDescriptions_Biochemistry()
+
+        foreach (var kvp in Descriptions.GetAll<Biochemistry>())
         {
-            var desc = new Descriptions();
-
-            Assert.GreaterOrEqual(desc.GetAll<Biochemistry>().ToArray().Length,5);
-            Assert.GreaterOrEqual(desc.GetAll("Biochemistry").ToArray().Length,5);
-            Assert.GreaterOrEqual(desc.GetAll("Common").ToArray().Length,1);
-
-
-            foreach(var kvp in desc.GetAll<Biochemistry>())
+            Assert.Multiple(() =>
             {
-                Assert.IsTrue(!string.IsNullOrWhiteSpace(kvp.Key), "Found null key");
-                Assert.IsTrue(!string.IsNullOrWhiteSpace(kvp.Value),"Found null description for" + kvp.Key);
-            }
+                Assert.That(!string.IsNullOrWhiteSpace(kvp.Key), Is.True, "Found null key");
+                Assert.That(!string.IsNullOrWhiteSpace(kvp.Value), Is.True, $"Found null description for{kvp.Key}");
+            });
         }
+    }
 
-        [Test]
-        public void Test_GetAllDescriptions_AllDatasets()
+    [Test]
+    public void Test_GetAllDescriptions_AllDatasets()
+    {
+        foreach(var g in DataGeneratorFactory.GetAvailableGenerators().Select(static t=>t.Type))
         {
-            var desc = new Descriptions();
-
-            var factory = new DataGeneratorFactory();
-            foreach(var g in factory.GetAvailableGenerators())
+            Assert.Multiple(() =>
             {
-                Assert.IsNotNull(desc.Get(g.Name),"Dataset '{0}' did not have a summary tag",g.Name);
-                Assert.IsNotEmpty(desc.GetAll(g.Name),"Dataset '{0}' did not have at least one column description",g.Name);
-            }
+                Assert.That(Descriptions.Get(g.Name), Is.Not.Null, $"Dataset '{g.Name}' did not have a summary tag");
+                Assert.That($"Dataset '{g.Name}' did not have at least one column description", Is.Not.Empty);
+            });
         }
     }
 }

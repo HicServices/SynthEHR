@@ -5,47 +5,43 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Demography'/>
+/// <inheritdoc/>
+public class Demography(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Demography'/>
-    public class Demography : DataGenerator
-    {
-        /// <inheritdoc/>
-        public Demography(Random rand) : base(rand)
-        {
-        }
 
-        /// <inheritdoc/>
-        public override object[] GenerateTestDataRow(Person person)
-        {
-            //leave off data load run ID 
+    /// <inheritdoc/>
+    public override object[] GenerateTestDataRow(Person person)
+    {
+            //leave off data load run ID
             var values = new object[39];
-            
+
             values[0] = person.CHI;
             values[1] = GetRandomDateAfter(person.DateOfBirth,r);//all records must have been created after the person was born
-            
+
             if(r.Next(0, 2) == 0)
                 values[2] = true;
             else
                 values[2] = false;
 
             values[3] = "Random record";
-            
+
             if(r.Next(0,10 )== 0)//one in 10 records has one of these (an ALIAS chi)
                 values[4] = person.GetRandomCHI(r);
 
             values[5] = GetRandomCHIStatus(r);
-            values[6] = person.DateOfBirth.Year.ToString().Substring(0,2);
+            values[6] = person.DateOfBirth.Year.ToString()[..2];
             values[7] = person.Surname;
             values[8] = person.Forename;
             values[9] = person.Gender;
 
 
             var randomAddress = new DemographyAddress(r);
-            
-            //if person is dead and dtCreated is after they died use the same address otehrwise use a random one (all records after a person dies have same address)
+
+            //if person is dead and dtCreated is after they died use the same address otherwise use a random one (all records after a person dies have same address)
             values[10] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line1: randomAddress.Line1;
             values[11] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line2: randomAddress.Line2;
             values[12] = person.DateOfDeath != null && (DateTime)values[1]>person.DateOfDeath ? person.Address.Line3: randomAddress.Line3;
@@ -54,27 +50,27 @@ namespace BadMedicine.Datasets
 
             //if the person is dead and the dtCreated of the record is greater than the date of death populate it
             values[15] = person.GetDateOfDeathOrNullOn((DateTime)values[1]); //pass record creation date and get isdead date back
-                
+
             //if we got a date put the source in as R
             if(values[15] != null)
                 values[16] = 'R';
-            
+
 
             if(!string.IsNullOrWhiteSpace(person.Address.Postcode.District))
-                values[17] = person.Address.Postcode.District.Substring(0, 1);
+                values[17] = person.Address.Postcode.District[..1];
 
             values[18] = GetRandomLetter(true,r);
 
             //healthboard 'A' use padding on the name field (to a length of 10!)
             if((char)values[18] == 'A')
                 if (values[8] != null)
-                    while (values[8].ToString().Length < 10)
-                        values[8] = values[8] + " ";
+                    while (values[8].ToString()?.Length < 10)
+                        values[8] = $"{values[8]} ";
 
-            //in healthboard 'B' they give us both forename and suranme in the same field! - and surname is always blank
+            //in healthboard 'B' they give us both forename and surname in the same field! - and surname is always blank
             if ((char)values[18] == 'B')
             {
-                values[8] = values[8] + " " +values[7];
+                values[8] = $"{values[8]} {values[7]}";
                 values[7] = null;
             }
 
@@ -85,10 +81,10 @@ namespace BadMedicine.Datasets
                 values[20] = Person.GetRandomSurname(r);
             if (r.Next(0, 10) == 0)
                 values[21] = Person.GetRandomSurname(r);
-            
+
             if (r.Next(0, 3) == 0)
                 values[22] = person.GetRandomForename(r); //random gender appropriate middle name for 1 person in 3
-            
+
             if (r.Next(0, 5) == 0)
                 values[23] = person.GetRandomForename(r); //alternate forename
 
@@ -117,8 +113,8 @@ namespace BadMedicine.Datasets
             //an always null field, why not?!
             values[31] = null;
 
-            DateTime gp_accept_date = GetRandomDateAfter(person.DateOfBirth, r);
-            
+            var gp_accept_date = GetRandomDateAfter(person.DateOfBirth, r);
+
             //current_gp_accept_date
             values[32] = gp_accept_date;
 
@@ -127,7 +123,7 @@ namespace BadMedicine.Datasets
             if (gp_accept_date.Year < 1980)
                 if (r.Next(gp_accept_date.Year - Person.MinimumYearOfBirth) == 0)//the farther back you go the more likely they are to be missing a forename
                         values[8] = null;//some people are randomly missing a forename
-            
+
             if(r.Next(0,3)==0)
             {
                 values[33] = GetRandomGPCode(r);
@@ -144,8 +140,8 @@ namespace BadMedicine.Datasets
             return values;
         }
 
-        private static DateTime GetMinimum(DateTime? date1, DateTime date2)
-        {
+    private static DateTime GetMinimum(DateTime? date1, DateTime date2)
+    {
             if (date1 == null)
                 return date2;
 
@@ -155,10 +151,10 @@ namespace BadMedicine.Datasets
             return date2;
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
-            return new string[]{
+    /// <inheritdoc/>
+    protected override string[] GetHeaders()
+    {
+            return [
             "chi",                                                  //0
             "dtCreated",                                            //1
             "current_record",                                       //2
@@ -198,8 +194,7 @@ namespace BadMedicine.Datasets
             "date_of_birth",                                        //36
             "patient_triage_score",                                 //37
             "hic_dataLoadRunID"                                     //38
-            };
+            ];
         }
 
-    }
 }

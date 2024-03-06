@@ -1,32 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-	  <Title>HIC.BadMedicine</Title>
-	  <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
-	  <PackageProjectUrl>https://github.com/HicServices/BadMedicine</PackageProjectUrl>
-	  <PackageTags>Test Data,Random,Synthetic Data,EHR,Electronic Health Record</PackageTags>
-	   <Copyright>Copyright 2019</Copyright>
-  <PackageId>HIC.BadMedicine</PackageId>
-  <Authors>Health Informatics Centre - University of Dundee</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>HIC.BadMedicine</Title>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/HicServices/BadMedicine</PackageProjectUrl>
+    <PackageTags>Test Data,Random,Synthetic Data,EHR,Electronic Health Record</PackageTags>
+    <Copyright>Copyright 2019</Copyright>
+    <PackageId>HIC.BadMedicine</PackageId>
+    <Authors>Health Informatics Centre - University of Dundee</Authors>
+    <TargetFramework>net8.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <StartupObject></StartupObject>
-    <ApplicationIcon />
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>embedded</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>BadMedicine</RootNamespace>
     <AssemblyName>BadMedicine.Core</AssemblyName>
-    <Description>Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system. It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
+    <LangVersion>latest</LangVersion>
+    <Description>
+      Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system. It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
 
-BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Generator etc in that data generated is based on (simple) models generated from live EHR datasets collected for over 30 years in Tayside and Fife (UK). This makes the data generated recognisable (codes used, frequency of codes etc) from a clinical perspective and representative of the problems (ontology mapping etc) that data analysts would encounter working with real medical data..</Description>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-  </PropertyGroup>
-  <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+      BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Generator etc in that data generated is based on (simple) models generated from live EHR datasets collected for over 30 years in Tayside and Fife (UK). This makes the data generated recognisable (codes used, frequency of codes etc) from a clinical perspective and representative of the problems (ontology mapping etc) that data analysts would encounter working with real medical data..
+    </Description>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -43,15 +39,14 @@ BadMedicine differs from other random data generators e.g. Mockaroo, SQL Data Ge
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Datasets.doc.xml" Link="Datasets.doc.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Datasets\Aggregates.zip" />
     <EmbeddedResource Include="Datasets\Maternity.csv" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="CsvHelper" Version="31.0.2" />
+    <PackageReference Include="Equ" Version="2.3.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

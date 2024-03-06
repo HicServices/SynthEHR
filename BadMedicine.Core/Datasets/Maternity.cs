@@ -1,24 +1,19 @@
 using System;
-using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Maternity'/>
+/// <inheritdoc/>
+public sealed class Maternity(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Maternity'/>
-    public class Maternity : DataGenerator
+
+    /// <summary>
+    /// Returns true if the person is Female and lived to be older than <see cref="MaternityRecord.MinAge"/> (e.g. 18).  Considers current DateTime and <see cref="Person.DateOfDeath"/>
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public override bool IsEligible(Person p)
     {
-
-        /// <inheritdoc/>
-        public Maternity(Random rand) : base(rand)
-        {
-        }
-
-        /// <summary>
-        /// Returns true if the person is Female and lived to be older than <see cref="MaternityRecord.MinAge"/> (e.g. 18).  Considers current DateTime and <see cref="Person.DateOfDeath"/>
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public override bool IsEligible(Person p)
-        {
             if( p.Gender != 'F')
                 return false;
 
@@ -30,16 +25,16 @@ namespace BadMedicine.Datasets
             return p.DateOfBirth < Now.AddYears(MaternityRecord.MinAge);
         }
 
-        /// <inheritdoc/>
-        public override object[] GenerateTestDataRow(Person p)
-        {
+    /// <inheritdoc/>
+    public override object[] GenerateTestDataRow(Person p)
+    {
             var record = new MaternityRecord(p,r);
 
-            object[] results = new object[12];
-            
+            var results = new object[12];
+
             results[0] = p.CHI;
             results[1] = r.Next(2) == 0 ? 'T': 'F';
-            
+
             results[2] = record.Date;
 
             // Partner CHI
@@ -59,25 +54,21 @@ namespace BadMedicine.Datasets
             return results;
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
-            return new string[]
-            {
-                "MotherCHI",                        //0
-                "Healthboard",                      //1
-                "Date",                             //2
-                "PartnerCHI",                       //3
-                "BabyCHI1",                         //4
-                "BabyCHI2",                         //5
-                "BabyCHI3",                         //6
-                "SendingLocation",                  //7
-                "EpisodeRecordKey",                 //8
-                "Location",                         //9
-                "MaritalStatus",                    //10
-                "Specialty"                        //11
+    /// <inheritdoc/>
+    protected override string[] GetHeaders() =>
+    [
+        "MotherCHI",                        //0
+        "Healthboard",                      //1
+        "Date",                             //2
+        "PartnerCHI",                       //3
+        "BabyCHI1",                         //4
+        "BabyCHI2",                         //5
+        "BabyCHI3",                         //6
+        "SendingLocation",                  //7
+        "EpisodeRecordKey",                 //8
+        "Location",                         //9
+        "MaritalStatus",                    //10
+        "Specialty"                        //11
 
-            };
-        }
-    }
+    ];
 }

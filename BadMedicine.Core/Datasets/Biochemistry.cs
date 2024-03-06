@@ -5,25 +5,21 @@
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.IO;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry'/>
+/// <inheritdoc/>
+public sealed class Biochemistry(Random rand) : DataGenerator(rand)
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Biochemistry'/>
-    public class Biochemistry: DataGenerator
+
+    /// <inheritdoc/>
+    public override object[] GenerateTestDataRow(Person p)
     {
-        /// <inheritdoc/>
-        public Biochemistry(Random rand) : base(rand)
-        {
-        }
+            var results = new object[13];
 
-        /// <inheritdoc/>
-        public override object[] GenerateTestDataRow(Person p)
-        {
-            object[] results = new object[13];
+            var randomSample = new BiochemistryRecord(r);
 
-            BiochemistryRecord randomSample = new BiochemistryRecord(r);
-            
             results[0] = p.CHI;
             results[1] = randomSample.Healthboard;
             results[2] = p.GetRandomDateDuringLifetime(r);
@@ -42,26 +38,22 @@ namespace BadMedicine.Datasets
 
         }
 
-        /// <inheritdoc/>
-        protected override string[] GetHeaders()
-        {
-            return new string[]
-            {
-                "chi",                              //0
-                "Healthboard",                      //1
-                "SampleDate",                       //2
-                "SampleType",                       //3
-                "TestCode",                         //4
-                "Result",                           //5
-                "Labnumber",                        //6
-                "QuantityUnit",                     //7
-                "ReadCodeValue",                    //8
-                "ArithmeticComparator",             //9
-                "Interpretation",                   //10
-                "RangeHighValue",                   //11
-                "RangeLowValue",                    //12
+    /// <inheritdoc/>
+    protected override string[] GetHeaders() =>
+    [
+        "chi",                              //0
+        "Healthboard",                      //1
+        "SampleDate",                       //2
+        "SampleType",                       //3
+        "TestCode",                         //4
+        "Result",                           //5
+        "Labnumber",                        //6
+        "QuantityUnit",                     //7
+        "ReadCodeValue",                    //8
+        "ArithmeticComparator",             //9
+        "Interpretation",                   //10
+        "RangeHighValue",                   //11
+        "RangeLowValue" //12
 
-            };
-        }
-    }
+    ];
 }

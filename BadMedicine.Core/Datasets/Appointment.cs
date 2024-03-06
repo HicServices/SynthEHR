@@ -6,32 +6,25 @@
 
 using System;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <summary>
+/// Data class describing an appointment including a guid identifier
+/// </summary>
+/// <remarks>
+/// Creates a new randomly generated appointment within the lifetime of the <paramref name="testPerson"/>
+/// </remarks>
+/// <param name="testPerson"></param>
+/// <param name="r"></param>
+public sealed class Appointment(Person testPerson, Random r)
 {
     /// <summary>
-    /// Data class describing an appointment including a guid identifier
+    /// Globally unique identifier for this appointment
     /// </summary>
-    public class Appointment
-    {
-        /// <summary>
-        /// Globally unique identifier for this appointment
-        /// </summary>
-        public string Identifier { get; set; }
+    public string Identifier { get; set; } = $"APPT_{Guid.NewGuid()}";
 
-        /// <summary>
-        /// Random date within the lifetime of the <see cref="Person"/> used for construction
-        /// </summary>
-        public DateTime StartDate { get; set; }
-
-        /// <summary>
-        /// Creates a new randomly generated appointment within the lifetime of the <paramref name="testPerson"/>
-        /// </summary>
-        /// <param name="testPerson"></param>
-        /// <param name="r"></param>
-        public Appointment(Person testPerson, Random r)
-        {
-            Identifier = "APPT_" + Guid.NewGuid();
-            StartDate = testPerson.GetRandomDateDuringLifetime(r);
-        }
-    }
+    /// <summary>
+    /// Random date within the lifetime of the <see cref="Person"/> used for construction
+    /// </summary>
+    public DateTime StartDate { get; set; } = testPerson.GetRandomDateDuringLifetime(r);
 }

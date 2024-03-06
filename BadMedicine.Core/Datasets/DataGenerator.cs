@@ -12,775 +12,773 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using MathNet.Numerics.Distributions;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <summary>
+/// Base class for all randomly generated datasets.  Handles generating random data types and writing
+/// out to csv etc.
+/// </summary>
+public abstract class DataGenerator : IDataGenerator
 {
+    /// <inheritdoc/>
+    public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
+
     /// <summary>
-    /// Base class for all randomly generated datasets.  Handles generating random datatypes and writing
-    /// out to csv etc.
+    /// Use for all your random needs to ensure Seed injection support.
     /// </summary>
-    public abstract class DataGenerator : IDataGenerator
+    protected Random r;
+
+    /// <summary>
+    /// Use this instead of DateTime.Now to ensure reproducible datasets when using the same seeded random
+    /// </summary>
+    public static DateTime Now { get; } = new(2019, 7, 5, 23, 59, 59);
+
+    /// <summary>
+    /// Creates a new instance which uses the provided <paramref name="rand"/> as a seed for generating data
+    /// </summary>
+    /// <param name="rand"></param>
+    protected DataGenerator(Random rand)
     {
-        /// <inheritdoc/>
-        public event EventHandler<RowsGeneratedEventArgs> RowsGenerated;
-        
-        /// <summary>
-        /// Use for all your random needs to ensure Seed injection support.
-        /// </summary>
-        protected Random r;
+        r = rand;
+        _normalDist = new Normal(0, 0.3, r);
+    }
 
-        /// <summary>
-        /// Use this instead of DateTime.Now to ensure reproducible datasets when using the same seeded random
-        /// </summary>
-        public static DateTime Now {get; } = new DateTime(2019, 7, 5, 23, 59, 59);
+    /// <summary>
+    /// Returns true if it is eligible to generate rows in the dataset for the given <paramref name="p"/>
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public virtual bool IsEligible(Person p)
+    {
+        return true;
+    }
 
-        /// <summary>
-        /// Creates a new instance which uses the provided <paramref name="rand"/> as a seed for generating data
-        /// </summary>
-        /// <param name="rand"></param>
-        protected DataGenerator(Random rand)
+    /// <inheritdoc/>
+    public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
+    {
+        using var sw = new StreamWriter(target.FullName);
+        WriteHeaders(sw);
+
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        using (var writer = new CsvWriter(sw, CultureInfo.CurrentCulture))
         {
-            r = rand;
-            _normalDist = new Normal(0, 0.3,r);
-        }
-
-        /// <summary>
-        /// Returns true if it is eligible to generate rows in the dataset for the given <paramref name="p"/>
-        /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
-        public virtual bool IsEligible(Person p)
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public void GenerateTestDataFile(IPersonCollection cohort, FileInfo target, int numberOfRecords)
-        {
-            using(StreamWriter sw = new StreamWriter(target.FullName))
+            int linesWritten;
+            for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
             {
-                WriteHeaders(sw);
+                foreach (var o in GenerateTestDataRow(GetRandomEligiblePerson(cohort.People, r)))
+                    writer.WriteField(o);
 
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
+                writer.NextRecord();
 
-                using (var writer = new CsvWriter(sw,CultureInfo.CurrentCulture))
-                {
-                    int linesWritten;
-                    for (linesWritten = 0; linesWritten < numberOfRecords; linesWritten++)
-                    {                       
-                        foreach (object o in GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)))
-                            writer.WriteField(o);
-                        
-                        writer.NextRecord();
+                if (linesWritten % 1000 != 0) continue;
 
-                        if (linesWritten % 1000 == 0)
-                        {
-                            RowsGenerated?.Invoke(this,new RowsGeneratedEventArgs(linesWritten + 1, stopwatch.Elapsed,false));
-                            sw.Flush();//flush every 1000
-                        }
-                    }
-
-                    //tell them about the last line written
-                    RowsGenerated?.Invoke(this, new RowsGeneratedEventArgs(linesWritten,stopwatch.Elapsed,true));
-
-                    writer.Dispose();
-                }
-                
-                stopwatch.Stop();
-            }
-        }
-
-
-        /// <summary>
-        /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligible then returns a random person.
-        /// </summary>
-        /// <param name="people"></param>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public Person GetRandomEligiblePerson(Person[] people, Random r)
-        {
-            if(people.Length == 0)
-                throw new ArgumentException("Must pass at least 1 person to GetRandomEligiblePerson",nameof(people));
-            
-            var eligible = people.Where(IsEligible).ToArray();
-
-            return
-                eligible.Any() ? eligible[r.Next(eligible.Length)] 
-                    //if nobody is eligibile then everyone is!
-                    : people[r.Next(people.Length)];
-        }
-
-        /// <inheritdoc/>
-        public virtual DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords)
-        {
-            var dt = new DataTable();
-
-            foreach (var h in GetHeaders())
-                dt.Columns.Add(h);
-
-            for (int i = 0; i < numberOfRecords; i++)
-                dt.Rows.Add(GenerateTestDataRow(GetRandomEligiblePerson(cohort.People,r)));
-            
-            return dt;
-        }
-
-        /// <inheritdoc/>
-        public abstract object[] GenerateTestDataRow(Person p);
-
-        /// <inheritdoc/>
-        protected abstract string[] GetHeaders();
-
-        /// <summary>
-        /// Outputs the top line of the CSV (column headers)
-        /// </summary>
-        /// <param name="sw"></param>
-        private void WriteHeaders(StreamWriter sw)
-        {
-            sw.WriteLine(string.Join(",", GetHeaders()));
-        }
-        readonly Normal _normalDist;
-
-        /// <summary>
-        /// Concatenates between <paramref name="min"/> and <paramref name="max"/> calls to the <paramref name="generator"/>
-        /// </summary>
-        /// <param name="r"></param>
-        /// <param name="min"></param>
-        /// <param name="max"></param>
-        /// <param name="generator"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        protected string Concat(Random r, int min, int max, Func<string> generator, string separator)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            int to = r.Next(min, max);
-            for (int i = 0; i < to; i++)
-                sb.Append(generator() + separator);
-
-            return sb.ToString().Trim();
-        }
-
-        
-
-        /// <summary>
-        /// returns random number between -1 and 1 with normal distribution (more numbers near 0 than near 1/-1).  The standard
-        /// deviation is 0.3.  Any values outside the range (5 in 10,000 or so) are adjusted to -1 or 1.
-        /// </summary>
-        /// <returns></returns>
-        public double GetGaussian()
-        {
-            return Math.Min(Math.Max(-1,_normalDist.Sample()),1);
-        }
-        
-        /// <summary>
-        /// Returns a random date inclusive of the lower bound and exclusive of the upper bound.
-        /// </summary>
-        /// <param name="from">inclusive lower bound</param>
-        /// <param name="to">exclusive upper bound</param>
-        /// <param name="r">seeded random</param>
-        /// <returns></returns>
-        public static DateTime GetRandomDate(DateTime from, DateTime to, Random r)
-        {
-            var range = to - from;
-
-            var randTimeSpan = new TimeSpan((long) (r.NextDouble()*range.Ticks));
-
-            return from + randTimeSpan;
-        }
-        
-        /// <summary>
-        /// Returns a date after (or on) <paramref name="afterDate"/>.  In order to preserve randomisation seeding a constant
-        /// value in 2019 is used instead of DateTime.Now (ensures that data generated doesn't vary with the same seed).
-        /// </summary>
-        /// <param name="afterDate"></param>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public static DateTime GetRandomDateAfter(DateTime afterDate,Random r)
-        {
-            return GetRandomDate(afterDate, Now,r);
-        }
-
-        /// <summary>
-        /// returns random number between lowerBoundary and upperBoundary with a gaussian distribution around the middle
-        /// </summary>
-        /// <param name="upperBoundary">Highest number that should be generated</param>
-        /// <param name="digits">The number of decimal places to have in the number</param>
-        /// <param name="lowerBoundary">Lowest number that should be generated</param>
-        /// <returns></returns>
-        public double GetGaussian(double lowerBoundary, double upperBoundary, int digits = 2)
-        {
-            if(upperBoundary< lowerBoundary)
-                throw new ArgumentException("lower must be lower than upper boundary");
-
-            double distributionZeroToOne = (GetGaussian() + 1)/2;
-
-            double range = upperBoundary - lowerBoundary;
-            return Math.Round((distributionZeroToOne * range) + lowerBoundary,digits);
-        }
-
-        /// <inheritdoc cref="GetGaussian(double,double,int)"/>
-        protected int GetGaussianInt(double lowerBoundary, double upperBoundary)
-        {
-            return (int) GetGaussian(lowerBoundary, upperBoundary);
-        }
-
-
-        /// <summary>
-        /// returns <paramref name="swapFor"/> if <paramref name="swapIfIn"/> contains the input <paramref name="randomInt"/> (otherwise returns the input)
-        /// </summary>
-        /// <param name="randomInt"></param>
-        /// <param name="swapIfIn"></param>
-        /// <param name="swapFor"></param>
-        /// <returns></returns>
-        protected int Swap(int randomInt, IEnumerable<int> swapIfIn, int swapFor)
-        {
-            return swapIfIn.Contains(randomInt) ? swapFor : randomInt;
-        }
-
-        /// <summary>
-        /// Returns a random double or string value that represents a double e.g. "2.1".  In future this might return
-        /// floats with e specification e.g. "1.7E+3"
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public object GetRandomDouble(Random r)
-        {
-            switch (r.Next(0, 3))
-            {
-                case 0:
-                    return r.Next(100);
-                case 1:
-                    return Math.Round(r.NextDouble(),2);
-                case 2:
-                    return r.Next(10) + "." + r.Next(10);
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Returns a random 'GPCode'.  This is a letter followed by up to 3 digits.
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public string GetRandomGPCode(Random r)
-        {
-            return GetRandomLetter(true,r).ToString() + r.Next(0, 999);
-        }
-
-        /// <summary>
-        /// Gets a random letter (A - Z)
-        /// </summary>
-        /// <param name="upperCase"></param>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public char GetRandomLetter(bool upperCase,Random r)
-        {
-            if(upperCase)
-                return (char) ('A' + r.Next(0, 26));
-
-            return (char)('a' + r.Next(0, 26));
-
-        }
-
-        /// <summary>
-        /// Returns a random 'status' for a CHI or sometimes null.  Values include 'C' (current), 'H' (historical), 'L'(legacy?) and 'R'(retracted?)
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public object GetRandomCHIStatus(Random r)
-        {
-            switch (r.Next(0, 5))
-            {
-                case 0: return 'C';
-                case 1: return 'H';
-                case 2: return null;
-                case 3: return 'L';
-                case 4: return 'R';
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        /// <summary>
-        /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>.  Will also work 
-        /// if you have an embedded resource file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
-        /// 
-        /// </summary>
-        /// <param name="requestingType"></param>
-        /// <param name="resourceFileName"></param>
-        /// <param name="dt">Optional - provide if you want to strongly type certain Columns.  New columns will be added to this table
-        /// if unmatched columns are read from the csv.</param>
-        /// <returns></returns>
-        public static DataTable EmbeddedCsvToDataTable(Type requestingType,string resourceFileName,DataTable dt = null)
-        {
-            var lookup = GetResourceStream(requestingType,resourceFileName);
-
-            if (lookup == null)
-                throw new Exception("Could not find embedded resource file " + resourceFileName);
-          
-            
-            var toReturn = dt?? new DataTable();
-
-            using (CsvReader r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) with {Delimiter = ","}))
-            {
-                r.Read();
-                r.ReadHeader();
-
-                foreach (string header in r.HeaderRecord)
-                    if(!toReturn.Columns.Contains(header))
-                        toReturn.Columns.Add(header);
-
-                r.Read();
-
-                do
-                {
-                    var row = toReturn.Rows.Add();
-                    foreach (DataColumn col in toReturn.Columns)
-                    {
-                        row[col] = r[col.ColumnName];
-                    }
-                } while (r.Read());
+                RowsGenerated?.Invoke(this, new RowsGeneratedEventArgs(linesWritten + 1, stopwatch.Elapsed, false));
+                sw.Flush();//flush every 1000
             }
 
-            return toReturn;
+            //tell them about the last line written
+            RowsGenerated?.Invoke(this, new RowsGeneratedEventArgs(linesWritten, stopwatch.Elapsed, true));
         }
 
-        private static Stream GetResourceStream(Type requestingType, string resourceFileName)
-        {
-            string toFind = requestingType.Namespace + "." + resourceFileName;
-            //is there an unzipped resource available?
-            var toReturn = requestingType.Assembly.GetManifestResourceStream(toFind);
+        stopwatch.Stop();
+    }
 
-            //no
-            if(toReturn == null)
+
+    /// <summary>
+    /// Returns a random <see cref="Person"/> that <see cref="IsEligible"/> for this dataset. If nobody is eligible then returns a random person.
+    /// </summary>
+    /// <param name="people"></param>
+    /// <param name="random"></param>
+    /// <returns></returns>
+    public Person GetRandomEligiblePerson(Person[] people, Random random=null)
+    {
+        random ??= r;
+
+        if (people.Length == 0)
+            throw new ArgumentException("Must pass at least 1 person to GetRandomEligiblePerson", nameof(people));
+
+        var eligible = people.Where(IsEligible).ToArray();
+
+        return
+            eligible.Length != 0 ? eligible[random.Next(eligible.Length)]
+                //if nobody is eligible then everyone is!
+                : people[random.Next(people.Length)];
+    }
+
+    /// <inheritdoc/>
+    public virtual DataTable GetDataTable(IPersonCollection cohort, int numberOfRecords)
+    {
+        var dt = new DataTable();
+
+        foreach (var h in GetHeaders())
+            dt.Columns.Add(h);
+
+        for (var i = 0; i < numberOfRecords; i++)
+            dt.Rows.Add(GenerateTestDataRow(GetRandomEligiblePerson(cohort.People, r)));
+
+        return dt;
+    }
+
+    /// <inheritdoc/>
+    public abstract object[] GenerateTestDataRow(Person p);
+
+    /// <inheritdoc/>
+    protected abstract string[] GetHeaders();
+
+    /// <summary>
+    /// Outputs the top line of the CSV (column headers)
+    /// </summary>
+    /// <param name="sw"></param>
+    private void WriteHeaders(StreamWriter sw)
+    {
+        sw.WriteLine(string.Join(",", GetHeaders()));
+    }
+
+    private readonly Normal _normalDist;
+
+    /// <summary>
+    /// Concatenates between <paramref name="min"/> and <paramref name="max"/> calls to the <paramref name="generator"/>
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="generator"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
+    protected static string Concat(Random r, int min, int max, Func<string> generator, string separator)
+    {
+        var sb = new StringBuilder();
+
+        var to = r.Next(min, max);
+        for (var i = 0; i < to; i++)
+            sb.Append(generator() + separator);
+
+        return sb.ToString().Trim();
+    }
+
+
+
+    /// <summary>
+    /// returns random number between -1 and 1 with normal distribution (more numbers near 0 than near 1/-1).  The standard
+    /// deviation is 0.3.  Any values outside the range (5 in 10,000 or so) are adjusted to -1 or 1.
+    /// </summary>
+    /// <returns></returns>
+    public double GetGaussian()
+    {
+        return Math.Min(Math.Max(-1, _normalDist.Sample()), 1);
+    }
+
+    /// <summary>
+    /// Returns a random date inclusive of the lower bound and exclusive of the upper bound.
+    /// </summary>
+    /// <param name="from">inclusive lower bound</param>
+    /// <param name="to">exclusive upper bound</param>
+    /// <param name="r">seeded random</param>
+    /// <returns></returns>
+    public static DateTime GetRandomDate(DateTime from, DateTime to, Random r)
+    {
+        var range = to - from;
+
+        var randTimeSpan = new TimeSpan((long)(r.NextDouble() * range.Ticks));
+
+        return from + randTimeSpan;
+    }
+
+    /// <summary>
+    /// Returns a date after (or on) <paramref name="afterDate"/>.  In order to preserve randomisation seeding a constant
+    /// value in 2019 is used instead of DateTime.Now (ensures that data generated doesn't vary with the same seed).
+    /// </summary>
+    /// <param name="afterDate"></param>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public static DateTime GetRandomDateAfter(DateTime afterDate, Random r)
+    {
+        return GetRandomDate(afterDate, Now, r);
+    }
+
+    /// <summary>
+    /// returns random number between lowerBoundary and upperBoundary with a gaussian distribution around the middle
+    /// </summary>
+    /// <param name="upperBoundary">Highest number that should be generated</param>
+    /// <param name="digits">The number of decimal places to have in the number</param>
+    /// <param name="lowerBoundary">Lowest number that should be generated</param>
+    /// <returns></returns>
+    public double GetGaussian(double lowerBoundary, double upperBoundary, int digits = 2)
+    {
+        if (upperBoundary < lowerBoundary)
+            throw new ArgumentException("lower must be lower than upper boundary");
+
+        var distributionZeroToOne = (GetGaussian() + 1) / 2;
+
+        var range = upperBoundary - lowerBoundary;
+        return Math.Round(distributionZeroToOne * range + lowerBoundary, digits);
+    }
+
+    /// <inheritdoc cref="GetGaussian(double,double,int)"/>
+    protected int GetGaussianInt(double lowerBoundary, double upperBoundary)
+    {
+        return (int)GetGaussian(lowerBoundary, upperBoundary);
+    }
+
+
+    /// <summary>
+    /// returns <paramref name="swapFor"/> if <paramref name="swapIfIn"/> contains the input <paramref name="randomInt"/> (otherwise returns the input)
+    /// </summary>
+    /// <param name="randomInt"></param>
+    /// <param name="swapIfIn"></param>
+    /// <param name="swapFor"></param>
+    /// <returns></returns>
+    protected static int Swap(int randomInt, IEnumerable<int> swapIfIn, int swapFor)
+    {
+        return swapIfIn.Contains(randomInt) ? swapFor : randomInt;
+    }
+
+    /// <summary>
+    /// Returns a random double or string value that represents a double e.g. "2.1".  In future this might return
+    /// floats with e specification e.g. "1.7E+3"
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public static object GetRandomDouble(Random r) =>
+        r.Next(0, 3) switch
+        {
+            0 => r.Next(100),
+            1 => Math.Round(r.NextDouble(), 2),
+            2 => $"{r.Next(10)}.{r.Next(10)}",
+            _ => throw new NotImplementedException()
+        };
+
+    /// <summary>
+    /// Returns a random 'GPCode'.  This is a letter followed by up to 3 digits.
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public static string GetRandomGPCode(Random r)
+    {
+        return GetRandomLetter(true, r).ToString() + r.Next(0, 999);
+    }
+
+    /// <summary>
+    /// Gets a random letter (A - Z)
+    /// </summary>
+    /// <param name="upperCase"></param>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    protected static char GetRandomLetter(bool upperCase, Random r) => (char)((upperCase ? 'A' : 'a') + r.Next(0, 26));
+
+    /// <summary>
+    /// Returns a random 'status' for a CHI or sometimes null.  Values include 'C' (current), 'H' (historical), 'L'(legacy?) and 'R'(retracted?)
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    protected static object GetRandomCHIStatus(Random r) =>
+        r.Next(0, 5) switch
+        {
+            0 => 'C',
+            1 => 'H',
+            2 => null,
+            3 => 'L',
+            4 => 'R',
+            _ => throw new InvalidOperationException("Random violated parameter constraints")
+        };
+
+    /// <summary>
+    /// Reads an embedded resource csv file that sits side by side (in terms of namespace) with the <paramref name="requestingType"/>.  Will also work
+    /// if you have an embedded resource file called "Aggregates.zip" which contains the <paramref name="resourceFileName"/>.
+    /// 
+    /// </summary>
+    /// <param name="requestingType"></param>
+    /// <param name="resourceFileName"></param>
+    /// <param name="dt">Optional - provide if you want to strongly type certain Columns.  New columns will be added to this table
+    /// if unmatched columns are read from the csv.</param>
+    /// <returns></returns>
+    public static DataTable EmbeddedCsvToDataTable(Type requestingType, string resourceFileName, DataTable dt = null)
+    {
+        var lookup = GetResourceStream(requestingType, resourceFileName) ?? throw new Exception($"Could not find embedded resource file {resourceFileName}");
+        var toReturn = dt ?? new DataTable();
+
+        using var r = new CsvReader(new StreamReader(lookup), new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = "," });
+        r.Read();
+        r.ReadHeader();
+
+        foreach (var header in (r.HeaderRecord ?? []).Where(header => !toReturn.Columns.Contains(header)))
+            toReturn.Columns.Add(header);
+
+        r.Read();
+
+        do
+        {
+            var row = toReturn.Rows.Add();
+            foreach (DataColumn col in toReturn.Columns)
             {
-                //see if there is a zipped resource file in the namespaces
-                string toFindZip = requestingType.Namespace + "." + "Aggregates.zip";
-                var zip = requestingType.Assembly.GetManifestResourceStream(toFindZip);
-                
-                MemoryStream memoryStream = new MemoryStream();
-
-                //containing a file named resourceFileNamed
-                if(zip != null)
-                    using(var archive = new ZipArchive(zip))
-                    {
-                        var entry = archive.GetEntry(resourceFileName);
-                        if(entry != null)
-                        {
-                            using(var s = entry.Open())
-                            {
-                                s.CopyTo(memoryStream);
-                                memoryStream.Seek(0, SeekOrigin.Begin);
-                                return memoryStream;
-                            }                            
-                        }                            
-                    }
+                row[col] = r[col.ColumnName];
             }
-            return toReturn;
-        }
+        } while (r.Read());
 
-        /// <summary>
-        /// Returns a random sentence.  There are 391 available.  They were created by https://randomwordgenerator.com/sentence.php
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public string GetRandomSentence(Random r)
+        return toReturn;
+    }
+
+    private static Stream GetResourceStream(Type requestingType, string resourceFileName)
+    {
+        var toFind = $"{requestingType.Namespace}.{resourceFileName}";
+        //is there an unzipped resource available?
+        var toReturn = requestingType.Assembly.GetManifestResourceStream(toFind);
+
+        // if so, return it
+        if (toReturn != null) return toReturn;
+
+        // if not, see if there is a zipped resource file in the namespaces
+        var toFindZip = $"{requestingType.Namespace}.Aggregates.zip";
+        var zip = requestingType.Assembly.GetManifestResourceStream(toFindZip);
+
+        var memoryStream = new MemoryStream();
+
+        //containing a file named resourceFileNamed
+        if (zip == null) return null;
+
+        using var archive = new ZipArchive(zip);
+        var entry = archive.GetEntry(resourceFileName);
+        if (entry == null) return null;
+
+        using var s = entry.Open();
+        s.CopyTo(memoryStream);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        return memoryStream;
+    }
+
+    /// <summary>
+    /// Returns a random sentence.  There are 391 available.  They were created by https://randomwordgenerator.com/sentence.php
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    protected static string GetRandomSentence(Random r)
+    {
+        return r.Next(391) switch
         {
-            switch (r.Next(391))
-            {
-                case 0: return "A mad prize ghosts the attractive romantic.";
-                case 1: return "I often see the time 11:11 or 12:34 on clocks.";
-                case 2: return "Malls are great places to shop; I can find everything I need under one roof.";
-                case 3: return "Christmas is coming.";
-                case 4: return "I will never be this young again. Ever. Oh damn' I just got older.";
-                case 5: return "This is a Japanese doll.";
-                case 6: return "We have never been to Asia, nor have we visited Africa.";
-                case 7: return "She was too short to see over the fence.";
-                case 8: return "Hurry!";
-                case 9: return "If I don't like something, I'll stay away from it.";
-                case 10: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
-                case 11: return "She folded her handkerchief neatly.";
-                case 12: return "I checked to make sure that he was still alive.";
-                case 13: return "He didn't want to go to the dentist, yet he went anyway.";
-                case 14: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 15: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
-                case 16: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
-                case 17: return "Cats are good pets, for they are clean and are not noisy.";
-                case 18: return "The body may perhaps compensates for the loss of a true metaphysics.";
-                case 19: return "Please wait outside of the house.";
-                case 20: return "The mysterious diary records the voice.";
-                case 21: return "There were white out conditions in the town; subsequently, the roads were impassable.";
-                case 22: return "I love eating toasted cheese and tuna sandwiches.";
-                case 23: return "Two seats were vacant.";
-                case 24: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
-                case 25: return "She did her best to help him.";
-                case 26: return "We need to rent a room for our party.";
-                case 27: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
-                case 28: return "The river stole the gods.";
-                case 29: return "Joe made the sugar cookies; Susan decorated them.";
-                case 30: return "He told us a very exciting adventure story.";
-                case 31: return "He said he was not there yesterday; however, many people saw him there.";
-                case 32: return "I really want to go to work, but I am too sick to drive.";
-                case 33: return "A glittering gem is not enough.";
-                case 34: return "Abstraction is often one floor above you.";
-                case 35: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
-                case 36: return "Mary plays the piano.";
-                case 37: return "She did not cheat on the test, for it was not the right thing to do.";
-                case 38: return "I would have gotten the promotion, but my attendance wasn't good enough.";
-                case 39: return "I want more detailed information.";
-                case 40: return "It was getting dark, and we weren't there yet.";
-                case 41: return "She borrowed the book from him many years ago and hasn't yet returned it.";
-                case 42: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
-                case 43: return "Wow, does that work?";
-                case 44: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
-                case 45: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 46: return "If Purple People Eaters are real' where do they find purple people to eat?";
-                case 47: return "Where do random thoughts come from?";
-                case 48: return "They got there early, and they got really good seats.";
-                case 49: return "Everyone was busy, so I went to the movie alone.";
-                case 50: return "I am never at home on Sundays.";
-                case 51: return "Should we start class now, or should we wait for everyone to get here?";
-                case 52: return "The quick brown fox jumps over the lazy dog.";
-                case 53: return "A song can make or ruin a person's day if they let it get to them.";
-                case 54: return "I want to buy a onesie' but know it won't suit me.";
-                case 55: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
-                case 56: return "I hear that Nancy is very pretty.";
-                case 57: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
-                case 58: return "She advised him to come back at once.";
-                case 59: return "He ran out of money, so he had to stop playing poker.";
-                case 60: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
-                case 61: return "The sky is clear; the stars are twinkling.";
-                case 62: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 63: return "I'd rather be a bird than a fish.";
-                case 64: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
-                case 65: return "The memory we used to share is no longer coherent.";
-                case 66: return "Lets all be unique together until we realise we are all the same.";
-                case 67: return "I am happy to take your donation; any amount will be greatly appreciated.";
-                case 68: return "The old apple revels in its authority.";
-                case 69: return "Let me help you with your baggage.";
-                case 70: return "Sixty-Four comes asking for bread.";
-                case 71: return "I am counting my calories, yet I really want dessert.";
-                case 72: return "How was the math test?";
-                case 73: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
-                case 74: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
-                case 75: return "She wrote him a long letter, but he didn't read it.";
-                case 76: return "Don't step on the broken glass.";
-                case 77: return "Check back tomorrow; I will see if the book has arrived.";
-                case 78: return "I currently have 4 windows open up' and I don't know why.";
-                case 79: return "Tom got a small piece of pie.";
-                case 80: return "Is it free?";
-                case 81: return "She only paints with bold colors; she does not like pastels.";
-                case 82: return "Yeah, I think it's a good environment for learning English.";
-                case 83: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
-                case 84: return "We have a lot of rain in June.";
-                case 85: return "She always speaks to him in a loud voice.";
-                case 86: return "The lake is a long way from here.";
-                case 87: return "Writing a list of random sentences is harder than I initially thought it would be.";
-                case 88: return "I think I will buy the red car, or I will lease the blue one.";
-                case 89: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
-                case 90: return "The stranger officiates the meal.";
-                case 91: return "The shooter says goodbye to his love.";
-                case 92: return "The book is in front of the table.";
-                case 93: return "Rock music approaches at high velocity.";
-                case 94: return "He told us a very exciting adventure story.";
-                case 95: return "We have a lot of rain in June.";
-                case 96: return "Abstraction is often one floor above you.";
-                case 97: return "I am happy to take your donation; any amount will be greatly appreciated.";
-                case 98: return "I hear that Nancy is very pretty.";
-                case 99: return "I want more detailed information.";
-                case 100: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
-                case 101: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
-                case 102: return "I currently have 4 windows open up' and I don't know why.";
-                case 103: return "The shooter says goodbye to his love.";
-                case 104: return "Everyone was busy, so I went to the movie alone.";
-                case 105: return "She was too short to see over the fence.";
-                case 106: return "I think I will buy the red car, or I will lease the blue one.";
-                case 107: return "Yeah, I think it's a good environment for learning English.";
-                case 108: return "The book is in front of the table.";
-                case 109: return "Writing a list of random sentences is harder than I initially thought it would be.";
-                case 110: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
-                case 111: return "I am never at home on Sundays.";
-                case 112: return "The quick brown fox jumps over the lazy dog.";
-                case 113: return "I love eating toasted cheese and tuna sandwiches.";
-                case 114: return "How was the math test?";
-                case 115: return "Rock music approaches at high velocity.";
-                case 116: return "She advised him to come back at once.";
-                case 117: return "There were white out conditions in the town; subsequently, the roads were impassable.";
-                case 118: return "I am counting my calories, yet I really want dessert.";
-                case 119: return "She did her best to help him.";
-                case 120: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 121: return "The lake is a long way from here.";
-                case 122: return "Lets all be unique together until we realise we are all the same.";
-                case 123: return "Let me help you with your baggage.";
-                case 124: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
-                case 125: return "Christmas is coming.";
-                case 126: return "The stranger officiates the meal.";
-                case 127: return "Joe made the sugar cookies; Susan decorated them.";
-                case 128: return "I often see the time 11:11 or 12:34 on clocks.";
-                case 129: return "Don't step on the broken glass.";
-                case 130: return "The sky is clear; the stars are twinkling.";
-                case 131: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 132: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
-                case 133: return "If Purple People Eaters are real' where do they find purple people to eat?";
-                case 134: return "It was getting dark, and we weren't there yet.";
-                case 135: return "Where do random thoughts come from?";
-                case 136: return "The river stole the gods.";
-                case 137: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
-                case 138: return "Sixty-Four comes asking for bread.";
-                case 139: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
-                case 140: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
-                case 141: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 142: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
-                case 143: return "He said he was not there yesterday; however, many people saw him there.";
-                case 144: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
-                case 145: return "Check back tomorrow; I will see if the book has arrived.";
-                case 146: return "I really want to go to work, but I am too sick to drive.";
-                case 147: return "Mary plays the piano.";
-                case 148: return "Should we start class now, or should we wait for everyone to get here?";
-                case 149: return "They got there early, and they got really good seats.";
-                case 150: return "A glittering gem is not enough.";
-                case 151: return "She only paints with bold colors; she does not like pastels.";
-                case 152: return "The memory we used to share is no longer coherent.";
-                case 153: return "If I don't like something, I'll stay away from it.";
-                case 154: return "A song can make or ruin a person's day if they let it get to them.";
-                case 155: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
-                case 156: return "She borrowed the book from him many years ago and hasn't yet returned it.";
-                case 157: return "Hurry!";
-                case 158: return "I checked to make sure that he was still alive.";
-                case 159: return "Two seats were vacant.";
-                case 160: return "This is a Japanese doll.";
-                case 161: return "She folded her handkerchief neatly.";
-                case 162: return "He didn't want to go to the dentist, yet he went anyway.";
-                case 163: return "I want to buy a onesie' but know it won't suit me.";
-                case 164: return "Tom got a small piece of pie.";
-                case 165: return "Please wait outside of the house.";
-                case 166: return "He ran out of money, so he had to stop playing poker.";
-                case 167: return "Wow, does that work?";
-                case 168: return "I'd rather be a bird than a fish.";
-                case 169: return "She wrote him a long letter, but he didn't read it.";
-                case 170: return "We need to rent a room for our party.";
-                case 171: return "She always speaks to him in a loud voice.";
-                case 172: return "Malls are great places to shop; I can find everything I need under one roof.";
-                case 173: return "Cats are good pets, for they are clean and are not noisy.";
-                case 174: return "We have never been to Asia, nor have we visited Africa.";
-                case 175: return "Is it free?";
-                case 176: return "I will never be this young again. Ever. Oh damn' I just got older.";
-                case 177: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
-                case 178: return "The body may perhaps compensates for the loss of a true metaphysics.";
-                case 179: return "The mysterious diary records the voice.";
-                case 180: return "I would have gotten the promotion, but my attendance wasn't good enough.";
-                case 181: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
-                case 182: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
-                case 183: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
-                case 184: return "She did not cheat on the test, for it was not the right thing to do.";
-                case 185: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
-                case 186: return "The old apple revels in its authority.";
-                case 187: return "Tom got a small piece of pie.";
-                case 188: return "I will never be this young again. Ever. Oh damn' I just got older.";
-                case 189: return "Should we start class now, or should we wait for everyone to get here?";
-                case 190: return "He told us a very exciting adventure story.";
-                case 191: return "They got there early, and they got really good seats.";
-                case 192: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
-                case 193: return "Two seats were vacant.";
-                case 194: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
-                case 195: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
-                case 196: return "Please wait outside of the house.";
-                case 197: return "Everyone was busy, so I went to the movie alone.";
-                case 198: return "Yeah, I think it's a good environment for learning English.";
-                case 199: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
-                case 200: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 201: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
-                case 202: return "We have never been to Asia, nor have we visited Africa.";
-                case 203: return "Malls are great places to shop; I can find everything I need under one roof.";
-                case 204: return "She borrowed the book from him many years ago and hasn't yet returned it.";
-                case 205: return "I want more detailed information.";
-                case 206: return "It was getting dark, and we weren't there yet.";
-                case 207: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
-                case 208: return "The body may perhaps compensates for the loss of a true metaphysics.";
-                case 209: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
-                case 210: return "How was the math test?";
-                case 211: return "She folded her handkerchief neatly.";
-                case 212: return "She only paints with bold colors; she does not like pastels.";
-                case 213: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
-                case 214: return "The sky is clear; the stars are twinkling.";
-                case 215: return "I love eating toasted cheese and tuna sandwiches.";
-                case 216: return "Hurry!";
-                case 217: return "The old apple revels in its authority.";
-                case 218: return "I'd rather be a bird than a fish.";
-                case 219: return "If I don't like something, I'll stay away from it.";
-                case 220: return "I currently have 4 windows open up' and I don't know why.";
-                case 221: return "Abstraction is often one floor above you.";
-                case 222: return "Wow, does that work?";
-                case 223: return "The book is in front of the table.";
-                case 224: return "Writing a list of random sentences is harder than I initially thought it would be.";
-                case 225: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
-                case 226: return "I checked to make sure that he was still alive.";
-                case 227: return "She always speaks to him in a loud voice.";
-                case 228: return "I am happy to take your donation; any amount will be greatly appreciated.";
-                case 229: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
-                case 230: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
-                case 231: return "A glittering gem is not enough.";
-                case 232: return "Joe made the sugar cookies; Susan decorated them.";
-                case 233: return "The stranger officiates the meal.";
-                case 234: return "He said he was not there yesterday; however, many people saw him there.";
-                case 235: return "Cats are good pets, for they are clean and are not noisy.";
-                case 236: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
-                case 237: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
-                case 238: return "Christmas is coming.";
-                case 239: return "Let me help you with your baggage.";
-                case 240: return "Sixty-Four comes asking for bread.";
-                case 241: return "I hear that Nancy is very pretty.";
-                case 242: return "There were white out conditions in the town; subsequently, the roads were impassable.";
-                case 243: return "The river stole the gods.";
-                case 244: return "He ran out of money, so he had to stop playing poker.";
-                case 245: return "I am counting my calories, yet I really want dessert.";
-                case 246: return "She did not cheat on the test, for it was not the right thing to do.";
-                case 247: return "This is a Japanese doll.";
-                case 248: return "She was too short to see over the fence.";
-                case 249: return "Check back tomorrow; I will see if the book has arrived.";
-                case 250: return "She advised him to come back at once.";
-                case 251: return "Don't step on the broken glass.";
-                case 252: return "I think I will buy the red car, or I will lease the blue one.";
-                case 253: return "Where do random thoughts come from?";
-                case 254: return "She did her best to help him.";
-                case 255: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
-                case 256: return "The quick brown fox jumps over the lazy dog.";
-                case 257: return "A song can make or ruin a person's day if they let it get to them.";
-                case 258: return "I am never at home on Sundays.";
-                case 259: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
-                case 260: return "I often see the time 11:11 or 12:34 on clocks.";
-                case 261: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 262: return "We need to rent a room for our party.";
-                case 263: return "He didn't want to go to the dentist, yet he went anyway.";
-                case 264: return "We have a lot of rain in June.";
-                case 265: return "The lake is a long way from here.";
-                case 266: return "I really want to go to work, but I am too sick to drive.";
-                case 267: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 268: return "I want to buy a onesie' but know it won't suit me.";
-                case 269: return "Mary plays the piano.";
-                case 270: return "Is it free?";
-                case 271: return "The mysterious diary records the voice.";
-                case 272: return "Lets all be unique together until we realise we are all the same.";
-                case 273: return "I would have gotten the promotion, but my attendance wasn't good enough.";
-                case 274: return "The memory we used to share is no longer coherent.";
-                case 275: return "She wrote him a long letter, but he didn't read it.";
-                case 276: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
-                case 277: return "The shooter says goodbye to his love.";
-                case 278: return "If Purple People Eaters are real' where do they find purple people to eat?";
-                case 279: return "Rock music approaches at high velocity.";
-                case 280: return "I often see the time 11:11 or 12:34 on clocks.";
-                case 281: return "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?";
-                case 282: return "Christmas is coming.";
-                case 283: return "A song can make or ruin a person's day if they let it get to them.";
-                case 284: return "Where do random thoughts come from?";
-                case 285: return "We have a lot of rain in June.";
-                case 286: return "The memory we used to share is no longer coherent.";
-                case 287: return "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?";
-                case 288: return "She advised him to come back at once.";
-                case 289: return "The mysterious diary records the voice.";
-                case 290: return "Let me help you with your baggage.";
-                case 291: return "Mary plays the piano.";
-                case 292: return "He ran out of money, so he had to stop playing poker.";
-                case 293: return "She only paints with bold colors; she does not like pastels.";
-                case 294: return "Everyone was busy, so I went to the movie alone.";
-                case 295: return "Sixty-Four comes asking for bread.";
-                case 296: return "Check back tomorrow; I will see if the book has arrived.";
-                case 297: return "The quick brown fox jumps over the lazy dog.";
-                case 298: return "Abstraction is often one floor above you.";
-                case 299: return "I want to buy a onesie' but know it won't suit me.";
-                case 300: return "Should we start class now, or should we wait for everyone to get here?";
-                case 301: return "Lets all be unique together until we realise we are all the same.";
-                case 302: return "The shooter says goodbye to his love.";
-                case 303: return "She borrowed the book from him many years ago and hasn't yet returned it.";
-                case 304: return "I think I will buy the red car, or I will lease the blue one.";
-                case 305: return "This is a Japanese doll.";
-                case 306: return "The sky is clear; the stars are twinkling.";
-                case 307: return "She wrote him a long letter, but he didn't read it.";
-                case 308: return "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.";
-                case 309: return "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.";
-                case 310: return "If Purple People Eaters are real' where do they find purple people to eat?";
-                case 311: return "She folded her handkerchief neatly.";
-                case 312: return "She was too short to see over the fence.";
-                case 313: return "I am counting my calories, yet I really want dessert.";
-                case 314: return "Joe made the sugar cookies; Susan decorated them.";
-                case 315: return "A glittering gem is not enough.";
-                case 316: return "My Mum tries to be cool by saying that she likes all the same things that I do.";
-                case 317: return "I hear that Nancy is very pretty.";
-                case 318: return "He turned in the research paper on Friday; otherwise, he would have not passed the class.";
-                case 319: return "Please wait outside of the house.";
-                case 320: return "The lake is a long way from here.";
-                case 321: return "Hurry!";
-                case 322: return "He said he was not there yesterday; however, many people saw him there.";
-                case 323: return "I checked to make sure that he was still alive.";
-                case 324: return "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.";
-                case 325: return "Wednesday is hump day, but has anyone asked the camel if he's happy about it?";
-                case 326: return "I will never be this young again. Ever. Oh damn' I just got older.";
-                case 327: return "He told us a very exciting adventure story.";
-                case 328: return "This is the last random sentence I will be writing and I am going to stop mid-sent";
-                case 329: return "They got there early, and they got really good seats.";
-                case 330: return "Malls are great places to shop; I can find everything I need under one roof.";
-                case 331: return "The waves were crashing on the shore; it was a lovely sight.";
-                case 332: return "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.";
-                case 333: return "She did not cheat on the test, for it was not the right thing to do.";
-                case 334: return "Don't step on the broken glass.";
-                case 335: return "I currently have 4 windows open up' and I don't know why.";
-                case 336: return "The clock within this blog and the clock on my laptop are 1 hour different from each other.";
-                case 337: return "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.";
-                case 338: return "Is it free?";
-                case 339: return "We have never been to Asia, nor have we visited Africa.";
-                case 340: return "There were white out conditions in the town; subsequently, the roads were impassable.";
-                case 341: return "The old apple revels in its authority.";
-                case 342: return "She always speaks to him in a loud voice.";
-                case 343: return "We need to rent a room for our party.";
-                case 344: return "The river stole the gods.";
-                case 345: return "The body may perhaps compensates for the loss of a true metaphysics.";
-                case 346: return "The book is in front of the table.";
-                case 347: return "Tom got a small piece of pie.";
-                case 348: return "Writing a list of random sentences is harder than I initially thought it would be.";
-                case 349: return "It was getting dark, and we weren't there yet.";
-                case 350: return "The stranger officiates the meal.";
-                case 351: return "I would have gotten the promotion, but my attendance wasn't good enough.";
-                case 352: return "I love eating toasted cheese and tuna sandwiches.";
-                case 353: return "I want more detailed information.";
-                case 354: return "There was no ice cream in the freezer, nor did they have money to go to the store.";
-                case 355: return "He didn't want to go to the dentist, yet he went anyway.";
-                case 356: return "Two seats were vacant.";
-                case 357: return "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.";
-                case 358: return "Rock music approaches at high velocity.";
-                case 359: return "Yeah, I think it's a good environment for learning English.";
-                case 360: return "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.";
-                case 361: return "Cats are good pets, for they are clean and are not noisy.";
-                case 362: return "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.";
-                case 363: return "If I don't like something, I'll stay away from it.";
-                case 364: return "I really want to go to work, but I am too sick to drive.";
-                case 365: return "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.";
-                case 366: return "I am happy to take your donation; any amount will be greatly appreciated.";
-                case 367: return "I'd rather be a bird than a fish.";
-                case 368: return "How was the math test?";
-                case 369: return "Italy is my favorite country; in fact, I plan to spend two weeks there next year.";
-                case 370: return "I am never at home on Sundays.";
-                case 380: return "Wow, does that work?";
-                case 390: return "She did her best to help him.";
+            0 => "A mad prize ghosts the attractive romantic.",
+            1 => "I often see the time 11:11 or 12:34 on clocks.",
+            2 => "Malls are great places to shop; I can find everything I need under one roof.",
+            3 => "Christmas is coming.",
+            4 => "I will never be this young again. Ever. Oh damn' I just got older.",
+            5 => "This is a Japanese doll.",
+            6 => "We have never been to Asia, nor have we visited Africa.",
+            7 => "She was too short to see over the fence.",
+            8 => "Hurry!",
+            9 => "If I don't like something, I'll stay away from it.",
+            10 => "Wednesday is hump day, but has anyone asked the camel if he's happy about it?",
+            11 => "She folded her handkerchief neatly.",
+            12 => "I checked to make sure that he was still alive.",
+            13 => "He didn't want to go to the dentist, yet he went anyway.",
+            14 => "There was no ice cream in the freezer, nor did they have money to go to the store.",
+            15 =>
+                "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.",
+            16 =>
+                "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?",
+            17 => "Cats are good pets, for they are clean and are not noisy.",
+            18 => "The body may perhaps compensates for the loss of a true metaphysics.",
+            19 => "Please wait outside of the house.",
+            20 => "The mysterious diary records the voice.",
+            21 => "There were white out conditions in the town; subsequently, the roads were impassable.",
+            22 => "I love eating toasted cheese and tuna sandwiches.",
+            23 => "Two seats were vacant.",
+            24 => "The clock within this blog and the clock on my laptop are 1 hour different from each other.",
+            25 => "She did her best to help him.",
+            26 => "We need to rent a room for our party.",
+            27 =>
+                "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.",
+            28 => "The river stole the gods.",
+            29 => "Joe made the sugar cookies; Susan decorated them.",
+            30 => "He told us a very exciting adventure story.",
+            31 => "He said he was not there yesterday; however, many people saw him there.",
+            32 => "I really want to go to work, but I am too sick to drive.",
+            33 => "A glittering gem is not enough.",
+            34 => "Abstraction is often one floor above you.",
+            35 =>
+                "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.",
+            36 => "Mary plays the piano.",
+            37 => "She did not cheat on the test, for it was not the right thing to do.",
+            38 => "I would have gotten the promotion, but my attendance wasn't good enough.",
+            39 => "I want more detailed information.",
+            40 => "It was getting dark, and we weren't there yet.",
+            41 => "She borrowed the book from him many years ago and hasn't yet returned it.",
+            42 =>
+                "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.",
+            43 => "Wow, does that work?",
+            44 => "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.",
+            45 => "The waves were crashing on the shore; it was a lovely sight.",
+            46 => "If Purple People Eaters are real' where do they find purple people to eat?",
+            47 => "Where do random thoughts come from?",
+            48 => "They got there early, and they got really good seats.",
+            49 => "Everyone was busy, so I went to the movie alone.",
+            50 => "I am never at home on Sundays.",
+            51 => "Should we start class now, or should we wait for everyone to get here?",
+            52 => "The quick brown fox jumps over the lazy dog.",
+            53 => "A song can make or ruin a person's day if they let it get to them.",
+            54 => "I want to buy a onesie' but know it won't suit me.",
+            55 => "Italy is my favorite country; in fact, I plan to spend two weeks there next year.",
+            56 => "I hear that Nancy is very pretty.",
+            57 =>
+                "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?",
+            58 => "She advised him to come back at once.",
+            59 => "He ran out of money, so he had to stop playing poker.",
+            60 => "My Mum tries to be cool by saying that she likes all the same things that I do.",
+            61 => "The sky is clear; the stars are twinkling.",
+            62 =>
+                "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.",
+            63 => "I'd rather be a bird than a fish.",
+            64 => "He turned in the research paper on Friday; otherwise, he would have not passed the class.",
+            65 => "The memory we used to share is no longer coherent.",
+            66 => "Lets all be unique together until we realise we are all the same.",
+            67 => "I am happy to take your donation; any amount will be greatly appreciated.",
+            68 => "The old apple revels in its authority.",
+            69 => "Let me help you with your baggage.",
+            70 => "Sixty-Four comes asking for bread.",
+            71 => "I am counting my calories, yet I really want dessert.",
+            72 => "How was the math test?",
+            73 => "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.",
+            74 =>
+                "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.",
+            75 => "She wrote him a long letter, but he didn't read it.",
+            76 => "Don't step on the broken glass.",
+            77 => "Check back tomorrow; I will see if the book has arrived.",
+            78 => "I currently have 4 windows open up' and I don't know why.",
+            79 => "Tom got a small piece of pie.",
+            80 => "Is it free?",
+            81 => "She only paints with bold colors; she does not like pastels.",
+            82 => "Yeah, I think it's a good environment for learning English.",
+            83 => "This is the last random sentence I will be writing and I am going to stop mid-sent",
+            84 => "We have a lot of rain in June.",
+            85 => "She always speaks to him in a loud voice.",
+            86 => "The lake is a long way from here.",
+            87 => "Writing a list of random sentences is harder than I initially thought it would be.",
+            88 => "I think I will buy the red car, or I will lease the blue one.",
+            89 => "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.",
+            90 => "The stranger officiates the meal.",
+            91 => "The shooter says goodbye to his love.",
+            92 => "The book is in front of the table.",
+            93 => "Rock music approaches at high velocity.",
+            94 => "He told us a very exciting adventure story.",
+            95 => "We have a lot of rain in June.",
+            96 => "Abstraction is often one floor above you.",
+            97 => "I am happy to take your donation; any amount will be greatly appreciated.",
+            98 => "I hear that Nancy is very pretty.",
+            99 => "I want more detailed information.",
+            100 =>
+                "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.",
+            101 => "Italy is my favorite country; in fact, I plan to spend two weeks there next year.",
+            102 => "I currently have 4 windows open up' and I don't know why.",
+            103 => "The shooter says goodbye to his love.",
+            104 => "Everyone was busy, so I went to the movie alone.",
+            105 => "She was too short to see over the fence.",
+            106 => "I think I will buy the red car, or I will lease the blue one.",
+            107 => "Yeah, I think it's a good environment for learning English.",
+            108 => "The book is in front of the table.",
+            109 => "Writing a list of random sentences is harder than I initially thought it would be.",
+            110 => "The clock within this blog and the clock on my laptop are 1 hour different from each other.",
+            111 => "I am never at home on Sundays.",
+            112 => "The quick brown fox jumps over the lazy dog.",
+            113 => "I love eating toasted cheese and tuna sandwiches.",
+            114 => "How was the math test?",
+            115 => "Rock music approaches at high velocity.",
+            116 => "She advised him to come back at once.",
+            117 => "There were white out conditions in the town; subsequently, the roads were impassable.",
+            118 => "I am counting my calories, yet I really want dessert.",
+            119 => "She did her best to help him.",
+            120 => "The waves were crashing on the shore; it was a lovely sight.",
+            121 => "The lake is a long way from here.",
+            122 => "Lets all be unique together until we realise we are all the same.",
+            123 => "Let me help you with your baggage.",
+            124 =>
+                "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.",
+            125 => "Christmas is coming.",
+            126 => "The stranger officiates the meal.",
+            127 => "Joe made the sugar cookies; Susan decorated them.",
+            128 => "I often see the time 11:11 or 12:34 on clocks.",
+            129 => "Don't step on the broken glass.",
+            130 => "The sky is clear; the stars are twinkling.",
+            131 => "There was no ice cream in the freezer, nor did they have money to go to the store.",
+            132 => "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.",
+            133 => "If Purple People Eaters are real' where do they find purple people to eat?",
+            134 => "It was getting dark, and we weren't there yet.",
+            135 => "Where do random thoughts come from?",
+            136 => "The river stole the gods.",
+            137 =>
+                "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.",
+            138 => "Sixty-Four comes asking for bread.",
+            139 => "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.",
+            140 => "He turned in the research paper on Friday; otherwise, he would have not passed the class.",
+            141 =>
+                "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.",
+            142 =>
+                "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?",
+            143 => "He said he was not there yesterday; however, many people saw him there.",
+            144 => "This is the last random sentence I will be writing and I am going to stop mid-sent",
+            145 => "Check back tomorrow; I will see if the book has arrived.",
+            146 => "I really want to go to work, but I am too sick to drive.",
+            147 => "Mary plays the piano.",
+            148 => "Should we start class now, or should we wait for everyone to get here?",
+            149 => "They got there early, and they got really good seats.",
+            150 => "A glittering gem is not enough.",
+            151 => "She only paints with bold colors; she does not like pastels.",
+            152 => "The memory we used to share is no longer coherent.",
+            153 => "If I don't like something, I'll stay away from it.",
+            154 => "A song can make or ruin a person's day if they let it get to them.",
+            155 => "My Mum tries to be cool by saying that she likes all the same things that I do.",
+            156 => "She borrowed the book from him many years ago and hasn't yet returned it.",
+            157 => "Hurry!",
+            158 => "I checked to make sure that he was still alive.",
+            159 => "Two seats were vacant.",
+            160 => "This is a Japanese doll.",
+            161 => "She folded her handkerchief neatly.",
+            162 => "He didn't want to go to the dentist, yet he went anyway.",
+            163 => "I want to buy a onesie' but know it won't suit me.",
+            164 => "Tom got a small piece of pie.",
+            165 => "Please wait outside of the house.",
+            166 => "He ran out of money, so he had to stop playing poker.",
+            167 => "Wow, does that work?",
+            168 => "I'd rather be a bird than a fish.",
+            169 => "She wrote him a long letter, but he didn't read it.",
+            170 => "We need to rent a room for our party.",
+            171 => "She always speaks to him in a loud voice.",
+            172 => "Malls are great places to shop; I can find everything I need under one roof.",
+            173 => "Cats are good pets, for they are clean and are not noisy.",
+            174 => "We have never been to Asia, nor have we visited Africa.",
+            175 => "Is it free?",
+            176 => "I will never be this young again. Ever. Oh damn' I just got older.",
+            177 =>
+                "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.",
+            178 => "The body may perhaps compensates for the loss of a true metaphysics.",
+            179 => "The mysterious diary records the voice.",
+            180 => "I would have gotten the promotion, but my attendance wasn't good enough.",
+            181 => "Wednesday is hump day, but has anyone asked the camel if he's happy about it?",
+            182 =>
+                "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?",
+            183 =>
+                "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.",
+            184 => "She did not cheat on the test, for it was not the right thing to do.",
+            185 => "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.",
+            186 => "The old apple revels in its authority.",
+            187 => "Tom got a small piece of pie.",
+            188 => "I will never be this young again. Ever. Oh damn' I just got older.",
+            189 => "Should we start class now, or should we wait for everyone to get here?",
+            190 => "He told us a very exciting adventure story.",
+            191 => "They got there early, and they got really good seats.",
+            192 => "The clock within this blog and the clock on my laptop are 1 hour different from each other.",
+            193 => "Two seats were vacant.",
+            194 =>
+                "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?",
+            195 =>
+                "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.",
+            196 => "Please wait outside of the house.",
+            197 => "Everyone was busy, so I went to the movie alone.",
+            198 => "Yeah, I think it's a good environment for learning English.",
+            199 =>
+                "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.",
+            200 => "There was no ice cream in the freezer, nor did they have money to go to the store.",
+            201 => "My Mum tries to be cool by saying that she likes all the same things that I do.",
+            202 => "We have never been to Asia, nor have we visited Africa.",
+            203 => "Malls are great places to shop; I can find everything I need under one roof.",
+            204 => "She borrowed the book from him many years ago and hasn't yet returned it.",
+            205 => "I want more detailed information.",
+            206 => "It was getting dark, and we weren't there yet.",
+            207 => "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.",
+            208 => "The body may perhaps compensates for the loss of a true metaphysics.",
+            209 => "He turned in the research paper on Friday; otherwise, he would have not passed the class.",
+            210 => "How was the math test?",
+            211 => "She folded her handkerchief neatly.",
+            212 => "She only paints with bold colors; she does not like pastels.",
+            213 => "This is the last random sentence I will be writing and I am going to stop mid-sent",
+            214 => "The sky is clear; the stars are twinkling.",
+            215 => "I love eating toasted cheese and tuna sandwiches.",
+            216 => "Hurry!",
+            217 => "The old apple revels in its authority.",
+            218 => "I'd rather be a bird than a fish.",
+            219 => "If I don't like something, I'll stay away from it.",
+            220 => "I currently have 4 windows open up' and I don't know why.",
+            221 => "Abstraction is often one floor above you.",
+            222 => "Wow, does that work?",
+            223 => "The book is in front of the table.",
+            224 => "Writing a list of random sentences is harder than I initially thought it would be.",
+            225 =>
+                "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?",
+            226 => "I checked to make sure that he was still alive.",
+            227 => "She always speaks to him in a loud voice.",
+            228 => "I am happy to take your donation; any amount will be greatly appreciated.",
+            229 => "Wednesday is hump day, but has anyone asked the camel if he's happy about it?",
+            230 => "Italy is my favorite country; in fact, I plan to spend two weeks there next year.",
+            231 => "A glittering gem is not enough.",
+            232 => "Joe made the sugar cookies; Susan decorated them.",
+            233 => "The stranger officiates the meal.",
+            234 => "He said he was not there yesterday; however, many people saw him there.",
+            235 => "Cats are good pets, for they are clean and are not noisy.",
+            236 => "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.",
+            237 =>
+                "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.",
+            238 => "Christmas is coming.",
+            239 => "Let me help you with your baggage.",
+            240 => "Sixty-Four comes asking for bread.",
+            241 => "I hear that Nancy is very pretty.",
+            242 => "There were white out conditions in the town; subsequently, the roads were impassable.",
+            243 => "The river stole the gods.",
+            244 => "He ran out of money, so he had to stop playing poker.",
+            245 => "I am counting my calories, yet I really want dessert.",
+            246 => "She did not cheat on the test, for it was not the right thing to do.",
+            247 => "This is a Japanese doll.",
+            248 => "She was too short to see over the fence.",
+            249 => "Check back tomorrow; I will see if the book has arrived.",
+            250 => "She advised him to come back at once.",
+            251 => "Don't step on the broken glass.",
+            252 => "I think I will buy the red car, or I will lease the blue one.",
+            253 => "Where do random thoughts come from?",
+            254 => "She did her best to help him.",
+            255 =>
+                "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.",
+            256 => "The quick brown fox jumps over the lazy dog.",
+            257 => "A song can make or ruin a person's day if they let it get to them.",
+            258 => "I am never at home on Sundays.",
+            259 => "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.",
+            260 => "I often see the time 11:11 or 12:34 on clocks.",
+            261 => "The waves were crashing on the shore; it was a lovely sight.",
+            262 => "We need to rent a room for our party.",
+            263 => "He didn't want to go to the dentist, yet he went anyway.",
+            264 => "We have a lot of rain in June.",
+            265 => "The lake is a long way from here.",
+            266 => "I really want to go to work, but I am too sick to drive.",
+            267 =>
+                "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.",
+            268 => "I want to buy a onesie' but know it won't suit me.",
+            269 => "Mary plays the piano.",
+            270 => "Is it free?",
+            271 => "The mysterious diary records the voice.",
+            272 => "Lets all be unique together until we realise we are all the same.",
+            273 => "I would have gotten the promotion, but my attendance wasn't good enough.",
+            274 => "The memory we used to share is no longer coherent.",
+            275 => "She wrote him a long letter, but he didn't read it.",
+            276 =>
+                "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.",
+            277 => "The shooter says goodbye to his love.",
+            278 => "If Purple People Eaters are real' where do they find purple people to eat?",
+            279 => "Rock music approaches at high velocity.",
+            280 => "I often see the time 11:11 or 12:34 on clocks.",
+            281 =>
+                "What was the person thinking when they discovered cow's milk was fine for human consumption' and why did they do it in the first place!?",
+            282 => "Christmas is coming.",
+            283 => "A song can make or ruin a person's day if they let it get to them.",
+            284 => "Where do random thoughts come from?",
+            285 => "We have a lot of rain in June.",
+            286 => "The memory we used to share is no longer coherent.",
+            287 =>
+                "If the Easter Bunny and the Tooth Fairy had babies would they take your teeth and leave chocolate for you?",
+            288 => "She advised him to come back at once.",
+            289 => "The mysterious diary records the voice.",
+            290 => "Let me help you with your baggage.",
+            291 => "Mary plays the piano.",
+            292 => "He ran out of money, so he had to stop playing poker.",
+            293 => "She only paints with bold colors; she does not like pastels.",
+            294 => "Everyone was busy, so I went to the movie alone.",
+            295 => "Sixty-Four comes asking for bread.",
+            296 => "Check back tomorrow; I will see if the book has arrived.",
+            297 => "The quick brown fox jumps over the lazy dog.",
+            298 => "Abstraction is often one floor above you.",
+            299 => "I want to buy a onesie' but know it won't suit me.",
+            300 => "Should we start class now, or should we wait for everyone to get here?",
+            301 => "Lets all be unique together until we realise we are all the same.",
+            302 => "The shooter says goodbye to his love.",
+            303 => "She borrowed the book from him many years ago and hasn't yet returned it.",
+            304 => "I think I will buy the red car, or I will lease the blue one.",
+            305 => "This is a Japanese doll.",
+            306 => "The sky is clear; the stars are twinkling.",
+            307 => "She wrote him a long letter, but he didn't read it.",
+            308 =>
+                "I was very proud of my nickname throughout high school but today- I couldn't be any different to what my nickname was.",
+            309 =>
+                "She works two jobs to make ends meet; at least, that was her reason for not having time to join us.",
+            310 => "If Purple People Eaters are real' where do they find purple people to eat?",
+            311 => "She folded her handkerchief neatly.",
+            312 => "She was too short to see over the fence.",
+            313 => "I am counting my calories, yet I really want dessert.",
+            314 => "Joe made the sugar cookies; Susan decorated them.",
+            315 => "A glittering gem is not enough.",
+            316 => "My Mum tries to be cool by saying that she likes all the same things that I do.",
+            317 => "I hear that Nancy is very pretty.",
+            318 => "He turned in the research paper on Friday; otherwise, he would have not passed the class.",
+            319 => "Please wait outside of the house.",
+            320 => "The lake is a long way from here.",
+            321 => "Hurry!",
+            322 => "He said he was not there yesterday; however, many people saw him there.",
+            323 => "I checked to make sure that he was still alive.",
+            324 =>
+                "Someone I know recently combined Maple Syrup & buttered Popcorn thinking it would taste like caramel popcorn. It didn't and they don't recommend anyone else do it either.",
+            325 => "Wednesday is hump day, but has anyone asked the camel if he's happy about it?",
+            326 => "I will never be this young again. Ever. Oh damn' I just got older.",
+            327 => "He told us a very exciting adventure story.",
+            328 => "This is the last random sentence I will be writing and I am going to stop mid-sent",
+            329 => "They got there early, and they got really good seats.",
+            330 => "Malls are great places to shop; I can find everything I need under one roof.",
+            331 => "The waves were crashing on the shore; it was a lovely sight.",
+            332 => "If you like tuna and tomato sauce- try combining the two. It's really not as bad as it sounds.",
+            333 => "She did not cheat on the test, for it was not the right thing to do.",
+            334 => "Don't step on the broken glass.",
+            335 => "I currently have 4 windows open up' and I don't know why.",
+            336 => "The clock within this blog and the clock on my laptop are 1 hour different from each other.",
+            337 =>
+                "Sometimes it is better to just walk away from things and go back to them later when you're in a better frame of mind.",
+            338 => "Is it free?",
+            339 => "We have never been to Asia, nor have we visited Africa.",
+            340 => "There were white out conditions in the town; subsequently, the roads were impassable.",
+            341 => "The old apple revels in its authority.",
+            342 => "She always speaks to him in a loud voice.",
+            343 => "We need to rent a room for our party.",
+            344 => "The river stole the gods.",
+            345 => "The body may perhaps compensates for the loss of a true metaphysics.",
+            346 => "The book is in front of the table.",
+            347 => "Tom got a small piece of pie.",
+            348 => "Writing a list of random sentences is harder than I initially thought it would be.",
+            349 => "It was getting dark, and we weren't there yet.",
+            350 => "The stranger officiates the meal.",
+            351 => "I would have gotten the promotion, but my attendance wasn't good enough.",
+            352 => "I love eating toasted cheese and tuna sandwiches.",
+            353 => "I want more detailed information.",
+            354 => "There was no ice cream in the freezer, nor did they have money to go to the store.",
+            355 => "He didn't want to go to the dentist, yet he went anyway.",
+            356 => "Two seats were vacant.",
+            357 =>
+                "Last Friday in three week's time I saw a spotted striped blue worm shake hands with a legless lizard.",
+            358 => "Rock music approaches at high velocity.",
+            359 => "Yeah, I think it's a good environment for learning English.",
+            360 =>
+                "Sometimes, all you need to do is completely make an ass of yourself and laugh it off to realise that life isn't so bad after all.",
+            361 => "Cats are good pets, for they are clean and are not noisy.",
+            362 => "When I was little I had a car door slammed shut on my hand. I still remember it quite vividly.",
+            363 => "If I don't like something, I'll stay away from it.",
+            364 => "I really want to go to work, but I am too sick to drive.",
+            365 => "A purple pig and a green donkey flew a kite in the middle of the night and ended up sunburnt.",
+            366 => "I am happy to take your donation; any amount will be greatly appreciated.",
+            367 => "I'd rather be a bird than a fish.",
+            368 => "How was the math test?",
+            369 => "Italy is my favorite country; in fact, I plan to spend two weeks there next year.",
+            370 => "I am never at home on Sundays.",
+            380 => "Wow, does that work?",
+            390 => "She did her best to help him.",
+            _ => null
+        };
+    }
 
-                default: return null;
-            }
-        }
+    /// <summary>
+    /// Writes out all lookup tables for all datasets.  These are tables which map codes to descriptions.
+    /// </summary>
+    /// <param name="dir"></param>
+    public static void WriteLookups(DirectoryInfo dir)
+    {
 
-        /// <summary>
-        /// Writes out all lookup tables for all datasets.  These are tables which map codes to descriptions.
-        /// </summary>
-        /// <param name="dir"></param>
-        public static void WriteLookups(DirectoryInfo dir)
-        {
-
-            File.WriteAllText(Path.Combine(dir.FullName,"z_chiStatus.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_chiStatus.csv"),
 @"Code,Description
 ""C"",""The current record - it contains the approved CHI Number and which contains the GP with whom the patient is currently registered or was last registered with before transfer out of Scotland or death.""
 ""R"",""Redundant records are former records that were cancelled from use, mainly because the date of birth within the number was incorrect.""
@@ -793,7 +791,7 @@ namespace BadMedicine.Datasets
 
 
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_Healthboards.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_Healthboards.csv"),
 @"
 Code,Description
 A,Ayrshire and Arran
@@ -824,7 +822,7 @@ Y,Dumfries and Galloway
 Z,Shetland");
 
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_PCStenosis.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_PCStenosis.csv"),
 @"Code,CodeValueDescription
 1,Normal
 2,Minimal disease
@@ -834,7 +832,7 @@ Z,Shetland");
 6,Occluded
 9,Unsure");
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_ICStenosisLookup.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_ICStenosisLookup.csv"),
 @"Code Type Description,Code,CodeValueDescription
 %stenosis Carotid Artery Scan,1,Normal
 %stenosis Carotid Artery Scan,2,Minimal disease
@@ -845,14 +843,14 @@ Z,Shetland");
 %stenosis Carotid Artery Scan,8,See report text
 %stenosis Carotid Artery Scan,9,Unsure");
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_VertflowLookup.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_VertflowLookup.csv"),
 @"Code,CodeValueDescription
 1,Cephalad
 2,Reversed
 3,Not Detected
 4,See report text");
-            
-            File.WriteAllText(Path.Combine(dir.FullName, "z_StenosisLookup.csv"),
+
+        File.WriteAllText(Path.Combine(dir.FullName, "z_StenosisLookup.csv"),
 @"Code,CodeValueDescription
 1,Normal
 2,Minimum
@@ -861,8 +859,8 @@ Z,Shetland");
 5,Occluded
 9,Not seen
 6,See report text");
-            
-            File.WriteAllText(Path.Combine(dir.FullName, "z_PlaqueLookup.csv"),
+
+        File.WriteAllText(Path.Combine(dir.FullName, "z_PlaqueLookup.csv"),
 @"Code,CodeValueDescription
 1,I
 2,II
@@ -871,7 +869,7 @@ Z,Shetland");
 9,Nil
 8,Not applicable");
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_Specialty.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_Specialty.csv"),
 @"Code,Specialty
 A1,General Medicine
 A11,Acute Medicine
@@ -1036,11 +1034,11 @@ T6,Health visiting
 T7,Sick children's nursing
 T8,Nursery nursing
 XSU,Unspecified
-XX,Others"                
-                );
+XX,Others"
+            );
 
 
-            File.WriteAllText(Path.Combine(dir.FullName, "z_MaritalStatus.csv"),
+        File.WriteAllText(Path.Combine(dir.FullName, "z_MaritalStatus.csv"),
 @"Code,Meaning
 A,Never married nor registered civil partnership
 B,Married
@@ -1053,7 +1051,6 @@ H,Widowed
 J,Surviving civil partner
 Y,Other
 Z,Not known");
-        }
-
     }
+
 }

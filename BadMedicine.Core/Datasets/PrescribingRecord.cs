@@ -7,110 +7,106 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using CsvHelper;
-using CsvHelper.Configuration;
 
-namespace BadMedicine.Datasets
+namespace BadMedicine.Datasets;
+
+/// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
+public sealed class PrescribingRecord
 {
-    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing'/>
-    public class PrescribingRecord
+    /// <summary>
+    /// every row in data table has a weight (the number of records in our biochemistry with this sample type, this dictionary lets you input
+    /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
+    /// </summary>
+    private static readonly Dictionary<int, int> WeightToRow;
+    private static readonly int MaxWeight;
+    private static readonly DataTable LookupTable;
+
+    static PrescribingRecord()
     {
-          /// <summary>
-        /// every row in data table has a weigth (the number of records in our bichemistry with this sample type, this dictionary lets you input
-        /// a record number 0-maxWeight and be returned an appropriate row from the table based on its weighting
-        /// </summary>
-        private static Dictionary<int, int> weightToRow;
-        private static readonly int maxWeight = -1;
-        private static DataTable lookupTable;
+        LookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(PrescribingRecord), "Prescribing.csv");
 
-        static PrescribingRecord()
+        WeightToRow = [];
+
+        var currentWeight = 0;
+        for (var i = 0; i < LookupTable.Rows.Count; i++)
         {
-            lookupTable = DataGenerator.EmbeddedCsvToDataTable(typeof(PrescribingRecord),"Prescribing.csv");
-                       
-            weightToRow = new Dictionary<int, int>();
+            var frequency = int.Parse(LookupTable.Rows[i]["frequency"].ToString());
 
-            int currentWeight = 0;
-            for (int i = 0; i < lookupTable.Rows.Count; i++)
-            {
-                int frequency = int.Parse(lookupTable.Rows[i]["frequency"].ToString());
-                
-                if(frequency == 0)
-                    continue;
-                
-                currentWeight += frequency;
+            if (frequency == 0)
+                continue;
 
-                weightToRow.Add(currentWeight, i);
-            }
+            currentWeight += frequency;
 
-            maxWeight = currentWeight;
+            WeightToRow.Add(currentWeight, i);
         }
 
-        /// <summary>
-        /// Generates a new random prescription record
-        /// </summary>
-        /// <param name="r"></param>
-        public PrescribingRecord(Random r)
-        {
-            //get a random row from the lookup table - based on its representation within our biochemistry dataset
-            DataRow row = GetRandomRowUsingWeight(r);
-
-            ResSeqNo = row["res_seqno"].ToString();
-            Name = row["name"].ToString();
-            FormulationCode = row["formulation_code"].ToString();
-            Strength= row["strength"].ToString();
-            StrengthNumerical = row["orig_strength"].ToString() == "NULL" ? null : (double?)Convert.ToDouble(row["orig_strength"].ToString());
-            MeasureCode = row["measure_code"].ToString();
-            BnfCode = row["BNF_Code"].ToString();
-            FormattedBnfCode= row["formatted_BNF_Code"].ToString();
-            BnfDescription = row["BNF_Description"].ToString();
-            ApprovedName = row["Approved_Name"].ToString();
-
-            var hasMin = double.TryParse(row["minQuantity"].ToString(),out var min);
-            var hasMax = double.TryParse(row["maxQuantity"].ToString(),out var max);
-
-            if(hasMin && hasMax)
-                Quantity = ((int)((r.NextDouble() * (max - min)) + min)).ToString();//it is a number
-            else
-                if(r.Next(0,2) == 0)
-                    Quantity = row["minQuantity"].ToString();//it isn't a number, randomly select max or min
-                else
-                    Quantity = row["maxQuantity"].ToString();
-
-        }
-
-        private DataRow GetRandomRowUsingWeight(Random r)
-        {
-            int weightToGet = r.Next(maxWeight);
-
-            //get the first key with a cumulative frequency above the one you are trying to get
-            int row =  weightToRow.First(kvp => kvp.Key > weightToGet).Value;
-            
-            return lookupTable.Rows[row];
-        }
-
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ResSeqNo"]'/>
-        public string ResSeqNo;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Name"]'/>
-        public string Name;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormulationCode"]'/>
-        public string FormulationCode;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Strength"]'/>
-        public string Strength;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="StrengthNumerical"]'/>
-        public double? StrengthNumerical;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="MeasureCode"]'/>
-        public string MeasureCode;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfCode"]'/>
-        public string BnfCode;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormattedBnfCode"]'/>
-        public string FormattedBnfCode;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfDescription"]'/>
-        public string BnfDescription;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ApprovedName"]'/>
-        public string ApprovedName;
-        /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Quantity"]'/>
-        public string Quantity;
+        MaxWeight = currentWeight;
     }
+
+    /// <summary>
+    /// Generates a new random prescription record
+    /// </summary>
+    /// <param name="r"></param>
+    public PrescribingRecord(Random r)
+    {
+        //get a random row from the lookup table - based on its representation within our biochemistry dataset
+        var row = GetRandomRowUsingWeight(r);
+
+        ResSeqNo = row["res_seqno"].ToString();
+        Name = row["name"].ToString();
+        FormulationCode = row["formulation_code"].ToString();
+        Strength = row["strength"].ToString();
+        StrengthNumerical = row["orig_strength"].ToString() == "NULL" ? null : Convert.ToDouble(row["orig_strength"].ToString());
+        MeasureCode = row["measure_code"].ToString();
+        BnfCode = row["BNF_Code"].ToString();
+        FormattedBnfCode = row["formatted_BNF_Code"].ToString();
+        BnfDescription = row["BNF_Description"].ToString();
+        ApprovedName = row["Approved_Name"].ToString();
+
+        var hasMin = double.TryParse(row["minQuantity"].ToString(), out var min);
+        var hasMax = double.TryParse(row["maxQuantity"].ToString(), out var max);
+
+        if (hasMin && hasMax)
+            Quantity = ((int)(r.NextDouble() * (max - min) + min)).ToString();//it is a number
+        else
+            if (r.Next(0, 2) == 0)
+            Quantity = row["minQuantity"].ToString();//it isn't a number, randomly select max or min
+        else
+            Quantity = row["maxQuantity"].ToString();
+
+    }
+
+    private static DataRow GetRandomRowUsingWeight(Random r)
+    {
+        var weightToGet = r.Next(MaxWeight);
+
+        //get the first key with a cumulative frequency above the one you are trying to get
+        var row = WeightToRow.First(kvp => kvp.Key > weightToGet).Value;
+
+        return LookupTable.Rows[row];
+    }
+
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ResSeqNo"]'/>
+    public string ResSeqNo;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Name"]'/>
+    public string Name;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormulationCode"]'/>
+    public string FormulationCode;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Strength"]'/>
+    public string Strength;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="StrengthNumerical"]'/>
+    public double? StrengthNumerical;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="MeasureCode"]'/>
+    public string MeasureCode;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfCode"]'/>
+    public string BnfCode;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="FormattedBnfCode"]'/>
+    public string FormattedBnfCode;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="BnfDescription"]'/>
+    public string BnfDescription;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="ApprovedName"]'/>
+    public string ApprovedName;
+    /// <include file='../../Datasets.doc.xml' path='Datasets/Prescribing/Field[@name="Quantity"]'/>
+    public string Quantity;
 }
