@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.1] - 2024-03-12
 
-- Bump HIC.FAnsiSql from 3.0.1 to 3.2.1
+- Bump HIC.FAnsiSql from 3.2.0 to 3.2.1
 
 ## [1.2.0] - 2024-03-06
 
