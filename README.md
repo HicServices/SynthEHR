@@ -1,4 +1,4 @@
-# SynthEHR
+# SynthEHR (Previously BadMedicine)
 
 [![Build Status](https://github.com/HICServices/SynthEHR/actions/workflows/testpack.yml/badge.svg?branch=develop)](https://travis-ci.org/HicServices/SynthEHR) [![NuGet Badge](https://buildstats.info/nuget/HIC.SynthEHR)](https://www.nuget.org/packages/HIC.SynthEHR/)
 
@@ -7,6 +7,9 @@ Library and CLI for randomly generating medical data like you might get out of a
 SynthEHR differs from other random data generators e.g. Mockaroo, SQL Data Generator etc in that data generated is based on (simple) models generated from live EHR datasets collected for over 30 years in Tayside and Fife (UK).  This makes the data generated recognisable (codes used, frequency of codes etc) from a clinical perspective and representative of the problems (ontology mapping etc) that data analysts would encounter working with real medical data.
 
 Datasets generated are not suitable for training AI algorithms etc (See [What is Modelled?](#what-is-modelled))
+
+## Rename
+As of v2.0.0 BadMedicine was renamed to SynthEHR. Previous versions of the software can be found at [nuget.org](https://www.nuget.org/packages/HIC.BadMedicine).
 
 ## Datasets
 
