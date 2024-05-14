@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SynthEHR": {
+      "commandName": "Project",
+      "commandLineArgs": "c:\\omg 5000 20000 -l -s 500"
+    }
+  }
+}

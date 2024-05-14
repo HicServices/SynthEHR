@@ -1,9 +1,0 @@
-﻿Database:
-  # Set to true to drop and recreate tables described in the Template
-  DropTables: false
-  # The connection string to your database
-  ConnectionString: server=127.0.0.1;Uid=root;Pwd=root;SslMode=None;AllowPublicKeyRetrieval=True
-  # Your DBMS provider ('MySql', 'PostgreSql','Oracle' or 'MicrosoftSQLServer')
-  DatabaseType: MySql
-  # Database to create/use on the server
-  DatabaseName: BadMedicineTestData

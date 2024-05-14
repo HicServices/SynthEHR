@@ -14,11 +14,11 @@ jobs:
         run: dotnet test --nologo
       - name: Package
         run: |
-          dotnet publish BadMedicine/BadMedicine.csproj -o linux-x64 -r linux-x64 -c Release --self-contained --nologo -p:PublishSingleFile=true -p:GenerateDocumentationFile=false
-          dotnet publish BadMedicine/BadMedicine.csproj -o win-x64 -r win-x64 -c Release --self-contained --nologo -p:PublishSingleFile=true -p:GenerateDocumentationFile=false
-          dotnet pack BadMedicine.Core/BadMedicine.Core.csproj -p:DebugType=full -p:SymbolPackageFormat=snupkg -p:PackageVersion=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs|cut -d'"' -f2) -o . --include-source --include-symbols --nologo -c Release
-          tar czf badmedicine-cli-linux-x64.tgz ./linux-x64
-          zip -9rj badmedicine-cli-win-x64.zip win-x64
+          dotnet publish SynthEHR/SynthEHR.csproj -o linux-x64 -r linux-x64 -c Release --self-contained --nologo -p:PublishSingleFile=true -p:GenerateDocumentationFile=false
+          dotnet publish SynthEHR/SynthEHR.csproj -o win-x64 -r win-x64 -c Release --self-contained --nologo -p:PublishSingleFile=true -p:GenerateDocumentationFile=false
+          dotnet pack SynthEHR.Core/SynthEHR.Core.csproj -p:DebugType=full -p:SymbolPackageFormat=snupkg -p:PackageVersion=$(fgrep AssemblyInformationalVersion SharedAssemblyInfo.cs|cut -d'"' -f2) -o . --include-source --include-symbols --nologo -c Release
+          tar czf SynthEHR-cli-linux-x64.tgz ./linux-x64
+          zip -9rj SynthEHR-cli-win-x64.zip win-x64
       - name: Nuget push
         if: contains(github.ref,'refs/tags/')
         run: nuget push HIC.*.nupkg -skipDuplicate -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
@@ -27,7 +27,7 @@ jobs:
         if: contains(github.ref, 'refs/tags/v')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: badmedicine-cli-*
+          file: SynthEHR-cli-*
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true

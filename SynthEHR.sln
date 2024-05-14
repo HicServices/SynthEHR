@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29006.145
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthEHRTests", "SynthEHRTests\SynthEHRTests.csproj", "{2CD8ACBD-1CF4-40F0-884D-8CA0A339C4F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthEHR.Core", "SynthEHR.Core\SynthEHR.Core.csproj", "{1100F649-D54E-49DF-BC8F-02B6BAB7522A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthEHR", "SynthEHR\SynthEHR.csproj", "{CF7CD87E-C734-4E61-9A29-94ECD847B77C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDE7D1ED-61F4-46F6-A1B8-BF6751B3A060}"
+	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
+		.github\dependabot.yml = .github\dependabot.yml
+		Packages.md = Packages.md
+		README.md = README.md
+		.github\workflows\testpack.yml = .github\workflows\testpack.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CD8ACBD-1CF4-40F0-884D-8CA0A339C4F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD8ACBD-1CF4-40F0-884D-8CA0A339C4F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD8ACBD-1CF4-40F0-884D-8CA0A339C4F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD8ACBD-1CF4-40F0-884D-8CA0A339C4F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1100F649-D54E-49DF-BC8F-02B6BAB7522A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1100F649-D54E-49DF-BC8F-02B6BAB7522A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1100F649-D54E-49DF-BC8F-02B6BAB7522A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1100F649-D54E-49DF-BC8F-02B6BAB7522A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF7CD87E-C734-4E61-9A29-94ECD847B77C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF7CD87E-C734-4E61-9A29-94ECD847B77C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF7CD87E-C734-4E61-9A29-94ECD847B77C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF7CD87E-C734-4E61-9A29-94ECD847B77C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E347774-59A5-4DC8-ABAB-BF53CD2EC40A}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal

@@ -1,13 +1,13 @@
-BadMedicine/obj/
-BadMedicine/bin/
+SynthEHR/obj/
+SynthEHR/bin/
 *.user
-BadMedicine/.vs/
+SynthEHR/.vs/
 .vs/
 Visual Studio 2017/
-BadMedicineTests/obj/
+SynthEHRTests/obj/
 *.vspx
 *.psess
-BadMedicineTests/bin/
-BadMedicine.Core/obj/
-BadMedicine.Core/bin/
+SynthEHRTests/bin/
+SynthEHR.Core/obj/
+SynthEHR.Core/bin/
 .idea/
