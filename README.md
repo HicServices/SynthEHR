@@ -1,5 +1,13 @@
 # BadMedicine
 
+## <a name="Deprecation"></a> Deprecation Notice
+
+BadMedicine v1.2.2 will be the final release under this name.
+
+The project will be renamed SynthEHR in all future releases, starting at v2.0.0
+
+The project will be able to be found on [Github](https://gituhb.com/HICServices/SynthEHR) and on [Nuget](https://www.nuget.org/packages/HIC.SynthEHR/)
+
 [![Build Status](https://github.com/HICServices/BadMedicine/actions/workflows/testpack.yml/badge.svg?branch=develop)](https://travis-ci.org/HicServices/BadMedicine) [![NuGet Badge](https://buildstats.info/nuget/HIC.BadMedicine)](https://www.nuget.org/packages/HIC.BadMedicine/)
 
 Library and CLI for randomly generating medical data like you might get out of an Electronic Health Records (EHR) system.  It is intended for generating data for demos and testing ETL / cohort generation/ data management tools.
