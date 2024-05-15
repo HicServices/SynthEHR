@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.2] - 2024-035-16
 
--Add warning about naming deprication, see [README](./README.md#Deprication)
+-Add warning about naming deprecation, see [README](./README.md#Deprecation)
 
 ## [1.2.1] - 2024-03-18
 
