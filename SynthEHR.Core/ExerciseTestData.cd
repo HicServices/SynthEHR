@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SynthEHR.Datasets.Biochemistry" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAACAAACAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Datasets\Biochemistry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.DataGenerator" Collapsed="true">
+    <Position X="5.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECAIIAAAAAIAAAAgAAAAAAACAIgBAIAAAEAhACQABCA=</HashCode>
+      <FileName>Datasets\DataGenerator.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SynthEHR.Datasets.CarotidArteryScan" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAgAAAAAgA=</HashCode>
+      <FileName>Datasets\CarotidArteryScan.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.Demography" Collapsed="true">
+    <Position X="5.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAgAgAAAAAAA=</HashCode>
+      <FileName>Datasets\Demography.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.HospitalAdmissions" Collapsed="true">
+    <Position X="7.5" Y="3.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Datasets\HospitalAdmissions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.Prescribing" Collapsed="true">
+    <Position X="10" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Datasets\Prescribing.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.PersonCollection" Collapsed="true">
+    <Position X="1" Y="1" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAAAAACAAAAABAAAAAAA=</HashCode>
+      <FileName>PersonCollection.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="People" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="SynthEHR.Person" Collapsed="true">
+    <Position X="4.5" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAEIBKAoAAAIAEDAgRBDABABRAARQAgDAUAAAAEAAAA=</HashCode>
+      <FileName>Person.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.BiochemistryRecord" Collapsed="true">
+    <Position X="3" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACQSAAAAAgAAAAAAAABAQAAIAAAAAAEAAAIAAAAAA=</HashCode>
+      <FileName>Datasets\BiochemistryRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.DemographyAddress" Collapsed="true">
+    <Position X="5.25" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAABAAAAAAAAAAgIAAAAAAAEAgAAAAQAAAAAA=</HashCode>
+      <FileName>Datasets\DemographyAddress.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.DemographyPostcode" Collapsed="true">
+    <Position X="5.25" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Datasets\DemographyPostcode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.HospitalAdmissionsRecord" Collapsed="true">
+    <Position X="7.5" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AIECACAcAAAAAEBAEQAACAAAQIAAAAgAAAAAAAEAAAA=</HashCode>
+      <FileName>Datasets\HospitalAdmissionsRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SynthEHR.Datasets.PrescribingRecord" Collapsed="true">
+    <Position X="10" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>CgRAQQAAAAAgAAgAAAAAAAACAIAEAAAAQAAAgAABAAA=</HashCode>
+      <FileName>Datasets\PrescribingRecord.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
