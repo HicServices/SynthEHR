@@ -8,7 +8,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using MathNet.Numerics.Distributions;
+using Normal = SynthEHR.Statistics.Distributions.Normal;
 
 namespace SynthEHR.Datasets;
 
