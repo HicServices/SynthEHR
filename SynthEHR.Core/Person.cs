@@ -6,15 +6,16 @@
 
 using System;
 using System.Text;
+using Generator.Equals;
 using SynthEHR.Datasets;
-using Equ;
 
 namespace SynthEHR;
 
 /// <summary>
 /// Randomly generated person for whom datasets can be built
 /// </summary>
-public sealed class Person : PropertywiseEquatable<Person>
+[Equatable]
+public sealed class Person
 {
 
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
