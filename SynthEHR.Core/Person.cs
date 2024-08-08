@@ -15,7 +15,7 @@ namespace SynthEHR;
 /// Randomly generated person for whom datasets can be built
 /// </summary>
 [Equatable]
-public sealed class Person
+public sealed partial class Person
 {
 
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
