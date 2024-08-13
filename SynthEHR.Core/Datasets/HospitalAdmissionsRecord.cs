@@ -209,7 +209,7 @@ public sealed class HospitalAdmissionsRecord
             rowCount++;
         }
 
-        var operationsTable = new DataTable();
+        using var operationsTable = new DataTable();
         operationsTable.BeginLoadData();
         operationsTable.Columns.Add("CountOfRecords", typeof(int));
 
