@@ -1,4 +1,8 @@
-﻿// <copyright file="Normal.cs" company="Math.NET">
+﻿// This is a partial copy of Normal.cs from Mathnet.Numerics 5.0.0
+// with the unused portions removed for embedding in SynthEHR.
+// (We only use the basic functionality of the Normal distribution.)
+//
+// <copyright file="Normal.cs" company="Math.NET">
 // Math.NET Numerics, part of the Math.NET Project
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
@@ -28,7 +32,6 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 
 namespace SynthEHR.Statistics.Distributions;
 
@@ -43,45 +46,6 @@ internal sealed class Normal : IContinuousDistribution
 
     private readonly double _mean;
     private readonly double _stdDev;
-
-    /// <summary>
-    /// Initializes a new instance of the Normal class. This is a normal distribution with mean 0.0
-    /// and standard deviation 1.0. The distribution will
-    /// be initialized with the default <seealso cref="System.Random"/> random number generator.
-    /// </summary>
-    public Normal()
-        : this(0.0,1.0)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Normal class. This is a normal distribution with mean 0.0
-    /// and standard deviation 1.0. The distribution will
-    /// be initialized with the default <seealso cref="System.Random"/> random number generator.
-    /// </summary>
-    /// <param name="randomSource">The random number generator which is used to draw random samples.</param>
-    public Normal(Random randomSource)
-        : this(0.0,1.0,randomSource)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the Normal class with a particular mean and standard deviation. The distribution will
-    /// be initialized with the default <seealso cref="System.Random"/> random number generator.
-    /// </summary>
-    /// <param name="mean">The mean (μ) of the normal distribution.</param>
-    /// <param name="stddev">The standard deviation (σ) of the normal distribution. Range: σ ≥ 0.</param>
-    public Normal(double mean,double stddev)
-    {
-        if (!IsValidParameterSet(mean,stddev))
-        {
-            throw new ArgumentException("Invalid parameterization for the distribution.");
-        }
-
-        _random = new Random();
-        _mean = mean;
-        _stdDev = stddev;
-    }
 
     /// <summary>
     /// Initializes a new instance of the Normal class with a particular mean and standard deviation. The distribution will
@@ -103,42 +67,6 @@ internal sealed class Normal : IContinuousDistribution
     }
 
     /// <summary>
-    /// Constructs a normal distribution from a mean and standard deviation.
-    /// </summary>
-    /// <param name="mean">The mean (μ) of the normal distribution.</param>
-    /// <param name="stddev">The standard deviation (σ) of the normal distribution. Range: σ ≥ 0.</param>
-    /// <param name="randomSource">The random number generator which is used to draw random samples. Optional, can be null.</param>
-    /// <returns>a normal distribution.</returns>
-    public static Normal WithMeanStdDev(double mean,double stddev,Random randomSource = null)
-    {
-        return new Normal(mean,stddev,randomSource);
-    }
-
-    /// <summary>
-    /// Constructs a normal distribution from a mean and variance.
-    /// </summary>
-    /// <param name="mean">The mean (μ) of the normal distribution.</param>
-    /// <param name="var">The variance (σ^2) of the normal distribution.</param>
-    /// <param name="randomSource">The random number generator which is used to draw random samples. Optional, can be null.</param>
-    /// <returns>A normal distribution.</returns>
-    public static Normal WithMeanVariance(double mean,double var,Random randomSource = null)
-    {
-        return new Normal(mean,Math.Sqrt(var),randomSource);
-    }
-
-    /// <summary>
-    /// Constructs a normal distribution from a mean and precision.
-    /// </summary>
-    /// <param name="mean">The mean (μ) of the normal distribution.</param>
-    /// <param name="precision">The precision of the normal distribution.</param>
-    /// <param name="randomSource">The random number generator which is used to draw random samples. Optional, can be null.</param>
-    /// <returns>A normal distribution.</returns>
-    public static Normal WithMeanPrecision(double mean,double precision,Random randomSource = null)
-    {
-        return new Normal(mean,1.0/Math.Sqrt(precision),randomSource);
-    }
-
-    /// <summary>
     /// A string representation of the distribution.
     /// </summary>
     /// <returns>a string representation of the distribution.</returns>
@@ -152,7 +80,7 @@ internal sealed class Normal : IContinuousDistribution
     /// </summary>
     /// <param name="mean">The mean (μ) of the normal distribution.</param>
     /// <param name="stddev">The standard deviation (σ) of the normal distribution. Range: σ ≥ 0.</param>
-    public static bool IsValidParameterSet(double mean,double stddev)
+    private static bool IsValidParameterSet(double mean,double stddev)
     {
         return stddev >= 0.0 && !double.IsNaN(mean);
     }
@@ -171,11 +99,6 @@ internal sealed class Normal : IContinuousDistribution
     /// Gets the variance of the normal distribution.
     /// </summary>
     public double Variance => _stdDev*_stdDev;
-
-    /// <summary>
-    /// Gets the precision of the normal distribution.
-    /// </summary>
-    public double Precision => 1.0/(_stdDev*_stdDev);
 
     /// <summary>
     /// Gets the random number generator which is used to draw random samples.
@@ -219,32 +142,6 @@ internal sealed class Normal : IContinuousDistribution
     public double Maximum => double.PositiveInfinity;
 
     /// <summary>
-    /// Computes the probability density of the distribution (PDF) at x, i.e. ∂P(X ≤ x)/∂x.
-    /// </summary>
-    /// <param name="x">The location at which to compute the density.</param>
-    /// <returns>the density at <paramref name="x"/>.</returns>
-    public double Density(double x)
-    {
-        var d = (x - _mean)/_stdDev;
-        return Math.Exp(-0.5*d*d)/(Sqrt2Pi*_stdDev);
-    }
-
-    private const double Sqrt2Pi = 2.5066282746310005024157652848110452530069867406099d;
-
-    /// <summary>
-    /// Computes the log probability density of the distribution (lnPDF) at x, i.e. ln(∂P(X ≤ x)/∂x).
-    /// </summary>
-    /// <param name="x">The location at which to compute the log density.</param>
-    /// <returns>the log density at <paramref name="x"/>.</returns>
-    public double DensityLn(double x)
-    {
-        var d = (x - _mean)/_stdDev;
-        return (-0.5*d*d) - Math.Log(_stdDev) - LogSqrt2Pi;
-    }
-
-    private const double LogSqrt2Pi = 0.91893853320467274178032973640561763986139747363778;
-
-    /// <summary>
     /// Generates a sample from the normal distribution using the <i>Box-Muller</i> algorithm.
     /// </summary>
     /// <returns>a sample from the distribution.</returns>
@@ -262,22 +159,6 @@ internal sealed class Normal : IContinuousDistribution
 
         return mean + (stddev*x);
     }
-
-    internal static IEnumerable<double> SamplesUnchecked(Random rnd,double mean,double stddev)
-    {
-        while (true)
-        {
-            if (!PolarTransform(rnd.NextDouble(),rnd.NextDouble(),out var x,out var y))
-            {
-                continue;
-            }
-
-            yield return mean + (stddev*x);
-            yield return mean + (stddev*y);
-        }
-    }
-
-    private const double InvPi = 0.31830988618379067153776752674502872406891929148091d;
 
     private static bool PolarTransform(double a,double b,out double x,out double y)
     {
