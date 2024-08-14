@@ -11,9 +11,7 @@
 | ------- | ------------| ------- | ------- | -------------------------- |
 | CommandLineParser | [GitHub](https://github.com/commandlineparser/commandline) | [MIT](https://opensource.org/licenses/MIT) | Allows command line arguments for main client application and CLI executables |
 | CsvHelper | [GitHub](https://github.com/JoshClose/CsvHelper) | MS-PL / Apache 2.0 | Enables reading/writing CSV files |
-| Generator.Equals    | [GitHub](https://github.com/diegofrata/Generator.Equals)                                    | [MIT](https://opensource.org/licenses/MIT)                                                     | Simplifies object comparators                                                                       |
 | HIC.FAnsiSql                            | [GitHub](https://github.com/HicServices/FAnsiSql)                          | [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.html)                                           | DBMS abstraction layer                                                                              |
-| MathNet.Numerics | [GitHub](https://github.com/mathnet/mathnet-numerics)| [MIT](https://opensource.org/licenses/MIT) | Generate statistical distributions (e.g. Gaussian) for random data | |
 | Microsoft.SourceLink.GitHub | [GitHub](https://github.com/dotnet/sourcelink) | [1.1.1](https://www.nuget.org/packages/Microsoft.SourceLink.GitHub/1.1.1) | [Apache License 2.0](https://github.com/dotnet/sourcelink/blob/master/License.txt) | Enables source debugging of project nuget package| |
 | YamlDotNet                              | [GitHub](https://github.com/aaubry/YamlDotNet)                             | [MIT](https://opensource.org/licenses/MIT)                                                     | Loading configuration files                                                                         |
 

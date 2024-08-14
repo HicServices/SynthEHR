@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
-using MathNet.Numerics.Distributions;
+using Normal = SynthEHR.Statistics.Distributions.Normal;
 
 namespace SynthEHR.Datasets;
 

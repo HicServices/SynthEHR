@@ -4,9 +4,9 @@
 // RDMP is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License along with RDMP. If not, see <https://www.gnu.org/licenses/>.
 
+#nullable enable
 using System;
 using System.Text;
-using Generator.Equals;
 using SynthEHR.Datasets;
 
 namespace SynthEHR;
@@ -14,10 +14,8 @@ namespace SynthEHR;
 /// <summary>
 /// Randomly generated person for whom datasets can be built
 /// </summary>
-[Equatable]
-public sealed partial class Person
+public sealed record Person
 {
-
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Forename"]'/>
     public string Forename { get; set; }
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Surname"]'/>
@@ -36,7 +34,7 @@ public sealed partial class Person
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="Address"]'/>
     public DemographyAddress Address { get; set; }
     /// <include file='../Datasets.doc.xml' path='Datasets/Demography/Field[@name="PreviousAddress"]'/>
-    public DemographyAddress PreviousAddress { get; set; }
+    public DemographyAddress? PreviousAddress { get; set; }
 
     /// <summary>
     /// Earliest year of birth to generate
@@ -52,7 +50,7 @@ public sealed partial class Person
     /// <summary>
     /// The collection to which the patient belongs, may be null
     /// </summary>
-    private readonly PersonCollection _parent;
+    private readonly PersonCollection? _parent;
 
     /// <summary>
     /// Generates a new random person using the seeded random.  This overload ensures that the <see cref="Person"/> generated
@@ -60,17 +58,11 @@ public sealed partial class Person
     /// </summary>
     /// <param name="r"></param>
     /// <param name="collection"></param>
-    public Person(Random r,PersonCollection collection):this(r)
+    public Person(Random? r, PersonCollection? collection = null)
     {
         _parent = collection;
-    }
+        r ??= Random.Shared;
 
-    /// <summary>
-    /// Generates a new random person using the seeded random
-    /// </summary>
-    /// <param name="r"></param>
-    public Person(Random r)
-    {
         Gender = r.Next(2) switch
         {
             0 => 'F',
@@ -85,7 +77,7 @@ public sealed partial class Person
 
         //1 in 10 patients is dead
         if (r.Next(10) == 0)
-            DateOfDeath = DataGenerator.GetRandomDateAfter(DateOfBirth, r);
+            DateOfDeath = DataGenerator.GetRandomDateAfter(DateOfBirth,r);
         else
             DateOfDeath = null;
 
@@ -96,7 +88,7 @@ public sealed partial class Person
         Address = new DemographyAddress(r);
 
         //one in 10 people doesn't have a previous address
-        if(r.Next(10) != 0)
+        if (r.Next(10) != 0)
             PreviousAddress = new DemographyAddress(r);
     }
 
@@ -105,32 +97,24 @@ public sealed partial class Person
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public string GetRandomForename(Random r)
-    {
-        return Gender == 'F' ? CommonGirlForenames[r.Next(100)] : CommonBoyForenames[r.Next(100)];
-    }
+    public string GetRandomForename(Random r) => Gender == 'F' ? CommonGirlForenames[r.Next(100)] : CommonBoyForenames[r.Next(100)];
 
     /// <summary>
     /// Returns a random date after the patients date of birth (and before their death if they are dead).
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public DateTime GetRandomDateDuringLifetime(Random r)
-    {
-        return DateOfDeath == null
+    public DateTime GetRandomDateDuringLifetime(Random r) =>
+        DateOfDeath == null
             ? DataGenerator.GetRandomDateAfter(DateOfBirth, r)
             : DataGenerator.GetRandomDate(DateOfBirth, (DateTime)DateOfDeath, r);
-    }
 
     /// <summary>
     /// Returns a random surname from a list of common surnames
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public static string GetRandomSurname(Random r)
-    {
-        return CommonSurnames[r.Next(100)];
-    }
+    public static string GetRandomSurname(Random r) => CommonSurnames[r.Next(100)];
 
     /// <summary>
     /// If the person died before onDate it returns NULL (as of onDate we did not know when the person would die).  if onDate is > date of death it
@@ -138,12 +122,12 @@ public sealed partial class Person
     /// </summary>
     /// <param name="onDate"></param>
     /// <returns></returns>
-    public DateTime? GetDateOfDeathOrNullOn(DateTime onDate)
-    {
-        return onDate >= DateOfDeath ? DateOfDeath :
+    public DateTime? GetDateOfDeathOrNullOn(DateTime onDate) =>
+        onDate >= DateOfDeath
+            ? DateOfDeath
+            :
             //we cannot predict the future, they are dead today, but you are pretending the date is onDate
             null;
-    }
 
     /// <summary>
     /// Returns a new random ANOCHI which does not exist in <see cref="_parent"/> (if we have one)
@@ -154,12 +138,10 @@ public sealed partial class Person
     {
         var anochi = GenerateANOCHI(r);
 
-        while(_parent != null && _parent.AlreadyGeneratedANOCHIs.Contains(anochi))
+        while (_parent?.AlreadyGeneratedANOCHIs.Add(anochi) == false)
             anochi = GenerateANOCHI(r);
-        _parent?.AlreadyGeneratedANOCHIs.Add(anochi);
 
         return anochi;
-
     }
 
     /// <summary>
@@ -171,16 +153,15 @@ public sealed partial class Person
     {
         var chi = GetRandomCHI(r);
 
-        while(_parent != null && _parent.AlreadyGeneratedCHIs.Contains(chi))
+        while (_parent?.AlreadyGeneratedCHIs.Add(chi) == false)
             chi = GetRandomCHI(r);
-        _parent?.AlreadyGeneratedCHIs.Add(chi);
 
         return chi;
     }
 
     private static string GenerateANOCHI(Random r)
     {
-        var toReturn = new StringBuilder();
+        var toReturn = new StringBuilder(12);
 
         for (var i = 0; i < 10; i++)
             toReturn.Append(r.Next(10));
