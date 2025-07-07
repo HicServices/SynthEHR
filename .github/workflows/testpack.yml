@@ -23,7 +23,7 @@ jobs:
         if: contains(github.ref,'refs/tags/')
         run: nuget push HIC.*.nupkg -skipDuplicate -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_KEY }}
       - name: Upload release binaries
-        uses: svenstaro/upload-release-action@2.9.0
+        uses: svenstaro/upload-release-action@2.11.2
         if: contains(github.ref, 'refs/tags/v')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
